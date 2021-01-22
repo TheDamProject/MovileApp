@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="indian_red_200">#d89987</color>
+    <color name="indian_red_500">#d87b6f</color>
+    <color name="indian_red_700">#d85d57</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="background_local_light">#faf2de</color>
+    <color name="background_local_dark">#d8b7a0</color>
+</resources>

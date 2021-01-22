@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">GoLocal</string>
+    <!-- AuthActivity Text -->
+    <string name="auth_title">Welcome to Go Local!</string>
+    <string name="auth_action_login">login</string>
+    <string name="auth_action_register">register</string>
+    <!-- Errors -->
+    <string name="error_invalid_email">"Please check your email"</string>
+    <string name="error_email_already_use">"Email already in use"</string>
+    <string name="error_wrong_password">Wrong password</string>
+    <string name="error_short_password">"Password must be at least %d characters"</string>
+    <string name="error_register_generic">"Register failed"</string>
+    <string name="error_login_generic">Login failed</string>
+</resources>

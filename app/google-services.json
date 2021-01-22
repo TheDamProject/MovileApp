@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "834242572570",
+    "project_id": "golocal-834c3",
+    "storage_bucket": "golocal-834c3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:834242572570:android:071e27cd1f8ad9bc083ca3",
+        "android_client_info": {
+          "package_name": "com.jotamarti.golocal"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "834242572570-i52bncur2ko4on3ha26c86tmmpgdde39.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jotamarti.golocal",
+            "certificate_hash": "25d5a3e8f84cb487f333ce5d6d1cf611ab6f19f8"
+          }
+        },
+        {
+          "client_id": "834242572570-m4336f7dljl9mt4cn8hmkngluhqhng8u.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBV7X7EApsczJUOFsFIFKaOR8ZG2qus6B4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "834242572570-m4336f7dljl9mt4cn8hmkngluhqhng8u.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
