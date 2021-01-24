@@ -23,7 +23,7 @@ public class CustomToast {
         }
         View view = toast.getView();
         view.getBackground().setColorFilter(parentContext.getColor(R.color.background_local_dark), PorterDuff.Mode.SRC_IN);
-        TextView text = (TextView) view.findViewById(android.R.id.message);
+        TextView text = view.findViewById(android.R.id.message);
         text.setTextColor(parentContext.getColor(R.color.indian_red_700));
         toast.show();
     }

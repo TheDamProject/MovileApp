@@ -26,9 +26,10 @@ public class SplashActivity extends AppCompatActivity {
         Intent intentLogin = new Intent(this, AuthActivity.class);
         Intent intentMain = new Intent(this, MainActivity.class);
 
-        SystemClock.sleep(1000);
+        //SystemClock.sleep(1000);
         if (!TextUtils.isEmpty(PrefsUtils.getEmailPrefs(loginPreferences)) && !TextUtils.isEmpty(PrefsUtils.getPasswordPrefs(loginPreferences))) {
-            startActivity(intentMain);
+            // TODO: Cambiar a main activity en produccion.
+            startActivity(intentLogin);
         } else {
             startActivity(intentLogin);
         }

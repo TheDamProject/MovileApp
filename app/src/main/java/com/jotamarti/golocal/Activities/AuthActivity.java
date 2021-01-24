@@ -2,11 +2,18 @@ package com.jotamarti.golocal.Activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.app.ActivityCompat;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.PorterDuff;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.location.Location;
+import android.media.Image;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -17,20 +24,34 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Switch;
-import android.widget.TextView;
-import android.widget.Toast;
 
+import com.android.volley.VolleyError;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
+import com.jotamarti.golocal.Models.User;
 import com.jotamarti.golocal.R;
 import com.jotamarti.golocal.Utils.CustomToast;
+import com.jotamarti.golocal.Utils.backendCalls;
+import com.jotamarti.golocal.Utils.OnResponseCallback;
 
-public class AuthActivity extends AppCompatActivity {
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+
+public class AuthActivity extends AppCompatActivity implements OnResponseCallback {
 
     private final int PASS_LENGTH = 6;
     private final String TAG = "AUTH_ACTIVITY";
@@ -43,16 +64,23 @@ public class AuthActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     private SharedPreferences preferences;
+    private backendCalls backend;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_auth);
 
+        // Deshabilitar el modo noche
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+
         mAuth = FirebaseAuth.getInstance();
         preferences = getSharedPreferences("authPreferences", Context.MODE_PRIVATE);
 
         initializeUI();
+        //registerUserInBacked("testing");
+
 
         btnAuthActivity.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -96,6 +124,7 @@ public class AuthActivity extends AppCompatActivity {
         switchRemember = findViewById(R.id.switchRemember);
         checkBoxRegister = findViewById(R.id.checkBoxRegister);
         btnAuthActivity = findViewById(R.id.btnAuth);
+        backend = new backendCalls(this);
     }
 
     private void registerUser(String email, String password) {
@@ -109,7 +138,8 @@ public class AuthActivity extends AppCompatActivity {
                             }
                             Log.d(TAG, "createUserWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
-                            showMainActivity(user, getString(R.string.auth_action_register));
+                            //registerUserInBacked(user.getUid());
+                            //showMainActivity(user, getString(R.string.auth_action_register));
                         } else {
                             Log.w(TAG, "createUserWithEmail:failure", task.getException());
                             try {
@@ -124,6 +154,14 @@ public class AuthActivity extends AppCompatActivity {
                 });
     }
 
+    private void registerUserInBacked(String userUid) {
+        backend.registerUser(this, userUid);
+    }
+
+    private void getUserFromBackend(String userUid){
+        backend.getUser(this, userUid);
+    }
+
     private void loginUser(String email, String password) {
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -135,8 +173,8 @@ public class AuthActivity extends AppCompatActivity {
                             }
                             Log.d(TAG, "signInWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
-                            Log.d(TAG, user.getUid());
-                            showMainActivity(user, getString(R.string.auth_action_login));
+                            getUserFromBackend(user.getUid());
+                            //showMainActivity(user, getString(R.string.auth_action_login));
                         } else {
                             Log.w(TAG, "signInWithEmail:failure", task.getException());
                             try {
@@ -151,11 +189,13 @@ public class AuthActivity extends AppCompatActivity {
                 });
     }
 
-    private void showMainActivity(FirebaseUser user, String action) {
+    private void showMainActivity(User user, String action) {
         if (action.equals(getString(R.string.auth_action_login))) {
             Intent intent = new Intent(AuthActivity.this, MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            intent.putExtra("avatar", user.getAvatar());
             intent.putExtra("email", user.getEmail());
+            intent.putExtra("uid", user.getUserId());
             startActivity(intent);
         } else {
             // Al ser un register tendremos que enviar al backend algo
@@ -191,5 +231,68 @@ public class AuthActivity extends AppCompatActivity {
 
     private boolean isValidPassword(String password) {
         return password.length() >= PASS_LENGTH;
+    }
+
+    @Override
+    public void onResponse(JSONObject json) {
+        String type = "";
+        try {
+            type = json.getString("type");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        switch (type){
+            case "registerUser":
+                Log.d(TAG, "Me ha llegado el register user");
+                break;
+            case "getUser":
+                Log.d(TAG, "Me ha llegado el el get user");
+                extractUser(json);
+                break;
+            default:
+                Log.d(TAG, "Me ha llegado otro distinto");
+                break;
+        }
+    }
+
+    @Override
+    public void onErrorResponse(String error) {
+        Log.d("VOLLEYERROR", error);
+    }
+
+    public void extractUser(JSONObject json){
+        try {
+            JSONArray jsonArray = json.getJSONArray("results");
+            JSONObject userObject = jsonArray.getJSONObject(0);
+            JSONObject loginObject = userObject.getJSONObject("login");
+            JSONObject pictureObject = userObject.getJSONObject("picture");
+            String uid = loginObject.getString("uuid");
+            String email = userObject.getString("email");
+            String imageUrl = pictureObject.getString("medium");
+
+
+            Runnable runnable = new Runnable() {
+                @Override
+                public void run() {
+                    Bitmap bitmap = null;
+                    InputStream inputStream = null;
+                    try {
+                        inputStream = new URL(imageUrl).openStream();
+                        bitmap = BitmapFactory.decodeStream(inputStream);
+                        User user = new User(bitmap, email, uid);
+                        passUser(user);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            };
+            new Thread(runnable).start();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void passUser(User user){
+        showMainActivity(user, getString(R.string.auth_action_login));
     }
 }
