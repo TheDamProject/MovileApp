@@ -45,6 +45,7 @@ public class MapsFragment extends Fragment {
             googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(getContext(), R.raw.map_style));
             LatLng valencia = new LatLng(39.47427, -0.37548);
             LatLng sydney = new LatLng(-34, 151);
+
             //googleMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
             //googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
             //CameraUpdate yourLocation = CameraUpdateFactory.newLatLngZoom(valencia, 16);
@@ -52,6 +53,7 @@ public class MapsFragment extends Fragment {
             if (!checkHaveLocationPermission()) {
                 requestPermission();
             } else {
+                googleMap.setMyLocationEnabled(true);
                 navigateToUserLocation();
             }
         }
@@ -75,6 +77,7 @@ public class MapsFragment extends Fragment {
         }
     }
 
+
     public void requestPermission() {
         // Pido los permisos
         requestPermissions(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, PERMISSIONS_REQUEST_ACCESS_LOCATION);
@@ -89,6 +92,12 @@ public class MapsFragment extends Fragment {
                         return;
                     }
                     mMap.setMyLocationEnabled(true);
+                    mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+                        @Override
+                        public void onMapClick(LatLng latLng) {
+                            CustomToast.showToast(requireActivity(), "Has clickado el mapa", CustomToast.mode.LONGER);
+                        }
+                    });
                     navigateToUserLocation();
                 } else {
                     CustomToast.showToast(getActivity(), "Permission not granted", CustomToast.mode.LONGER);
@@ -101,12 +110,15 @@ public class MapsFragment extends Fragment {
         if (!checkHaveLocationPermission()) {
             return;
         }
+        fusedLocationClient.requestLocationUpdates(null, null);
         fusedLocationClient.getLastLocation().addOnSuccessListener(requireActivity(), new OnSuccessListener<Location>() {
             @Override
             public void onSuccess(Location location) {
-                LatLng cordsUser = new LatLng(location.getLatitude(), location.getLongitude());
-                CameraUpdate yourLocation = CameraUpdateFactory.newLatLngZoom(cordsUser, 16);
-                mMap.animateCamera(yourLocation);
+                if (location != null){
+                    LatLng cordsUser = new LatLng(location.getLatitude(), location.getLongitude());
+                    CameraUpdate yourLocation = CameraUpdateFactory.newLatLngZoom(cordsUser, 16);
+                    mMap.animateCamera(yourLocation);
+                }
             }
         });
     }

@@ -5,6 +5,6 @@ import com.android.volley.VolleyError;
 import org.json.JSONObject;
 
 public interface OnResponseCallback {
-    void onResponse(JSONObject json);
-    void onErrorResponse(String error);
+    void onResponse(JSONObject json, String tag);
+    void onErrorResponse(String error, String tag);
 }

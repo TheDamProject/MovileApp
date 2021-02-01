@@ -11,6 +11,10 @@
     <string name="error_short_password">"Password must be at least %d characters"</string>
     <string name="error_register_generic">"Register failed"</string>
     <string name="error_login_generic">Login failed</string>
+    <!-- API Base URL -->
+    <string name="api_base_url">https://randomuser.me/api</string>
+    <!-- Backend TAGS -->
+    <string name="get_user_usecase">GET_USER_USECASE</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

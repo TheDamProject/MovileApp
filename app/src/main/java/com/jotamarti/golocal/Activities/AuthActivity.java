@@ -3,17 +3,12 @@ package com.jotamarti.golocal.Activities;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
-import androidx.core.app.ActivityCompat;
 
-import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.location.Location;
-import android.media.Image;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -25,11 +20,7 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Switch;
 
-import com.android.volley.VolleyError;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -38,8 +29,10 @@ import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
 import com.jotamarti.golocal.Models.User;
 import com.jotamarti.golocal.R;
+import com.jotamarti.golocal.UseCases.Users.GetUser;
+import com.jotamarti.golocal.UseCases.Users.RegisterUser;
 import com.jotamarti.golocal.Utils.CustomToast;
-import com.jotamarti.golocal.Utils.backendCalls;
+import com.jotamarti.golocal.Utils.BackendCalls;
 import com.jotamarti.golocal.Utils.OnResponseCallback;
 
 import org.json.JSONArray;
@@ -48,7 +41,6 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 public class AuthActivity extends AppCompatActivity implements OnResponseCallback {
@@ -64,7 +56,8 @@ public class AuthActivity extends AppCompatActivity implements OnResponseCallbac
 
     private FirebaseAuth mAuth;
     private SharedPreferences preferences;
-    private backendCalls backend;
+    private RegisterUser registerUserUseCase;
+    private GetUser getUserUseCase;
 
 
     @Override
@@ -124,7 +117,8 @@ public class AuthActivity extends AppCompatActivity implements OnResponseCallbac
         switchRemember = findViewById(R.id.switchRemember);
         checkBoxRegister = findViewById(R.id.checkBoxRegister);
         btnAuthActivity = findViewById(R.id.btnAuth);
-        backend = new backendCalls(this);
+        registerUserUseCase = new RegisterUser(this);
+        getUserUseCase = new GetUser(this);
     }
 
     private void registerUser(String email, String password) {
@@ -155,11 +149,11 @@ public class AuthActivity extends AppCompatActivity implements OnResponseCallbac
     }
 
     private void registerUserInBacked(String userUid) {
-        backend.registerUser(this, userUid);
+        registerUserUseCase.registerUser(this, userUid);
     }
 
     private void getUserFromBackend(String userUid){
-        backend.getUser(this, userUid);
+        getUserUseCase.getUser(this, userUid);
     }
 
     private void loginUser(String email, String password) {
@@ -174,6 +168,8 @@ public class AuthActivity extends AppCompatActivity implements OnResponseCallbac
                             Log.d(TAG, "signInWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
                             getUserFromBackend(user.getUid());
+
+
                             //showMainActivity(user, getString(R.string.auth_action_login));
                         } else {
                             Log.w(TAG, "signInWithEmail:failure", task.getException());
@@ -234,18 +230,12 @@ public class AuthActivity extends AppCompatActivity implements OnResponseCallbac
     }
 
     @Override
-    public void onResponse(JSONObject json) {
-        String type = "";
-        try {
-            type = json.getString("type");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        switch (type){
+    public void onResponse(JSONObject json, String tag) {
+        switch (tag){
             case "registerUser":
                 Log.d(TAG, "Me ha llegado el register user");
                 break;
-            case "getUser":
+            case "GET_USER_USECASE":
                 Log.d(TAG, "Me ha llegado el el get user");
                 extractUser(json);
                 break;
@@ -256,7 +246,7 @@ public class AuthActivity extends AppCompatActivity implements OnResponseCallbac
     }
 
     @Override
-    public void onErrorResponse(String error) {
+    public void onErrorResponse(String error, String tag) {
         Log.d("VOLLEYERROR", error);
     }
 
