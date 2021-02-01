@@ -14,12 +14,13 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.HttpURLConnection;
 import java.util.List;
 
 public class BackendCalls {
 
     OnResponseCallback callerObject = null;
-    private final String TAG = "BACKED_CALLS";
+    private final String TAG = "BACKEND_CALLS";
 
     public BackendCalls(OnResponseCallback onResponseCallback) {
         callerObject = onResponseCallback;
@@ -34,7 +35,7 @@ public class BackendCalls {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                callerObject.onErrorResponse("error", tag);
+                callerObject.onErrorResponse(error.networkResponse.statusCode, tag);
             }
         });
     }

@@ -246,8 +246,8 @@ public class AuthActivity extends AppCompatActivity implements OnResponseCallbac
     }
 
     @Override
-    public void onErrorResponse(String error, String tag) {
-        Log.d("VOLLEYERROR", error);
+    public void onErrorResponse(int error, String tag) {
+        Log.d("VOLLEYERROR", String.valueOf(error));
     }
 
     public void extractUser(JSONObject json){

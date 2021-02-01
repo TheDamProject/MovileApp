@@ -6,5 +6,5 @@ import org.json.JSONObject;
 
 public interface OnResponseCallback {
     void onResponse(JSONObject json, String tag);
-    void onErrorResponse(String error, String tag);
+    void onErrorResponse(int error, String tag);
 }

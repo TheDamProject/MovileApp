@@ -37,7 +37,7 @@ public class GetUser {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                callerObject.onErrorResponse(String.valueOf(error.networkResponse.statusCode), TAG);
+                callerObject.onErrorResponse(error.networkResponse.statusCode, TAG);
             }
         });
         RequestQueueSingleton.getInstance(context.getApplicationContext()).addToRequestQueue(jsonObjectRequest);
