@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">GoLocal</string>
+    <string name="auth_title">Bienvenido a Go Local!</string>
+    <string name="error_invalid_email">Por favor, revisa tu email.</string>
+    <string name="error_email_already_use">Email en uso.</string>
+    <string name="error_wrong_password">Contraseña incorrecta.</string>
+    <string name="error_short_password">La contraseña debe ser de al menos %d carácteres</string>
+    <string name="error_register_generic">Registro fallido.</string>
+    <string name="error_login_generic">Login fallido.</string>
+    <string name="auth_checkbox_company">Soy una tienda</string>
+</resources>

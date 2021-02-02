@@ -1,17 +1,13 @@
 package com.jotamarti.golocal.UseCases.Users;
 
 import android.content.Context;
-
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 import com.jotamarti.golocal.R;
 import com.jotamarti.golocal.Utils.OnResponseCallback;
 import com.jotamarti.golocal.Utils.RequestQueueSingleton;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -39,7 +35,7 @@ public class RegisterUser {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                callerObject.onErrorResponse("error", "registerUser");
+                callerObject.onErrorResponse(error.networkResponse.statusCode, "registerUser");
             }
         });
         RequestQueueSingleton.getInstance(context.getApplicationContext()).addToRequestQueue(jsonObjectRequest);

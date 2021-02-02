@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Activities.AuthActivity"
-    android:background="@color/background_local_light">
+    android:background="@color/background_local_light"
+    tools:context=".Activities.AuthActivity">
 
     <ImageView
         android:id="@+id/imageView"
@@ -15,14 +15,15 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/go_local_house" />
+        app:srcCompat="@drawable/go_local_house"
+        android:contentDescription="@string/auth_logo_description" />
 
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="0dp"
-        android:text="Go Local!"
+        android:text="@string/brand_title"
         android:textColor="@color/indian_red_700"
         android:textSize="64sp"
         android:textStyle="bold"
@@ -36,9 +37,9 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:ems="10"
-        android:inputType="textPersonName"
+        android:hint="@string/auth_edittext_email_hint"
+        android:inputType="textEmailAddress"
         android:text=""
-        android:hint="Email"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView" />
@@ -49,7 +50,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:ems="10"
-        android:hint="Password"
+        android:hint="@string/auth_edittext_password_hint"
         android:inputType="textPassword"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -60,7 +61,7 @@
         android:layout_width="wrap_content"
         android:layout_height="20dp"
         android:layout_marginTop="8dp"
-        android:text="Register"
+        android:text="@string/auth_checkbox_register"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.267"
         app:layout_constraintStart_toStartOf="parent"
@@ -71,7 +72,7 @@
         android:layout_width="wrap_content"
         android:layout_height="20dp"
         android:layout_marginTop="4dp"
-        android:text="Remember"
+        android:text="@string/auth_switch_remember"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.706"
         app:layout_constraintStart_toStartOf="parent"
@@ -81,9 +82,20 @@
         android:id="@+id/btnAuth"
         android:layout_width="110dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:text="LOGIN"
+        android:layout_marginTop="24dp"
+        android:text="@string/auth_btn_login"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.508"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/checkBoxRegister" />
+
+    <CheckBox
+        android:id="@+id/checkBoxCompany"
+        android:layout_width="wrap_content"
+        android:layout_height="20dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="16dp"
+        android:text="@string/auth_checkbox_company"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

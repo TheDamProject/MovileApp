@@ -32,7 +32,6 @@ import com.jotamarti.golocal.R;
 import com.jotamarti.golocal.UseCases.Users.GetUser;
 import com.jotamarti.golocal.UseCases.Users.RegisterUser;
 import com.jotamarti.golocal.Utils.CustomToast;
-import com.jotamarti.golocal.Utils.BackendCalls;
 import com.jotamarti.golocal.Utils.OnResponseCallback;
 
 import org.json.JSONArray;
@@ -89,7 +88,9 @@ public class AuthActivity extends AppCompatActivity implements OnResponseCallbac
                     return;
                 }
                 if (checkBoxRegister.isChecked()) {
-                    registerUser(email, password);
+                    //registerUser(email, password);
+                    Intent intent = new Intent(AuthActivity.this, ShopConfiguration.class);
+                    startActivity(intent);
                 } else {
                     loginUser(email, password);
                 }
