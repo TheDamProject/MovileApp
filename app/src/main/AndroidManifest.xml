@@ -8,6 +8,9 @@
     -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.CAMERA"/>
 
     <application
         android:name=".App"
@@ -17,7 +20,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.GoLocal">
-        <activity android:name=".Activities.ShopConfiguration"></activity>
+        <activity android:name=".Activities.ShopConfiguration" />
         <activity android:name=".Activities.PostDetailActivity" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
@@ -42,6 +45,8 @@
         </activity>
         <activity android:name=".Activities.AuthActivity" />
         <activity android:name=".Activities.MainActivity" />
+        <activity android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
+            android:theme="@style/Base.Theme.AppCompat"/>
     </application>
 
 </manifest>

@@ -73,6 +73,9 @@ public class AuthActivity extends AppCompatActivity implements OnResponseCallbac
         initializeUI();
         //registerUserInBacked("testing");
 
+        editTxtEmail.setText("test@test.com");
+        editTxtPassword.setText("123456");
+
 
         btnAuthActivity.setOnClickListener(new View.OnClickListener() {
             @Override
