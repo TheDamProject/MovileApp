@@ -38,6 +38,6 @@ public class RegisterUser {
                 callerObject.onErrorResponse(error.networkResponse.statusCode, "registerUser");
             }
         });
-        RequestQueueSingleton.getInstance(context.getApplicationContext()).addToRequestQueue(jsonObjectRequest);
+        RequestQueueSingleton.getInstance().addToRequestQueue(jsonObjectRequest);
     }
 }

@@ -40,6 +40,6 @@ public class GetUser {
                 callerObject.onErrorResponse(error.networkResponse.statusCode, TAG);
             }
         });
-        RequestQueueSingleton.getInstance(context.getApplicationContext()).addToRequestQueue(jsonObjectRequest);
+        RequestQueueSingleton.getInstance().addToRequestQueue(jsonObjectRequest);
     }
 }

@@ -18,7 +18,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.Switch;
+import androidx.appcompat.widget.SwitchCompat;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -27,6 +27,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
+import com.jotamarti.golocal.App;
 import com.jotamarti.golocal.Models.User;
 import com.jotamarti.golocal.R;
 import com.jotamarti.golocal.UseCases.Users.GetUser;
@@ -44,17 +45,21 @@ import java.net.URL;
 
 public class AuthActivity extends AppCompatActivity implements OnResponseCallback {
 
-    private final int PASS_LENGTH = 6;
-    private final String TAG = "AUTH_ACTIVITY";
+    private final String TAG = "AuthActivity";
+    private final int MIN_PASS_LENGTH = 6;
 
+    // UI Views
     private EditText editTxtEmail;
     private EditText editTxtPassword;
-    private Switch switchRemember;
+    private SwitchCompat switchRemember;
     private CheckBox checkBoxRegister;
     private Button btnAuthActivity;
 
     private FirebaseAuth mAuth;
+
     private SharedPreferences preferences;
+
+    // Backend usecases
     private RegisterUser registerUserUseCase;
     private GetUser getUserUseCase;
 
@@ -71,11 +76,12 @@ public class AuthActivity extends AppCompatActivity implements OnResponseCallbac
         preferences = getSharedPreferences("authPreferences", Context.MODE_PRIVATE);
 
         initializeUI();
-        //registerUserInBacked("testing");
+        setCredentialsIfExists();
 
-        editTxtEmail.setText("test@test.com");
-        editTxtPassword.setText("123456");
-
+        if(App.getAppInDevelopment()) {
+            editTxtEmail.setText("test@test.com");
+            editTxtPassword.setText("123456");
+        }
 
         btnAuthActivity.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -87,7 +93,7 @@ public class AuthActivity extends AppCompatActivity implements OnResponseCallbac
                     return;
                 }
                 if (!isValidPassword(password)) {
-                    CustomToast.showToast(AuthActivity.this, String.format(getString(R.string.error_short_password), PASS_LENGTH), CustomToast.mode.SHORTER);
+                    CustomToast.showToast(AuthActivity.this, String.format(getString(R.string.error_short_password), MIN_PASS_LENGTH), CustomToast.mode.SHORTER);
                     return;
                 }
                 if (checkBoxRegister.isChecked()) {
@@ -104,26 +110,17 @@ public class AuthActivity extends AppCompatActivity implements OnResponseCallbac
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    btnAuthActivity.setText("REGISTER");
+                    btnAuthActivity.setText(R.string.auth_btn_register);
                 } else {
-                    btnAuthActivity.setText("LOGIN");
+                    btnAuthActivity.setText(R.string.auth_btn_login);
                 }
             }
         });
 
-        setCredentialsIfExists();
+
     }
 
-    public void initializeUI() {
-        setTitle(getString(R.string.auth_title));
-        editTxtEmail = findViewById(R.id.editTextEmail);
-        editTxtPassword = findViewById(R.id.editTextPassword);
-        switchRemember = findViewById(R.id.switchRemember);
-        checkBoxRegister = findViewById(R.id.checkBoxRegister);
-        btnAuthActivity = findViewById(R.id.btnAuth);
-        registerUserUseCase = new RegisterUser(this);
-        getUserUseCase = new GetUser(this);
-    }
+
 
     private void registerUser(String email, String password) {
         mAuth.createUserWithEmailAndPassword(email, password)
@@ -224,14 +221,7 @@ public class AuthActivity extends AppCompatActivity implements OnResponseCallbac
         }
     }
 
-    // Validaciones
-    private boolean isValidEmail(String email) {
-        return !TextUtils.isEmpty(email) && Patterns.EMAIL_ADDRESS.matcher(email).matches();
-    }
 
-    private boolean isValidPassword(String password) {
-        return password.length() >= PASS_LENGTH;
-    }
 
     @Override
     public void onResponse(JSONObject json, String tag) {
@@ -288,5 +278,25 @@ public class AuthActivity extends AppCompatActivity implements OnResponseCallbac
 
     public void passUser(User user){
         showMainActivity(user, getString(R.string.auth_action_login));
+    }
+
+    // Validations
+    private boolean isValidEmail(String email) {
+        return !TextUtils.isEmpty(email) && Patterns.EMAIL_ADDRESS.matcher(email).matches();
+    }
+
+    private boolean isValidPassword(String password) {
+        return password.length() >= MIN_PASS_LENGTH;
+    }
+
+    public void initializeUI() {
+        setTitle(getString(R.string.auth_title));
+        editTxtEmail = findViewById(R.id.auth_activity_edit_text_email);
+        editTxtPassword = findViewById(R.id.auth_activity_edit_text_password);
+        switchRemember = findViewById(R.id.auth_activity_switch_remember);
+        checkBoxRegister = findViewById(R.id.auth_activity_checkbox_register);
+        btnAuthActivity = findViewById(R.id.auth_activity_btn);
+        registerUserUseCase = new RegisterUser(this);
+        getUserUseCase = new GetUser(this);
     }
 }

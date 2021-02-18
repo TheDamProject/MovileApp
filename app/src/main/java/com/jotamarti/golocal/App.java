@@ -6,6 +6,7 @@ import android.content.Context;
 public class App extends Application {
 
     private static Context mContext;
+    private static Boolean appInDevelopment = true;
 
     @Override
     public void onCreate() {
@@ -15,5 +16,9 @@ public class App extends Application {
 
     public static Context getContext(){
         return mContext;
+    }
+
+    public static Boolean getAppInDevelopment() {
+        return appInDevelopment;
     }
 }
