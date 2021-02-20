@@ -1,36 +1,21 @@
 package com.jotamarti.golocal.UseCases.Users;
 
-
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.google.gson.JsonObject;
 import com.jotamarti.golocal.App;
 import com.jotamarti.golocal.R;
-import com.jotamarti.golocal.Utils.OnResponseCallback;
 import com.jotamarti.golocal.Utils.RequestQueueSingleton;
 
 import org.json.JSONObject;
 
-public class GetUser {
+public class UserUsecases implements UserApi {
 
-    private OnResponseCallback callerObject = null;
-    private final String TAG = App.getContext().getResources().getString(R.string.get_user_usecase);
 
-    public GetUser(OnResponseCallback onResponseCallback){
-        callerObject = onResponseCallback;
-    }
-
-    public GetUser() {
-
-    }
-
-    public interface OnResponseCallbackGetUser {
-        void onResponse(JSONObject json);
-        void onErrorResponse(int error);
-    }
-
-    public void getUser(String uid, OnResponseCallbackGetUser onResponseCallbackGetUser) {
+    @Override
+    public void getUser(String uid, UserCallbacks.OnResponseCallbackGetUser onResponseCallbackGetUser) {
         String baseUrl = String.valueOf(App.getContext().getResources().getText(R.string.api_base_url));
         String uri = baseUrl + "/user?" + uid;
         JsonObjectRequest jsonObjectRequest  = new JsonObjectRequest(Request.Method.GET, baseUrl, null, new Response.Listener<JSONObject>() {
@@ -42,9 +27,24 @@ public class GetUser {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                //callerObject.onErrorResponse(error.networkResponse.statusCode, TAG);
+                onResponseCallbackGetUser.onErrorResponse(error.networkResponse.statusCode);
             }
         });
         RequestQueueSingleton.getInstance().addToRequestQueue(jsonObjectRequest);
+    }
+
+    @Override
+    public void registerUser(String uid) {
+
+    }
+
+    @Override
+    public void modifyUser(String uid, JsonObject newValues) {
+
+    }
+
+    @Override
+    public void deleteUser(String uid) {
+
     }
 }

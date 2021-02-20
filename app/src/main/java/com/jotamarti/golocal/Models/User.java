@@ -20,6 +20,10 @@ public class User {
         //this.companiesFollowed = companiesFollowed;
     }
 
+    public User() {
+
+    }
+
     public Bitmap getAvatar() {
         return avatar;
     }

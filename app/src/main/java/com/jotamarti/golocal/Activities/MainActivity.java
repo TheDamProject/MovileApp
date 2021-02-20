@@ -1,6 +1,7 @@
 package com.jotamarti.golocal.Activities;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -10,12 +11,15 @@ import androidx.navigation.ui.NavigationUI;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.jotamarti.golocal.Models.Post;
 import com.jotamarti.golocal.Models.User;
 import com.jotamarti.golocal.R;
 import com.jotamarti.golocal.ViewModels.MainActivityViewModel;
 
+import java.util.List;
 import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
@@ -49,5 +53,12 @@ public class MainActivity extends AppCompatActivity {
         User user = new User(avatar, email, uid);
         model = new ViewModelProvider(this).get(MainActivityViewModel.class);
         model.setUser(user);
+        /*final Observer<List<Post>> observador = new Observer<List<Post>>() {
+            @Override
+            public void onChanged(List<Post> posts) {
+                Log.d("TXTVIEW", "HOLAAA");
+            }
+        };*/
+        //model.getPosts().observe(MainActivity.this , observador);
     }
 }

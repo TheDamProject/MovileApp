@@ -18,7 +18,12 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.Toast;
+
 import androidx.appcompat.widget.SwitchCompat;
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelProviders;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -34,6 +39,7 @@ import com.jotamarti.golocal.UseCases.Users.GetUser;
 import com.jotamarti.golocal.UseCases.Users.RegisterUser;
 import com.jotamarti.golocal.Utils.CustomToast;
 import com.jotamarti.golocal.Utils.OnResponseCallback;
+import com.jotamarti.golocal.ViewModels.AuthActivityViewModel;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -42,11 +48,14 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.List;
 
-public class AuthActivity extends AppCompatActivity implements OnResponseCallback {
+public class AuthActivity extends AppCompatActivity {
 
     private final String TAG = "AuthActivity";
     private final int MIN_PASS_LENGTH = 6;
+
+    private AuthActivityViewModel mViewModel;
 
     // UI Views
     private EditText editTxtEmail;
@@ -60,8 +69,8 @@ public class AuthActivity extends AppCompatActivity implements OnResponseCallbac
     private SharedPreferences preferences;
 
     // Backend usecases
-    private RegisterUser registerUserUseCase;
-    private GetUser getUserUseCase;
+    //private RegisterUser registerUserUseCase;
+    //private GetUser getUserUseCase;
 
 
     @Override
@@ -75,13 +84,21 @@ public class AuthActivity extends AppCompatActivity implements OnResponseCallbac
         mAuth = FirebaseAuth.getInstance();
         preferences = getSharedPreferences("authPreferences", Context.MODE_PRIVATE);
 
+        mViewModel = new ViewModelProvider(this).get(AuthActivityViewModel.class);
+        //mViewModel.getNewUser("1234");
+        mViewModel.getError().observe(this, (Integer currentError) -> {
+            Log.d(TAG, "Error numero: " + String.valueOf(currentError));
+        });
+
+
         initializeUI();
         setCredentialsIfExists();
 
-        if(App.getAppInDevelopment()) {
+        if (App.getAppInDevelopment()) {
             editTxtEmail.setText("test@test.com");
             editTxtPassword.setText("123456");
         }
+
 
         btnAuthActivity.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -121,7 +138,6 @@ public class AuthActivity extends AppCompatActivity implements OnResponseCallbac
     }
 
 
-
     private void registerUser(String email, String password) {
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -149,12 +165,24 @@ public class AuthActivity extends AppCompatActivity implements OnResponseCallbac
                 });
     }
 
-    private void registerUserInBacked(String userUid) {
+   /* private void registerUserInBacked(String userUid) {
         registerUserUseCase.registerUser(this, userUid);
+    }*/
+
+    private void getUserFromBackend(String userUid) {
+        if (mViewModel.getCurrentUser() == null) {
+            mViewModel.getNewUser("1234");
+            startObserving();
+        } else {
+            mViewModel.getNewUser("1234");
+        }
     }
 
-    private void getUserFromBackend(String userUid){
-        getUserUseCase.getUser(this, userUid);
+    private void startObserving() {
+        Log.d(TAG, "ESTOY OBSERVANDOOOOOO");
+        mViewModel.getCurrentUser().observe(this, (User currentUser) -> {
+            showMainActivity(currentUser, getString(R.string.auth_action_login));
+        });
     }
 
     private void loginUser(String email, String password) {
@@ -223,7 +251,7 @@ public class AuthActivity extends AppCompatActivity implements OnResponseCallbac
 
 
 
-    @Override
+    /*@Override
     public void onResponse(JSONObject json, String tag) {
         switch (tag){
             case "registerUser":
@@ -237,14 +265,14 @@ public class AuthActivity extends AppCompatActivity implements OnResponseCallbac
                 Log.d(TAG, "Me ha llegado otro distinto");
                 break;
         }
-    }
+    }*/
 
-    @Override
+    /*@Override
     public void onErrorResponse(int error, String tag) {
         Log.d("VOLLEYERROR", String.valueOf(error));
-    }
+    }*/
 
-    public void extractUser(JSONObject json){
+    /*public void extractUser(JSONObject json){
         try {
             JSONArray jsonArray = json.getJSONArray("results");
             JSONObject userObject = jsonArray.getJSONObject(0);
@@ -274,9 +302,9 @@ public class AuthActivity extends AppCompatActivity implements OnResponseCallbac
         } catch (JSONException e) {
             e.printStackTrace();
         }
-    }
+    }*/
 
-    public void passUser(User user){
+    public void passUser(User user) {
         showMainActivity(user, getString(R.string.auth_action_login));
     }
 
@@ -296,7 +324,7 @@ public class AuthActivity extends AppCompatActivity implements OnResponseCallbac
         switchRemember = findViewById(R.id.auth_activity_switch_remember);
         checkBoxRegister = findViewById(R.id.auth_activity_checkbox_register);
         btnAuthActivity = findViewById(R.id.auth_activity_btn);
-        registerUserUseCase = new RegisterUser(this);
-        getUserUseCase = new GetUser(this);
+        //registerUserUseCase = new RegisterUser(this);
+        //getUserUseCase = new GetUser(this);
     }
 }
