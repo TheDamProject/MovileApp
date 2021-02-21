@@ -4,11 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -18,12 +14,9 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import androidx.appcompat.widget.SwitchCompat;
-import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelProviders;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -35,27 +28,17 @@ import com.google.firebase.auth.FirebaseUser;
 import com.jotamarti.golocal.App;
 import com.jotamarti.golocal.Models.User;
 import com.jotamarti.golocal.R;
-import com.jotamarti.golocal.UseCases.Users.GetUser;
-import com.jotamarti.golocal.UseCases.Users.RegisterUser;
+import com.jotamarti.golocal.SharedPreferences.DataStorage;
+import com.jotamarti.golocal.SharedPreferences.UserPreferences;
 import com.jotamarti.golocal.Utils.CustomToast;
-import com.jotamarti.golocal.Utils.OnResponseCallback;
 import com.jotamarti.golocal.ViewModels.AuthActivityViewModel;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.List;
 
 public class AuthActivity extends AppCompatActivity {
 
     private final String TAG = "AuthActivity";
-    private final int MIN_PASS_LENGTH = 6;
 
-    private AuthActivityViewModel mViewModel;
+    // ViewModel
+    private AuthActivityViewModel authActivityViewModel;
 
     // UI Views
     private EditText editTxtEmail;
@@ -66,11 +49,7 @@ public class AuthActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
 
-    private SharedPreferences preferences;
-
-    // Backend usecases
-    //private RegisterUser registerUserUseCase;
-    //private GetUser getUserUseCase;
+    private DataStorage dataStorage;
 
 
     @Override
@@ -78,27 +57,16 @@ public class AuthActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_auth);
 
-        // Deshabilitar el modo noche
+        // Deshabilitamos modo noche
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
 
+        // Iniciamos variables
+        authActivityViewModel = new ViewModelProvider(this).get(AuthActivityViewModel.class);
         mAuth = FirebaseAuth.getInstance();
-        preferences = getSharedPreferences("authPreferences", Context.MODE_PRIVATE);
-
-        mViewModel = new ViewModelProvider(this).get(AuthActivityViewModel.class);
-        //mViewModel.getNewUser("1234");
-        mViewModel.getError().observe(this, (Integer currentError) -> {
-            Log.d(TAG, "Error numero: " + String.valueOf(currentError));
-        });
-
 
         initializeUI();
         setCredentialsIfExists();
-
-        if (App.getAppInDevelopment()) {
-            editTxtEmail.setText("test@test.com");
-            editTxtPassword.setText("123456");
-        }
-
+        manageErrors();
 
         btnAuthActivity.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -110,7 +78,7 @@ public class AuthActivity extends AppCompatActivity {
                     return;
                 }
                 if (!isValidPassword(password)) {
-                    CustomToast.showToast(AuthActivity.this, String.format(getString(R.string.error_short_password), MIN_PASS_LENGTH), CustomToast.mode.SHORTER);
+                    CustomToast.showToast(AuthActivity.this, String.format(getString(R.string.error_short_password), authActivityViewModel.MIN_PASS_LENGTH), CustomToast.mode.SHORTER);
                     return;
                 }
                 if (checkBoxRegister.isChecked()) {
@@ -145,7 +113,7 @@ public class AuthActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             if (switchRemember.isChecked()) {
-                                saveOnPreferences(email, password);
+                                authActivityViewModel.setPreferences(email, password);
                             }
                             Log.d(TAG, "createUserWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
@@ -170,18 +138,23 @@ public class AuthActivity extends AppCompatActivity {
     }*/
 
     private void getUserFromBackend(String userUid) {
-        if (mViewModel.getCurrentUser() == null) {
-            mViewModel.getNewUser("1234");
+        if (authActivityViewModel.getCurrentUser() == null) {
+            authActivityViewModel.getNewUser(userUid);
             startObserving();
         } else {
-            mViewModel.getNewUser("1234");
+            authActivityViewModel.getNewUser(userUid);
         }
     }
 
     private void startObserving() {
-        Log.d(TAG, "ESTOY OBSERVANDOOOOOO");
-        mViewModel.getCurrentUser().observe(this, (User currentUser) -> {
+        authActivityViewModel.getCurrentUser().observe(this, (User currentUser) -> {
             showMainActivity(currentUser, getString(R.string.auth_action_login));
+        });
+    }
+
+    private void manageErrors(){
+        authActivityViewModel.getError().observe(this, (Integer currentError) -> {
+            Log.d(TAG, "Error numero: " + String.valueOf(currentError));
         });
     }
 
@@ -192,7 +165,7 @@ public class AuthActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             if (switchRemember.isChecked()) {
-                                saveOnPreferences(email, password);
+                                authActivityViewModel.setPreferences(email, password);
                             }
                             Log.d(TAG, "signInWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
@@ -232,77 +205,20 @@ public class AuthActivity extends AppCompatActivity {
 
     }
 
-    private void saveOnPreferences(String email, String password) {
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putString("email", email);
-        editor.putString("password", password);
-        editor.apply();
-    }
-
     private void setCredentialsIfExists() {
-        String email = preferences.getString("email", "");
-        String password = preferences.getString("password", "");
-
-        if (!email.isEmpty() && !password.isEmpty()) {
-            editTxtEmail.setText(email);
-            editTxtPassword.setText(password);
-        }
+        authActivityViewModel.getSharedPreferences().observe(this, (UserPreferences userPreferences) -> {
+            String userEmail = userPreferences.getEmail();
+            String userPassword = userPreferences.getPassword();
+            if (!userEmail.isEmpty() && !userPassword.isEmpty()) {
+                editTxtEmail.setText(userEmail);
+                editTxtPassword.setText(userPassword);
+            } else if (App.getAppInDevelopment()) {
+                //TODO: Ojo con esto en producccion
+                editTxtEmail.setText("test@test.com");
+                editTxtPassword.setText("123456");
+            }
+        });
     }
-
-
-
-    /*@Override
-    public void onResponse(JSONObject json, String tag) {
-        switch (tag){
-            case "registerUser":
-                Log.d(TAG, "Me ha llegado el register user");
-                break;
-            case "GET_USER_USECASE":
-                Log.d(TAG, "Me ha llegado el el get user");
-                extractUser(json);
-                break;
-            default:
-                Log.d(TAG, "Me ha llegado otro distinto");
-                break;
-        }
-    }*/
-
-    /*@Override
-    public void onErrorResponse(int error, String tag) {
-        Log.d("VOLLEYERROR", String.valueOf(error));
-    }*/
-
-    /*public void extractUser(JSONObject json){
-        try {
-            JSONArray jsonArray = json.getJSONArray("results");
-            JSONObject userObject = jsonArray.getJSONObject(0);
-            JSONObject loginObject = userObject.getJSONObject("login");
-            JSONObject pictureObject = userObject.getJSONObject("picture");
-            String uid = loginObject.getString("uuid");
-            String email = userObject.getString("email");
-            String imageUrl = pictureObject.getString("medium");
-
-
-            Runnable runnable = new Runnable() {
-                @Override
-                public void run() {
-                    Bitmap bitmap = null;
-                    InputStream inputStream = null;
-                    try {
-                        inputStream = new URL(imageUrl).openStream();
-                        bitmap = BitmapFactory.decodeStream(inputStream);
-                        User user = new User(bitmap, email, uid);
-                        passUser(user);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            };
-            new Thread(runnable).start();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }*/
 
     public void passUser(User user) {
         showMainActivity(user, getString(R.string.auth_action_login));
@@ -314,7 +230,7 @@ public class AuthActivity extends AppCompatActivity {
     }
 
     private boolean isValidPassword(String password) {
-        return password.length() >= MIN_PASS_LENGTH;
+        return password.length() >= authActivityViewModel.MIN_PASS_LENGTH;
     }
 
     public void initializeUI() {
@@ -324,7 +240,5 @@ public class AuthActivity extends AppCompatActivity {
         switchRemember = findViewById(R.id.auth_activity_switch_remember);
         checkBoxRegister = findViewById(R.id.auth_activity_checkbox_register);
         btnAuthActivity = findViewById(R.id.auth_activity_btn);
-        //registerUserUseCase = new RegisterUser(this);
-        //getUserUseCase = new GetUser(this);
     }
 }

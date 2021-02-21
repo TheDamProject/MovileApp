@@ -2,32 +2,34 @@ package com.jotamarti.golocal.Splash;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.SystemClock;
-import android.text.TextUtils;
 
 import com.jotamarti.golocal.Activities.AuthActivity;
 import com.jotamarti.golocal.Activities.MainActivity;
-import com.jotamarti.golocal.Utils.PrefsUtils;
+import com.jotamarti.golocal.App;
+import com.jotamarti.golocal.SharedPreferences.DataStorage;
 
 public class SplashActivity extends AppCompatActivity {
 
-    private SharedPreferences loginPreferences;
+    private DataStorage dataStorage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        loginPreferences = getSharedPreferences("authPreferences", Context.MODE_PRIVATE);
+        // SharedPreferences
+        dataStorage = new DataStorage(App.getContext());
+        String userEmail = (String) dataStorage.read("email", DataStorage.STRING);
+        String userPassword = (String) dataStorage.read("password", DataStorage.STRING);
 
         Intent intentLogin = new Intent(this, AuthActivity.class);
         Intent intentMain = new Intent(this, MainActivity.class);
 
+
+
         //SystemClock.sleep(1000);
-        if (!TextUtils.isEmpty(PrefsUtils.getEmailPrefs(loginPreferences)) && !TextUtils.isEmpty(PrefsUtils.getPasswordPrefs(loginPreferences))) {
+        if (!userEmail.isEmpty() && !userPassword.isEmpty()) {
             // TODO: Cambiar a main activity en produccion.
             startActivity(intentLogin);
         } else {

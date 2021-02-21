@@ -2,13 +2,13 @@ package com.jotamarti.golocal.Repositories;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 
 import com.jotamarti.golocal.Models.User;
+import com.jotamarti.golocal.UseCases.Users.RepositoryFactory;
 import com.jotamarti.golocal.UseCases.Users.UserCallbacks;
 import com.jotamarti.golocal.UseCases.Users.UserUsecases;
 
@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
-public class UserRepository {
+public class UserRepository implements RepositoryFactory {
 
     private final String TAG = "UserRepository";
 
