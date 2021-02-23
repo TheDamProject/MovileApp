@@ -8,9 +8,11 @@ import androidx.lifecycle.MutableLiveData;
 
 
 import com.jotamarti.golocal.Models.User;
-import com.jotamarti.golocal.UseCases.Users.RepositoryFactory;
+import com.jotamarti.golocal.UseCases.Users.UserRepositoryFactory;
+import com.jotamarti.golocal.UseCases.Users.UserApi;
 import com.jotamarti.golocal.UseCases.Users.UserCallbacks;
 import com.jotamarti.golocal.UseCases.Users.UserUsecases;
+import com.jotamarti.golocal.Utils.Errors.AuthErrors;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -20,21 +22,28 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
-public class UserRepository implements RepositoryFactory {
+public class UserRepository implements UserRepositoryFactory {
 
     private final String TAG = "UserRepository";
 
-    private UserUsecases userUsecases;
+    private UserApi userUsecases;
 
+    // Backend
     private MutableLiveData<User> currentUser = new MutableLiveData<>();
     private MutableLiveData<Integer> haveError = new MutableLiveData<>();
+
+    // Auth
+    private MutableLiveData<String> userLoggedUid = new MutableLiveData<>();
+    private MutableLiveData<AuthErrors> authError = new MutableLiveData<>();
+    private MutableLiveData<String> userRegisteredUid = new MutableLiveData<>();
+
 
     public UserRepository(){
         userUsecases = new UserUsecases();
         //haveError.setValue(false);
     }
 
-
+    @Override
     public LiveData<User> getUser(String userUid) {
         userUsecases.getUser("1234", new UserCallbacks.OnResponseCallbackGetUser() {
             @Override
@@ -79,8 +88,53 @@ public class UserRepository implements RepositoryFactory {
         return currentUser;
     }
 
-    public MutableLiveData<Integer> getError(){
+    @Override
+    public MutableLiveData<Integer> getBackendError(){
         return haveError;
+    }
+
+    @Override
+    public LiveData<String> loginUser(String email, String password) {
+        userUsecases.loginUser(email, password, new UserCallbacks.onResponseCallbackAuthUser() {
+            @Override
+            public void onResponse(String uid) {
+                userLoggedUid.setValue(uid);
+            }
+
+            @Override
+            public void onErrorResponse(AuthErrors error) {
+                authError.setValue(error);
+            }
+        });
+        return userLoggedUid;
+    }
+
+
+
+    @Override
+    public LiveData<AuthErrors> getLoginUserInAuthServiceError() {
+        return authError;
+    }
+
+    @Override
+    public LiveData<String> registerUserInAuthService(String email, String password) {
+        userUsecases.registerUserInAuthService(email, password, new UserCallbacks.onResponseCallbackAuthUser() {
+            @Override
+            public void onResponse(String uid) {
+                userRegisteredUid.setValue(uid);
+            }
+
+            @Override
+            public void onErrorResponse(AuthErrors error) {
+                authError.setValue(error);
+            }
+        });
+        return userRegisteredUid;
+    }
+
+    @Override
+    public LiveData<AuthErrors> getRegisterUserInAuthServiceError() {
+        return null;
     }
 
 }
