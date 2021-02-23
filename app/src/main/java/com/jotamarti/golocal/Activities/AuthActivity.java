@@ -173,6 +173,9 @@ public class AuthActivity extends AppCompatActivity {
     }
 
     private void showMainActivity(User user, String action) {
+        if(switchRemember.isChecked()){
+            authActivityViewModel.setPreferences();
+        }
         if (action.equals(getString(R.string.auth_action_login))) {
             Intent intent = new Intent(AuthActivity.this, MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

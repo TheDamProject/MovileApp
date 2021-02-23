@@ -15,10 +15,14 @@ import com.jotamarti.golocal.Utils.Errors.AuthErrors;
 
 public class AuthActivityViewModel extends ViewModel {
 
+    public final int MIN_PASS_LENGTH = 6;
+    private final UserRepositoryFactory repository;
+
+    // Backend
     private LiveData<User> currentUser;
     private LiveData<Integer> backendError;
-    private UserRepositoryFactory repository;
 
+    // Activity Views data
     private String currentInsertedEmail;
     private String currentInsertedPassword;
 
@@ -27,14 +31,9 @@ public class AuthActivityViewModel extends ViewModel {
     private LiveData<String> userRegisteredUid;
     private LiveData<AuthErrors> authError;
 
-
-    public final int MIN_PASS_LENGTH = 6;
-
     // SharedPreferences
-    private DataStorage dataStorage;
-    private String emailPreferences;
-    private String passwordPreferences;
-    private MutableLiveData<UserPreferences> preferences = new MutableLiveData<>();
+    private final DataStorage dataStorage;
+    private final MutableLiveData<UserPreferences> preferences = new MutableLiveData<>();
 
     public AuthActivityViewModel(){
         super();
@@ -78,16 +77,16 @@ public class AuthActivityViewModel extends ViewModel {
 
 
     public LiveData<UserPreferences> getSharedPreferences(){
-        emailPreferences = (String) dataStorage.read("email", DataStorage.STRING);
-        passwordPreferences = (String) dataStorage.read("password", DataStorage.STRING);
+        String emailPreferences = (String) dataStorage.read("email", DataStorage.STRING);
+        String passwordPreferences = (String) dataStorage.read("password", DataStorage.STRING);
         UserPreferences userPreferences = new UserPreferences(emailPreferences, passwordPreferences);
         preferences.setValue(userPreferences);
         return preferences;
     }
 
-    public void setPreferences(String email, String password){
-        dataStorage.write("email", email);
-        dataStorage.write("password", password);
+    public void setPreferences(){
+        dataStorage.write("email", currentInsertedEmail);
+        dataStorage.write("password", currentInsertedPassword);
     }
 
     public void setCurrentInsertedEmail(String email){
