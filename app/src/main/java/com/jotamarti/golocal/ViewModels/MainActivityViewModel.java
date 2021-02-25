@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.jotamarti.golocal.Models.Post;
 import com.jotamarti.golocal.Models.User;
+import com.jotamarti.golocal.dummy.PostsDummy;
 
 import java.util.List;
 
@@ -22,7 +23,8 @@ public class MainActivityViewModel extends ViewModel {
         return user;
     }
 
-    public void setPosts(List<Post> posts) {
+    public void setPosts() {
+        List<Post> posts = PostsDummy.getITems();
         this.posts.setValue(posts);
     }
 

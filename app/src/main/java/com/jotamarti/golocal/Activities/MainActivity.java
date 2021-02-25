@@ -53,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
         User user = new User(avatar, email, uid);
         model = new ViewModelProvider(this).get(MainActivityViewModel.class);
         model.setUser(user);
+        model.setPosts();
         /*final Observer<List<Post>> observador = new Observer<List<Post>>() {
             @Override
             public void onChanged(List<Post> posts) {
