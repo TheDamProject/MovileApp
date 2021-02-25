@@ -13,6 +13,7 @@ import com.jotamarti.golocal.UseCases.Users.UserApi;
 import com.jotamarti.golocal.UseCases.Users.UserCallbacks;
 import com.jotamarti.golocal.UseCases.Users.UserUsecases;
 import com.jotamarti.golocal.Utils.Errors.AuthErrors;
+import com.jotamarti.golocal.Utils.Errors.BackendErrors;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -30,7 +31,7 @@ public class UserRepository implements UserRepositoryFactory {
 
     // Backend
     private MutableLiveData<User> currentUser = new MutableLiveData<>();
-    private MutableLiveData<Integer> haveError = new MutableLiveData<>();
+    private MutableLiveData<BackendErrors> haveHttpNetworkError = new MutableLiveData<>();
 
     // Auth
     private MutableLiveData<String> userLoggedUid = new MutableLiveData<>();
@@ -40,7 +41,6 @@ public class UserRepository implements UserRepositoryFactory {
 
     public UserRepository(){
         userUsecases = new UserUsecases();
-        //haveError.setValue(false);
     }
 
     @Override
@@ -68,7 +68,6 @@ public class UserRepository implements UserRepositoryFactory {
                                 bitmap = BitmapFactory.decodeStream(inputStream);
                                 User user = new User(bitmap, email, uid);
                                 currentUser.postValue(user);
-                                haveError.postValue(23);
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
@@ -81,16 +80,16 @@ public class UserRepository implements UserRepositoryFactory {
             }
 
             @Override
-            public void onErrorResponse(int error) {
-                haveError.setValue(23);
+            public void onErrorResponse(BackendErrors httpNetworkError) {
+                haveHttpNetworkError.setValue(httpNetworkError);
             }
         });
         return currentUser;
     }
 
     @Override
-    public MutableLiveData<Integer> getBackendError(){
-        return haveError;
+    public MutableLiveData<BackendErrors> getBackendError(){
+        return haveHttpNetworkError;
     }
 
     @Override

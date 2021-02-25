@@ -11,6 +11,7 @@ import com.jotamarti.golocal.SharedPreferences.DataStorage;
 import com.jotamarti.golocal.SharedPreferences.UserPreferences;
 import com.jotamarti.golocal.UseCases.Users.UserRepositoryFactory;
 import com.jotamarti.golocal.Utils.Errors.AuthErrors;
+import com.jotamarti.golocal.Utils.Errors.BackendErrors;
 
 
 public class AuthActivityViewModel extends ViewModel {
@@ -20,7 +21,7 @@ public class AuthActivityViewModel extends ViewModel {
 
     // Backend
     private LiveData<User> currentUser;
-    private LiveData<Integer> backendError;
+    private LiveData<BackendErrors> backendError;
 
     // Activity Views data
     private String currentInsertedEmail;
@@ -51,7 +52,7 @@ public class AuthActivityViewModel extends ViewModel {
         this.currentUser = repository.getUser(uid);
     }
 
-    public LiveData<Integer> getBackendError(){
+    public LiveData<BackendErrors> getBackendError(){
         return this.backendError;
     }
 

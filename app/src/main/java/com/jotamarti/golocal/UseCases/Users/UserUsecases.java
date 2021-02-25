@@ -23,6 +23,7 @@ import com.jotamarti.golocal.App;
 import com.jotamarti.golocal.R;
 import com.jotamarti.golocal.Utils.CustomToast;
 import com.jotamarti.golocal.Utils.Errors.AuthErrors;
+import com.jotamarti.golocal.Utils.Errors.BackendErrors;
 import com.jotamarti.golocal.Utils.RequestQueueSingleton;
 
 import org.json.JSONObject;
@@ -45,7 +46,8 @@ public class UserUsecases implements UserApi {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                onResponseCallbackGetUser.onErrorResponse(error.networkResponse.statusCode);
+                BackendErrors httpNetworkError = BackendErrors.getBackendError(error.networkResponse.statusCode);
+                onResponseCallbackGetUser.onErrorResponse(httpNetworkError);
             }
         });
         RequestQueueSingleton.getInstance().addToRequestQueue(jsonObjectRequest);

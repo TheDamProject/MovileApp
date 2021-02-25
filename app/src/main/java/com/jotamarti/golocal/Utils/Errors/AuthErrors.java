@@ -6,6 +6,7 @@ public enum AuthErrors {
     WRONG_PASSWORD,
     EMAIL_NOT_FOUND,
     GENERIC_LOGIN_ERROR,
+    // Register Errors
     EMAIL_ALREADY_IN_USE,
     GENERIC_REGISTER_ERROR
 }

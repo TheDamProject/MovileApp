@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import com.jotamarti.golocal.Adapters.PostsRecyclerViewAdapter;
 import com.jotamarti.golocal.R;
 import com.jotamarti.golocal.dummy.DummyContent;
+import com.jotamarti.golocal.dummy.PostsDummy;
 
 
 public class PostsFragment extends Fragment {
@@ -33,7 +34,7 @@ public class PostsFragment extends Fragment {
             Context context = view.getContext();
             RecyclerView recyclerView = (RecyclerView) view;
             recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            recyclerView.setAdapter(new PostsRecyclerViewAdapter(DummyContent.ITEMS, context));
+            recyclerView.setAdapter(new PostsRecyclerViewAdapter(PostsDummy.getITems(), context));
         }
         return view;
     }

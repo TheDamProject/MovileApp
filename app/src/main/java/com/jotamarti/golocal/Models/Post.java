@@ -1,26 +1,30 @@
 package com.jotamarti.golocal.Models;
 
-import android.media.Image;
+import android.graphics.Bitmap;
 
 public class Post {
 
-    private Image image;
+    private Bitmap image;
     private String header;
     private String message;
     private String companyId;
+    private String postId;
 
-    public Post(Image image, String header, String message, String companyId) {
+
+
+    public Post(Bitmap image, String header, String message, String companyId, String postId) {
         this.image = image;
         this.header = header;
         this.message = message;
         this.companyId = companyId;
+        this.postId = postId;
     }
 
-    public Image getImage() {
+    public Bitmap getImage() {
         return image;
     }
 
-    public void setImage(Image image) {
+    public void setImage(Bitmap image) {
         this.image = image;
     }
 
@@ -46,5 +50,13 @@ public class Post {
 
     public void setCompanyId(String companyId) {
         this.companyId = companyId;
+    }
+
+    public String getPostId() {
+        return postId;
+    }
+
+    public void setPostId(String postId) {
+        this.postId = postId;
     }
 }

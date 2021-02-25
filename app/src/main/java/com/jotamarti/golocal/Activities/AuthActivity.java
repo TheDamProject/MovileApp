@@ -30,6 +30,7 @@ import com.jotamarti.golocal.R;
 import com.jotamarti.golocal.SharedPreferences.UserPreferences;
 import com.jotamarti.golocal.Utils.CustomToast;
 import com.jotamarti.golocal.Utils.Errors.AuthErrors;
+import com.jotamarti.golocal.Utils.Errors.BackendErrors;
 import com.jotamarti.golocal.ViewModels.AuthActivityViewModel;
 
 public class AuthActivity extends AppCompatActivity {
@@ -142,8 +143,9 @@ public class AuthActivity extends AppCompatActivity {
     }
 
     private void manageBackendErrors() {
-        authActivityViewModel.getBackendError().observe(this, (Integer currentError) -> {
-            Log.d(TAG, "Error numero: " + String.valueOf(currentError));
+        // TODO: Manejar errores del backend
+        authActivityViewModel.getBackendError().observe(this, (BackendErrors httpNetworkError) -> {
+            Log.d(TAG, "Tipo error: " + httpNetworkError);
         });
     }
 
