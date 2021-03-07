@@ -3,20 +3,20 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav"
-    app:startDestination="@id/postsFragment">
+    app:startDestination="@id/page_posts">
 
     <fragment
-        android:id="@+id/postsFragment"
+        android:id="@+id/page_posts"
         android:name="com.jotamarti.golocal.Fragments.PostsFragment"
         android:label="Posts"
         tools:layout="@layout/post_item_list" />
     <fragment
-        android:id="@+id/mapsFragment"
+        android:id="@+id/page_maps"
         android:name="com.jotamarti.golocal.Fragments.MapsFragment"
         android:label="Map"
         tools:layout="@layout/fragment_maps" />
     <fragment
-        android:id="@+id/moreFragment"
+        android:id="@+id/page_more"
         android:name="com.jotamarti.golocal.Fragments.MoreFragment"
         android:label="More"
         tools:layout="@layout/fragment_more" />
