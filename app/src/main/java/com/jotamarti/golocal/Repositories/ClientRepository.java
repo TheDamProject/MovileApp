@@ -98,48 +98,4 @@ public class ClientRepository implements ClientRepositoryFactory {
         return haveHttpNetworkError;
     }
 
-    @Override
-    public LiveData<String> loginUser(String email, String password) {
-        userUsecases.loginClient(email, password, new ClientCallbacks.onResponseCallBackAuthClient() {
-            @Override
-            public void onResponse(String uid) {
-                userLoggedUid.setValue(uid);
-            }
-
-            @Override
-            public void onErrorResponse(AuthErrors error) {
-                authError.setValue(error);
-            }
-        });
-        return userLoggedUid;
-    }
-
-
-
-    @Override
-    public LiveData<AuthErrors> getLoginUserInAuthServiceError() {
-        return authError;
-    }
-
-    @Override
-    public LiveData<String> registerUserInAuthService(String email, String password) {
-        userUsecases.registerClientInAuthService(email, password, new ClientCallbacks.onResponseCallBackAuthClient() {
-            @Override
-            public void onResponse(String uid) {
-                userRegisteredUid.setValue(uid);
-            }
-
-            @Override
-            public void onErrorResponse(AuthErrors error) {
-                authError.setValue(error);
-            }
-        });
-        return userRegisteredUid;
-    }
-
-    @Override
-    public LiveData<AuthErrors> getRegisterUserInAuthServiceError() {
-        return null;
-    }
-
 }

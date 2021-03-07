@@ -3,6 +3,7 @@ package com.jotamarti.golocal.Repositories;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.jotamarti.golocal.UseCases.Clients.ClientCallbacks;
 import com.jotamarti.golocal.UseCases.Users.UserCallbacks;
 import com.jotamarti.golocal.UseCases.Users.UserRepositoryFactory;
 import com.jotamarti.golocal.UseCases.Users.UserUseCases;
@@ -21,7 +22,7 @@ public class UserRepository implements UserRepositoryFactory {
     }
 
 
-
+    // Login
     @Override
     public LiveData<String> loginUserInAuthService(String email, String password) {
         userUsecases.loginUserInAuthService(email, password, new UserCallbacks.onResponseCallBackLoginUserInAuthService() {
@@ -40,16 +41,28 @@ public class UserRepository implements UserRepositoryFactory {
 
     @Override
     public LiveData<AuthErrors> getLoginUserInAuthServiceError() {
-        return null;
+        return authError;
     }
 
+    // Register
     @Override
     public LiveData<String> registerUserInAuthService(String email, String password) {
-        return null;
+        userUsecases.registerUserInAuthService(email, password, new UserCallbacks.onResponseCallBackRegisterUserInAuthService() {
+            @Override
+            public void onResponse(String uid) {
+                userRegisteredUid.setValue(uid);
+            }
+
+            @Override
+            public void onErrorResponse(AuthErrors error) {
+                authError.setValue(error);
+            }
+        });
+        return userRegisteredUid;
     }
 
     @Override
     public LiveData<AuthErrors> getRegisterUserInAuthServiceError() {
-        return null;
+        return authError;
     }
 }

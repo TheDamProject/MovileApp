@@ -32,7 +32,7 @@
         app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
     <EditText
-        android:id="@+id/auth_activity_edit_text_email"
+        android:id="@+id/AuthActivity_editText_email"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
@@ -45,7 +45,7 @@
         app:layout_constraintTop_toBottomOf="@+id/textView" />
 
     <EditText
-        android:id="@+id/auth_activity_edit_text_password"
+        android:id="@+id/AuthActivity_editText_password"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
@@ -54,10 +54,10 @@
         android:inputType="textPassword"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/auth_activity_edit_text_email" />
+        app:layout_constraintTop_toBottomOf="@+id/AuthActivity_editText_email" />
 
     <CheckBox
-        android:id="@+id/auth_activity_checkbox_register"
+        android:id="@+id/AuthActivity_checkBox_register"
         android:layout_width="wrap_content"
         android:layout_height="20dp"
         android:layout_marginTop="8dp"
@@ -65,10 +65,10 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.267"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/auth_activity_edit_text_password" />
+        app:layout_constraintTop_toBottomOf="@+id/AuthActivity_editText_password" />
 
     <androidx.appcompat.widget.SwitchCompat
-        android:id="@+id/auth_activity_switch_remember"
+        android:id="@+id/AuthActivity_switch_remember"
         android:layout_width="wrap_content"
         android:layout_height="20dp"
         android:layout_marginTop="4dp"
@@ -76,10 +76,10 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.706"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/auth_activity_edit_text_password" />
+        app:layout_constraintTop_toBottomOf="@+id/AuthActivity_editText_password" />
 
     <Button
-        android:id="@+id/auth_activity_btn"
+        android:id="@+id/AuthActivity_btn"
         android:layout_width="110dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
@@ -87,10 +87,10 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.508"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/auth_activity_checkbox_register" />
+        app:layout_constraintTop_toBottomOf="@+id/AuthActivity_checkBox_register" />
 
     <CheckBox
-        android:id="@+id/auth_activity_checkbox_company"
+        android:id="@+id/AuthActivity_checkBox_Shop"
         android:layout_width="wrap_content"
         android:layout_height="20dp"
         android:layout_marginStart="16dp"

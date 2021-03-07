@@ -12,11 +12,4 @@ public interface ClientRepositoryFactory {
     // Backend calls
     LiveData<User> getUser(String userUid);
     MutableLiveData<BackendErrors> getBackendError();
-
-    // Auth Service
-    LiveData<String> loginUser(String email, String password);
-    LiveData<AuthErrors> getLoginUserInAuthServiceError();
-
-    LiveData<String> registerUserInAuthService(String email, String password);
-    LiveData<AuthErrors> getRegisterUserInAuthServiceError();
 }

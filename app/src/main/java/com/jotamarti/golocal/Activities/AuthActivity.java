@@ -18,8 +18,6 @@ import androidx.appcompat.widget.SwitchCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.jotamarti.golocal.App;
-import com.jotamarti.golocal.Models.Client;
-import com.jotamarti.golocal.Models.Shop;
 import com.jotamarti.golocal.Models.User;
 import com.jotamarti.golocal.R;
 import com.jotamarti.golocal.SharedPreferences.UserPreferences;
@@ -95,28 +93,18 @@ public class AuthActivity extends AppCompatActivity {
 
     }
 
-
-    private void registerUser() {
-        authActivityViewModel.registerUser();
-        startObservingRegisteredUser();
-    }
-
-    private void startObservingRegisteredUser(){
-        authActivityViewModel.getRegisteredUserUid().observe(this, (String userUid) -> {
-            if(!userUid.isEmpty()) {
-                getUserFromBackend(userUid);
-            }
-        });
-
-    }
-
     private void loginUser() {
         authActivityViewModel.loginUserInAuthService();
-        startObservingLoggedUser();
+        startObservingFirebaseUserUid();
     }
 
-    private void startObservingLoggedUser(){
-        authActivityViewModel.getLoggedUser().observe(this, (String userUid) -> {
+    private void registerUser() {
+        authActivityViewModel.registerUserInAuthService();
+        startObservingFirebaseUserUid();
+    }
+
+    private void startObservingFirebaseUserUid(){
+        authActivityViewModel.getFirebaseUserUid().observe(this, (String userUid) -> {
             if(!userUid.isEmpty()) {
                 getUserFromBackend(userUid);
             }
@@ -126,7 +114,7 @@ public class AuthActivity extends AppCompatActivity {
     private void getUserFromBackend(String userUid) {
         if (authActivityViewModel.getCurrentUser() == null) {
             if(checkBoxShop.isChecked()) {
-                // Aqui tendre que poner getNewShop
+                //TODO: Aqui deberemos poner getNewShop
                 authActivityViewModel.getNewUser(userUid);
             } else {
                 authActivityViewModel.getNewUser(userUid);
@@ -147,6 +135,35 @@ public class AuthActivity extends AppCompatActivity {
             }
 
         });
+    }
+
+    private void showMainActivity(User user, String action) {
+        Log.d(TAG, "Entrando en showMainActivity");
+        if(switchRemember.isChecked()){
+            authActivityViewModel.setPreferences();
+        }
+        if (action.equals(getString(R.string.auth_action_login))) {
+            Intent intent = new Intent(AuthActivity.this, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            intent.putExtra("user", user);
+            intent.putExtra("caller", "AuthActivity");
+            startActivity(intent);
+            Log.d(TAG, "Entrando en el if de showMainActivity");
+        } else {
+            Log.d(TAG, "Entrando en el else de showMainActivity");
+            // Al ser un register tendremos que enviar al backend algo
+            Intent intent;
+            if(checkBoxShop.isChecked()) {
+                intent = new Intent(AuthActivity.this, ShopConfiguration.class);
+            } else {
+                intent = new Intent(AuthActivity.this, MainActivity.class);
+            }
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            intent.putExtra("user", user);
+            intent.putExtra("caller", "AuthActivity");
+            startActivity(intent);
+        }
+
     }
 
     private void manageBackendErrors() {
@@ -181,33 +198,7 @@ public class AuthActivity extends AppCompatActivity {
         });
     }
 
-    private void showMainActivity(User user, String action) {
-        Log.d(TAG, "Entrando en showMainActivity");
-        if(switchRemember.isChecked()){
-            authActivityViewModel.setPreferences();
-        }
-        if (action.equals(getString(R.string.auth_action_login))) {
-            Intent intent = new Intent(AuthActivity.this, MainActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            intent.putExtra("user", user);
-            startActivity(intent);
-            Log.d(TAG, "Entrando en el if de showMainActivity");
-        } else {
-            Log.d(TAG, "Entrando en el else de showMainActivity");
-            // Al ser un register tendremos que enviar al backend algo
-            Intent intent;
-            if(checkBoxShop.isChecked()) {
-                intent = new Intent(AuthActivity.this, ShopConfiguration.class);
-            } else {
-                intent = new Intent(AuthActivity.this, MainActivity.class);
-            }
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            intent.putExtra("user", user);
-            intent.putExtra("caller", "AuthActivity");
-            startActivity(intent);
-        }
 
-    }
 
     private void setCredentialsIfExists() {
         authActivityViewModel.getSharedPreferences().observe(this, (UserPreferences userPreferences) -> {
@@ -226,12 +217,12 @@ public class AuthActivity extends AppCompatActivity {
 
     public void initializeUI() {
         setTitle(getString(R.string.auth_title));
-        editTxtEmail = findViewById(R.id.auth_activity_edit_text_email);
-        editTxtPassword = findViewById(R.id.auth_activity_edit_text_password);
-        switchRemember = findViewById(R.id.auth_activity_switch_remember);
-        checkBoxRegister = findViewById(R.id.auth_activity_checkbox_register);
-        btnAuthActivity = findViewById(R.id.auth_activity_btn);
-        checkBoxShop = findViewById(R.id.auth_activity_checkbox_company);
+        editTxtEmail = findViewById(R.id.AuthActivity_editText_email);
+        editTxtPassword = findViewById(R.id.AuthActivity_editText_password);
+        switchRemember = findViewById(R.id.AuthActivity_switch_remember);
+        checkBoxRegister = findViewById(R.id.AuthActivity_checkBox_register);
+        checkBoxShop = findViewById(R.id.AuthActivity_checkBox_Shop);
+        btnAuthActivity = findViewById(R.id.AuthActivity_btn);
     }
 
     // Validations

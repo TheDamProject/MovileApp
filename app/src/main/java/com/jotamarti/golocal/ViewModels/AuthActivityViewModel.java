@@ -19,10 +19,9 @@ import com.jotamarti.golocal.Utils.Errors.BackendErrors;
 public class AuthActivityViewModel extends ViewModel {
 
     public final int MIN_PASS_LENGTH = 6;
-    private final ClientRepositoryFactory clientRepository;
-    private final UserRepositoryFactory userRepository;
 
     // Backend
+    private final ClientRepositoryFactory clientRepository;
     private LiveData<User> currentUser;
     private LiveData<BackendErrors> backendError;
 
@@ -31,7 +30,8 @@ public class AuthActivityViewModel extends ViewModel {
     private String currentInsertedPassword;
 
     // Auth
-    private LiveData<String> userLoggedUid;
+    private final UserRepositoryFactory userRepository;
+    private LiveData<String> firebaseUserUid;
     private LiveData<String> userRegisteredUid;
     private LiveData<AuthErrors> authError;
 
@@ -44,10 +44,11 @@ public class AuthActivityViewModel extends ViewModel {
         clientRepository = new ClientRepository();
         userRepository = new UserRepository();
         backendError = clientRepository.getBackendError();
-        authError = clientRepository.getLoginUserInAuthServiceError();
+        authError = userRepository.getLoginUserInAuthServiceError();
         dataStorage = new DataStorage(App.getContext());
     }
 
+    // Manage Backend
     public LiveData<User> getCurrentUser() {
         return this.currentUser;
     }
@@ -60,27 +61,24 @@ public class AuthActivityViewModel extends ViewModel {
         return this.backendError;
     }
 
+    // Manage Auth
     public void loginUserInAuthService(){
-        userLoggedUid = userRepository.loginUserInAuthService(currentInsertedEmail, currentInsertedPassword);
+        firebaseUserUid = userRepository.loginUserInAuthService(currentInsertedEmail, currentInsertedPassword);
     }
 
-    public void registerUser(){
-        userRegisteredUid = clientRepository.registerUserInAuthService(currentInsertedEmail, currentInsertedPassword);
+    public void registerUserInAuthService(){
+        firebaseUserUid = userRepository.registerUserInAuthService(currentInsertedEmail, currentInsertedPassword);
     }
 
-    public LiveData<String> getRegisteredUserUid(){
-        return userRegisteredUid;
-    }
-
-    public LiveData<String> getLoggedUser(){
-        return userLoggedUid;
+    public LiveData<String> getFirebaseUserUid(){
+        return firebaseUserUid;
     }
 
     public LiveData<AuthErrors> getAuthError(){
         return authError;
     }
 
-
+    // Manage SharedPreferences
     public LiveData<UserPreferences> getSharedPreferences(){
         String emailPreferences = (String) dataStorage.read("email", DataStorage.STRING);
         String passwordPreferences = (String) dataStorage.read("password", DataStorage.STRING);
