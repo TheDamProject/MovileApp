@@ -73,7 +73,7 @@ public class MapsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         Log.d(TAG, "Ejecutado onViewCreated en maps fragment");
         model = new ViewModelProvider(requireActivity()).get(MainActivityViewModel.class);
-        model.setTitle("Esto son los mapas");
+        model.setTitle("Explore Shops");
 
         super.onViewCreated(view, savedInstanceState);
 

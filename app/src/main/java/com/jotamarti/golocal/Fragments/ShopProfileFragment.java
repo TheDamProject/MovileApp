@@ -31,6 +31,7 @@ public class ShopProfileFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         model = new ViewModelProvider(requireActivity()).get(MainActivityViewModel.class);
+        model.setTitle("Shop Profile");
         View view = inflater.inflate(R.layout.fragment_shop_profile, container, false);
 
         TextView txtView = view.findViewById(R.id.fragmentShopProfile_txtView_shopDescription);
