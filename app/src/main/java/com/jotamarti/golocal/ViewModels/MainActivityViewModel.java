@@ -13,6 +13,7 @@ import java.util.List;
 public class MainActivityViewModel extends ViewModel {
 
     private User user;
+    private MutableLiveData<String> title = new MutableLiveData<>();
     private MutableLiveData<List<Post>> posts = new MutableLiveData<>();
 
     public void setUser(User user) {
@@ -30,5 +31,13 @@ public class MainActivityViewModel extends ViewModel {
 
     public LiveData<List<Post>> getPosts(){
         return posts;
+    }
+
+    public MutableLiveData<String> getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title.setValue(title);
     }
 }

@@ -21,6 +21,8 @@ import android.view.MenuItem;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.jotamarti.golocal.Fragments.MapsFragment;
+import com.jotamarti.golocal.Fragments.MoreFragment;
+import com.jotamarti.golocal.Fragments.PostsFragment;
 import com.jotamarti.golocal.Models.Post;
 import com.jotamarti.golocal.Models.User;
 import com.jotamarti.golocal.R;
@@ -31,6 +33,7 @@ import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
 
+    private final String TAG = "MainActivity";
     private BottomNavigationView btnNavView;
     private NavController navController;
     private AppBarConfiguration appBarConfiguration;
@@ -40,26 +43,44 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        initializeUi();
         setUserInViewModel();
+        initializeUi();
+
+
     }
 
     private void initializeUi(){
         btnNavView = findViewById(R.id.bottomNavigationView);
-        /*btnNavView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+
+        Fragment mapsFragment = new MapsFragment();
+        Fragment postsFragment = new PostsFragment();
+        Fragment moreFragment = new MoreFragment();
+
+        setCurrentFragment(postsFragment);
+
+
+        btnNavView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()){
-                    case R.id.mapsFragment:
-                        openFragment();
+                int id = item.getItemId();
+                if(id == R.id.page_posts) {
+                    setCurrentFragment(postsFragment);
+                    return true;
+                } else if (id == R.id.page_maps) {
+                    setCurrentFragment(mapsFragment);
+                    return true;
+                } else if(id == R.id.page_more) {
+                    setCurrentFragment(moreFragment);
+                    return true;
+                } else {
+                    return false;
                 }
             }
-        });*/
-        navController = Navigation.findNavController(this,  R.id.fragmentParent);
-        NavigationUI.setupWithNavController(btnNavView, navController);
-        //appBarConfiguration = new AppBarConfiguration.Builder(R.id.postsFragment, R.id.mapsFragment).build();
-        // Con esto aparece el nombre arriba
-        NavigationUI.setupActionBarWithNavController(this, navController);
+        });
+    }
+
+    private void setCurrentFragment(Fragment fragment){
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragmentParent, fragment).commit();
     }
 
     private void setUserInViewModel(){
@@ -71,6 +92,10 @@ public class MainActivity extends AppCompatActivity {
         model = new ViewModelProvider(this).get(MainActivityViewModel.class);
         model.setUser(user);
         model.setPosts();
+        model.getTitle().observe(this, (String title) -> {
+            Log.d(TAG, "Nuevo titulo recibido " + title);
+           setTitle(title);
+        });
         /*final Observer<List<Post>> observador = new Observer<List<Post>>() {
             @Override
             public void onChanged(List<Post> posts) {

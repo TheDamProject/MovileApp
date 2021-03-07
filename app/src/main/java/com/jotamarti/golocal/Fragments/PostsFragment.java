@@ -37,6 +37,7 @@ public class PostsFragment extends Fragment {
         View view = inflater.inflate(R.layout.post_item_list, container, false);
         model = new ViewModelProvider(requireActivity()).get(MainActivityViewModel.class);
         List<Post> posts = model.getPosts().getValue();
+        model.setTitle("Prueba posts");
         // Set the adapter
         if (view instanceof RecyclerView) {
             Context context = view.getContext();
