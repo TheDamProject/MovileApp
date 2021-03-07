@@ -14,7 +14,7 @@
     <string name="auth_btn_login">LOGIN</string>
     <string name="auth_btn_register">REGISTER</string>
     <!-- Activity Shop Configuration Text -->
-    <string name="edittext_location">Location</string>
+    <string name="edittext_location">Adress (With number)</string>
     <string name="txtview_number">Number</string>
     <string name="checkbox_wn">No number</string>
     <!-- Errors -->

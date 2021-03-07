@@ -29,6 +29,7 @@ import com.google.android.libraries.places.api.model.AddressComponent;
 import com.google.android.libraries.places.api.model.AddressComponents;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.model.TypeFilter;
+import com.google.android.libraries.places.api.net.FetchPlaceRequest;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
@@ -47,16 +48,16 @@ import java.util.List;
 
 public class ShopConfiguration extends AppCompatActivity {
 
-    private final String TAG = "SHOP_CONFIGURATION";
+    private final String TAG = "ShopConfiguration";
     private final static int PERMISSIONS_REQUEST_CAMERA = 1;
     private final static int CAMERA_REQ_CODE = 2;
     private TextView txtViewNumber;
-    private EditText editTextNumber;
     private CheckBox checkBoxNoNumber;
     private Button btnUploadImage;
     private Button btnSave;
     private ImageView imageViewShopHeader;
     private Uri uri;
+    private AutocompleteSupportFragment autocompleteFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,14 +69,7 @@ public class ShopConfiguration extends AppCompatActivity {
         PlacesClient placesClient = Places.createClient(this);
 
 
-        AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
-                getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
-
-
-        autocompleteFragment.setTypeFilter(TypeFilter.ADDRESS);
-        autocompleteFragment.setCountries("ES");
-
-        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS_COMPONENTS, Place.Field.ADDRESS));
+        initializeAutoCompleteFragment();
 
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
@@ -84,9 +78,12 @@ public class ShopConfiguration extends AppCompatActivity {
                 Log.i(TAG, "Place: " + place.getName());
                 String directionName = place.getName();
                 if (!directionHasNumber(directionName)) {
+                    // TODO: tendremos que manejar cuando el usuario mete
                     showInputNumber();
+                    Log.d(TAG, place.getLatLng().toString());
                 } else {
                     hideInputNumber();
+                    Log.d(TAG, place.getLatLng().toString());
                 }
                 Log.d(TAG, String.valueOf(directionHasNumber(directionName)));
                 AddressComponents componentes = place.getAddressComponents();
@@ -107,7 +104,8 @@ public class ShopConfiguration extends AppCompatActivity {
         checkBoxNoNumber.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                editTextNumber.setEnabled(!isChecked);
+                //editTextNumber.setEnabled(!isChecked);
+                CustomToast.showToast(ShopConfiguration.this, "Please, if your address have number consider inserting it", CustomToast.mode.LONGER);
             }
         });
 
@@ -208,26 +206,33 @@ public class ShopConfiguration extends AppCompatActivity {
 
     private void initializeUi() {
         txtViewNumber = findViewById(R.id.shopConfigTxtViewNumber);
-        editTextNumber = findViewById(R.id.shopConfigEditTextNumber);
         checkBoxNoNumber = findViewById(R.id.shopConfigCheckBoxNoNumber);
         btnUploadImage = findViewById(R.id.fragmentShopProfile_btn_changeShopProfileImage);
         imageViewShopHeader = findViewById(R.id.fragmentShopProfile_imageView_shopProfileImage);
         btnSave = findViewById(R.id.activityShopConfiguration_btn_save);
 
         txtViewNumber.setVisibility(View.INVISIBLE);
-        editTextNumber.setVisibility(View.INVISIBLE);
         checkBoxNoNumber.setVisibility(View.INVISIBLE);
+    }
+
+    private void initializeAutoCompleteFragment() {
+        autocompleteFragment = (AutocompleteSupportFragment)
+                getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
+
+
+        autocompleteFragment.setTypeFilter(TypeFilter.ADDRESS);
+        autocompleteFragment.setCountries("ES");
+
+        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS_COMPONENTS, Place.Field.ADDRESS, Place.Field.LAT_LNG));
     }
 
     private void showInputNumber() {
         txtViewNumber.setVisibility(View.VISIBLE);
-        editTextNumber.setVisibility(View.VISIBLE);
         checkBoxNoNumber.setVisibility(View.VISIBLE);
     }
 
     private void hideInputNumber() {
         txtViewNumber.setVisibility(View.INVISIBLE);
-        editTextNumber.setVisibility(View.INVISIBLE);
         checkBoxNoNumber.setVisibility(View.INVISIBLE);
     }
 }

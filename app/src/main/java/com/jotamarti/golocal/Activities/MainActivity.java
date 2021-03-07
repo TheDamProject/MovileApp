@@ -22,9 +22,10 @@ import com.jotamarti.golocal.ViewModels.MainActivityViewModel;
 public class MainActivity extends AppCompatActivity {
 
     private final String TAG = "MainActivity";
+
     private BottomNavigationView btnNavView;
-    private MainActivityViewModel model;
-    private Intent previousIntent;
+    private MainActivityViewModel mainActivityViewModel;
+    private Intent intent;
     private String caller;
 
     @Override
@@ -32,19 +33,19 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        previousIntent = getIntent();
-        caller = previousIntent.getStringExtra("caller");
+        intent = getIntent();
+        caller = intent.getStringExtra("caller");
 
         initializeUi();
         manageFragmentSelected();
         setUserInViewModel();
-
+        manageChangeTitle();
 
     }
 
     private void initializeUi() {
-        btnNavView = findViewById(R.id.bottomNavigationView);
-        model = new ViewModelProvider(this).get(MainActivityViewModel.class);
+        btnNavView = findViewById(R.id.MainActivity_bottomNavigationView);
+        mainActivityViewModel = new ViewModelProvider(this).get(MainActivityViewModel.class);
     }
 
     private void manageFragmentSelected() {
@@ -71,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
                     setCurrentFragment(mapsFragment);
                     return true;
                 } else if (id == R.id.page_more) {
-                    if (model.getUser() instanceof Client) {
+                    if (mainActivityViewModel.getUser() instanceof Client) {
                         setCurrentFragment(clientProfileFragment);
                     } else {
                         //TODO : Poner el fragment de la tienda.
@@ -86,17 +87,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setCurrentFragment(Fragment fragment) {
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragmentParent, fragment).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.MainActivity_fragment_parent, fragment).commit();
     }
 
     private void setUserInViewModel() {
-        User user = (User) previousIntent.getSerializableExtra("user");
+        User user = (User) intent.getSerializableExtra("user");
 
-        model.setUser(user);
-        model.setPosts();
-        model.getTitle().observe(this, (String title) -> {
-            setTitle(title);
-        });
+        mainActivityViewModel.setUser(user);
+        mainActivityViewModel.setPosts();
         /*final Observer<List<Post>> observador = new Observer<List<Post>>() {
             @Override
             public void onChanged(List<Post> posts) {
@@ -104,5 +102,11 @@ public class MainActivity extends AppCompatActivity {
             }
         };*/
         //model.getPosts().observe(MainActivity.this , observador);
+    }
+
+    private void manageChangeTitle() {
+        mainActivityViewModel.getTitle().observe(this, (String title) -> {
+            setTitle(title);
+        });
     }
 }

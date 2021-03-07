@@ -42,17 +42,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/fragmentShopProfile_imageView_shopProfileImage" />
 
-    <EditText
-        android:id="@+id/shopConfigEditTextNumber"
-        android:layout_width="50dp"
-        android:layout_height="40dp"
-        android:layout_marginStart="14dp"
-        android:layout_marginTop="10dp"
-        android:ems="10"
-        android:inputType="number"
-        android:textAlignment="center"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/shopConfigTxtViewNumber" />
+
 
     <TextView
         android:id="@+id/shopConfigTxtViewNumber"
@@ -66,12 +56,12 @@
 
     <CheckBox
         android:id="@+id/shopConfigCheckBoxNoNumber"
-        android:layout_width="100dp"
+        android:layout_width="wrap_content"
         android:layout_height="40dp"
         android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="4dp"
         android:text="@string/checkbox_wn"
-        app:layout_constraintStart_toEndOf="@+id/shopConfigEditTextNumber"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/shopConfigTxtViewNumber" />
 
     <ImageView
