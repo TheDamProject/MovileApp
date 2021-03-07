@@ -3,15 +3,9 @@ package com.jotamarti.golocal.Activities;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentFactory;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -21,15 +15,13 @@ import android.view.MenuItem;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.jotamarti.golocal.Fragments.MapsFragment;
-import com.jotamarti.golocal.Fragments.MoreFragment;
+import com.jotamarti.golocal.Fragments.ClientProfileFragment;
 import com.jotamarti.golocal.Fragments.PostsFragment;
-import com.jotamarti.golocal.Models.Post;
+import com.jotamarti.golocal.Fragments.ShopProfileFragment;
+import com.jotamarti.golocal.Models.Client;
 import com.jotamarti.golocal.Models.User;
 import com.jotamarti.golocal.R;
 import com.jotamarti.golocal.ViewModels.MainActivityViewModel;
-
-import java.util.List;
-import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -38,13 +30,16 @@ public class MainActivity extends AppCompatActivity {
     private NavController navController;
     private AppBarConfiguration appBarConfiguration;
     private MainActivityViewModel model;
+    private Intent previousIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setUserInViewModel();
+        previousIntent = getIntent();
         initializeUi();
+
 
 
     }
@@ -54,9 +49,12 @@ public class MainActivity extends AppCompatActivity {
 
         Fragment mapsFragment = new MapsFragment();
         Fragment postsFragment = new PostsFragment();
-        Fragment moreFragment = new MoreFragment();
+        Fragment clientProfileFragment = new ClientProfileFragment();
+        Fragment shopProfileFragment = new ShopProfileFragment();
 
         setCurrentFragment(postsFragment);
+
+        String caller = previousIntent.getStringExtra("caller");
 
 
         btnNavView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -70,13 +68,25 @@ public class MainActivity extends AppCompatActivity {
                     setCurrentFragment(mapsFragment);
                     return true;
                 } else if(id == R.id.page_more) {
-                    setCurrentFragment(moreFragment);
+                    if(model.getUser() instanceof Client) {
+                        setCurrentFragment(clientProfileFragment);
+                    } else {
+                        //TODO : Poner el fragment de la tienda.
+                        setCurrentFragment(shopProfileFragment);
+                    }
                     return true;
                 } else {
                     return false;
                 }
             }
         });
+
+        if(caller != null){
+            if(caller.equals("ShopProfileFragment")) {
+                btnNavView.setSelectedItemId(R.id.page_more);
+                setCurrentFragment(shopProfileFragment);
+            }
+        }
     }
 
     private void setCurrentFragment(Fragment fragment){
@@ -85,10 +95,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void setUserInViewModel(){
         Intent intent = getIntent();
-        Bitmap avatar = intent.getParcelableExtra("avatar");
-        String email = intent.getStringExtra("email");
-        String uid = intent.getStringExtra("uid");
-        User user = new User(avatar, email, uid);
+        User user = (User) intent.getSerializableExtra("user");
         model = new ViewModelProvider(this).get(MainActivityViewModel.class);
         model.setUser(user);
         model.setPosts();

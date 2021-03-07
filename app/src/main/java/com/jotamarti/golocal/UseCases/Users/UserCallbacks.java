@@ -1,21 +1,17 @@
 package com.jotamarti.golocal.UseCases.Users;
 
 import com.jotamarti.golocal.Utils.Errors.AuthErrors;
-import com.jotamarti.golocal.Utils.Errors.BackendErrors;
-
-import org.json.JSONObject;
 
 public class UserCallbacks {
 
-    public interface OnResponseCallbackGetUser {
-        void onResponse(JSONObject json);
-        void onErrorResponse(BackendErrors httpNetworkError);
-    }
-
-    public interface onResponseCallbackAuthUser {
+    public interface onResponseCallBackLoginUserInAuthService {
         void onResponse(String uid);
         void onErrorResponse(AuthErrors error);
-    }
+    };
 
+    public interface onResponseCallBackRegisterUserInAuthService {
+        void onResponse(String uid);
+        void onErrorResponse(AuthErrors error);
+    };
 
 }

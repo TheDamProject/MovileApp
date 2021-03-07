@@ -4,31 +4,30 @@ import android.graphics.Bitmap;
 import android.media.Image;
 
 import java.io.Serializable;
+import java.net.URL;
 import java.util.List;
 
-public class User {
+public abstract class User implements Serializable {
 
-    private Bitmap avatar;
-    private String email;
-    private String userId;
-    private List<String> companiesFollowed;
+    protected URL avatar;
+    protected String email;
+    protected String userId;
 
-    public User(Bitmap avatar, String email, String userId) {
+    public User(URL avatar, String email, String userId) {
         this.avatar = avatar;
         this.email = email;
         this.userId = userId;
-        //this.companiesFollowed = companiesFollowed;
     }
 
     public User() {
 
     }
 
-    public Bitmap getAvatar() {
+    public URL getAvatar() {
         return avatar;
     }
 
-    public void setAvatar(Bitmap avatar) {
+    public void setAvatar(URL avatar) {
         this.avatar = avatar;
     }
 
@@ -48,11 +47,4 @@ public class User {
         this.userId = userId;
     }
 
-    public List<String> getCompaniesFollowed() {
-        return companiesFollowed;
-    }
-
-    public void setCompaniesFollowed(List<String> companiesFollowed) {
-        this.companiesFollowed = companiesFollowed;
-    }
 }

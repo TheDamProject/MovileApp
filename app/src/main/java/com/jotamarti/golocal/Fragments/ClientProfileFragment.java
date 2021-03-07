@@ -1,5 +1,7 @@
 package com.jotamarti.golocal.Fragments;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -17,8 +19,12 @@ import android.widget.TextView;
 import com.jotamarti.golocal.Models.User;
 import com.jotamarti.golocal.R;
 import com.jotamarti.golocal.ViewModels.MainActivityViewModel;
+import com.squareup.picasso.Picasso;
 
-public class MoreFragment extends Fragment {
+import java.io.IOException;
+import java.io.InputStream;
+
+public class ClientProfileFragment extends Fragment {
 
     private ImageView imageView;
     private TextView txtViewEmail;
@@ -45,7 +51,8 @@ public class MoreFragment extends Fragment {
         txtViewEmail = view.findViewById(R.id.txtViewEmail);
         model = new ViewModelProvider(requireActivity()).get(MainActivityViewModel.class);
         User user = model.getUser();
-        imageView.setImageBitmap(user.getAvatar());
+        Picasso.get().load(user.getAvatar().toString()).into(imageView);
+
         txtViewEmail.setText(user.getEmail());
     }
 }

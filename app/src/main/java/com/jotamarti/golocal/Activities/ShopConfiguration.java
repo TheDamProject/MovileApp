@@ -7,14 +7,12 @@ import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
 import android.app.Activity;
-import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
@@ -25,7 +23,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.android.gms.common.api.ResultTransform;
 import com.google.android.gms.common.api.Status;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.AddressComponent;
@@ -35,6 +32,7 @@ import com.google.android.libraries.places.api.model.TypeFilter;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
+import com.jotamarti.golocal.Models.Shop;
 import com.jotamarti.golocal.R;
 import com.jotamarti.golocal.Utils.CustomToast;
 import com.theartofdev.edmodo.cropper.CropImage;
@@ -56,6 +54,7 @@ public class ShopConfiguration extends AppCompatActivity {
     private EditText editTextNumber;
     private CheckBox checkBoxNoNumber;
     private Button btnUploadImage;
+    private Button btnSave;
     private ImageView imageViewShopHeader;
     private Uri uri;
 
@@ -123,6 +122,29 @@ public class ShopConfiguration extends AppCompatActivity {
 
             }
         });
+
+        btnSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent previousIntent = getIntent();
+                String caller = previousIntent.getStringExtra("caller");
+
+                if(caller.equals("ShopProfileFragment")) {
+                    // TODO: Cuando le de a guardar desde ShopProfileFragment tendre que actualizar en el bancked, despues actualizar el objeto y volver al perfil
+                    Shop currentShop = (Shop) previousIntent.getParcelableExtra("user");
+                    Intent intent = new Intent(ShopConfiguration.this, MainActivity.class);
+                    intent.putExtra("user", currentShop);
+                    intent.putExtra("caller", "ShopProfileFragment");
+                    startActivity(intent);
+                } else {
+                    Intent intent = new Intent(ShopConfiguration.this, MainActivity.class);
+                    Shop shop = new Shop();
+                    intent.putExtra("user", shop);
+                    intent.putExtra("caller", "ShopConfiguration");
+                    startActivity(intent);
+                }
+            }
+        });
     }
 
     private Boolean haveCameraPermissions() {
@@ -188,8 +210,9 @@ public class ShopConfiguration extends AppCompatActivity {
         txtViewNumber = findViewById(R.id.shopConfigTxtViewNumber);
         editTextNumber = findViewById(R.id.shopConfigEditTextNumber);
         checkBoxNoNumber = findViewById(R.id.shopConfigCheckBoxNoNumber);
-        btnUploadImage = findViewById(R.id.shopConfigBtnUploadImage);
-        imageViewShopHeader = findViewById(R.id.shopConfigImageView);
+        btnUploadImage = findViewById(R.id.fragmentShopProfile_btn_changeShopProfileImage);
+        imageViewShopHeader = findViewById(R.id.fragmentShopProfile_imageView_shopProfileImage);
+        btnSave = findViewById(R.id.activityShopConfiguration_btn_save);
 
         txtViewNumber.setVisibility(View.INVISIBLE);
         editTextNumber.setVisibility(View.INVISIBLE);

@@ -1,4 +1,4 @@
-package com.jotamarti.golocal.UseCases.Users;
+package com.jotamarti.golocal.UseCases.Clients;
 
 import android.util.Log;
 
@@ -18,59 +18,57 @@ import com.google.firebase.auth.FirebaseAuthInvalidUserException;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.gson.JsonObject;
-import com.jotamarti.golocal.Activities.AuthActivity;
 import com.jotamarti.golocal.App;
 import com.jotamarti.golocal.R;
-import com.jotamarti.golocal.Utils.CustomToast;
 import com.jotamarti.golocal.Utils.Errors.AuthErrors;
 import com.jotamarti.golocal.Utils.Errors.BackendErrors;
 import com.jotamarti.golocal.Utils.RequestQueueSingleton;
 
 import org.json.JSONObject;
 
-public class UserUsecases implements UserApi {
+public class ClientUsecases implements ClientApi {
 
     private final String TAG = "UserUsecases";
 
 
     @Override
-    public void getUser(String uid, UserCallbacks.OnResponseCallbackGetUser onResponseCallbackGetUser) {
+    public void getClient(String uid, ClientCallbacks.onResponseCallBackGetClient onResponseCallBackGetClient) {
         String baseUrl = String.valueOf(App.getContext().getResources().getText(R.string.api_base_url));
         String uri = baseUrl + "/user?" + uid;
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, baseUrl, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 //callerObject.onResponse(response, TAG);
-                onResponseCallbackGetUser.onResponse(response);
+                onResponseCallBackGetClient.onResponse(response);
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 BackendErrors httpNetworkError = BackendErrors.getBackendError(error.networkResponse.statusCode);
-                onResponseCallbackGetUser.onErrorResponse(httpNetworkError);
+                onResponseCallBackGetClient.onErrorResponse(httpNetworkError);
             }
         });
         RequestQueueSingleton.getInstance().addToRequestQueue(jsonObjectRequest);
     }
 
     @Override
-    public void registerUserInBackend(String uid) {
+    public void registerClientInBackend(String uid) {
 
     }
 
     @Override
-    public void modifyUser(String uid, JsonObject newValues) {
+    public void modifyClient(String uid, JsonObject newValues) {
 
     }
 
     @Override
-    public void deleteUser(String uid) {
+    public void deleteClient(String uid) {
 
     }
 
     // Auth
     @Override
-    public void loginUser(String email, String password, UserCallbacks.onResponseCallbackAuthUser onResponseCallbackAuthUser) {
+    public void loginClient(String email, String password, ClientCallbacks.onResponseCallBackAuthClient onResponseCallbackAuthUser) {
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(TaskExecutors.MAIN_THREAD, new OnCompleteListener<AuthResult>() {
@@ -97,7 +95,7 @@ public class UserUsecases implements UserApi {
     }
 
     @Override
-    public void registerUserInAuthService(String email, String password, UserCallbacks.onResponseCallbackAuthUser onResponseCallbackAuthUser) {
+    public void registerClientInAuthService(String email, String password, ClientCallbacks.onResponseCallBackAuthClient onResponseCallbackAuthUser) {
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(TaskExecutors.MAIN_THREAD, new OnCompleteListener<AuthResult>() {

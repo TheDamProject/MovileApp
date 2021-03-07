@@ -1,4 +1,4 @@
-package com.jotamarti.golocal.UseCases.Users;
+package com.jotamarti.golocal.UseCases.Clients;
 
 import android.content.Context;
 import com.android.volley.Request;
@@ -11,16 +11,16 @@ import com.jotamarti.golocal.Utils.RequestQueueSingleton;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class RegisterUser {
+public class RegisterClient {
 
     private OnResponseCallback callerObject = null;
     private final String TAG = "REGISTER_USER_USECASE";
 
-    public RegisterUser(OnResponseCallback onResponseCallback){
+    public RegisterClient(OnResponseCallback onResponseCallback){
         callerObject = onResponseCallback;
     }
 
-    public void registerUser(Context context, String uid) {
+    public void registerClient(Context context, String uid) {
         JSONObject postData = new JSONObject();
         try {
             postData.put("id", uid);
@@ -30,12 +30,12 @@ public class RegisterUser {
         JsonObjectRequest jsonObjectRequest  = new JsonObjectRequest(Request.Method.POST, String.valueOf(context.getText(R.string.api_base_url)), postData, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-                callerObject.onResponse(response, "registerUser");
+                callerObject.onResponse(response, "registerClient");
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                callerObject.onErrorResponse(error.networkResponse.statusCode, "registerUser");
+                callerObject.onErrorResponse(error.networkResponse.statusCode, "registerClient");
             }
         });
         RequestQueueSingleton.getInstance().addToRequestQueue(jsonObjectRequest);

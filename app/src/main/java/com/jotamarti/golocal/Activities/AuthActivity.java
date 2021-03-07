@@ -1,6 +1,5 @@
 package com.jotamarti.golocal.Activities;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
@@ -18,13 +17,9 @@ import android.widget.EditText;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthUserCollisionException;
-import com.google.firebase.auth.FirebaseUser;
 import com.jotamarti.golocal.App;
+import com.jotamarti.golocal.Models.Client;
+import com.jotamarti.golocal.Models.Shop;
 import com.jotamarti.golocal.Models.User;
 import com.jotamarti.golocal.R;
 import com.jotamarti.golocal.SharedPreferences.UserPreferences;
@@ -45,6 +40,7 @@ public class AuthActivity extends AppCompatActivity {
     private EditText editTxtPassword;
     private SwitchCompat switchRemember;
     private CheckBox checkBoxRegister;
+    private CheckBox checkBoxShop;
     private Button btnAuthActivity;
 
 
@@ -115,7 +111,7 @@ public class AuthActivity extends AppCompatActivity {
     }
 
     private void loginUser() {
-        authActivityViewModel.loginUser();
+        authActivityViewModel.loginUserInAuthService();
         startObservingLoggedUser();
     }
 
@@ -129,7 +125,13 @@ public class AuthActivity extends AppCompatActivity {
 
     private void getUserFromBackend(String userUid) {
         if (authActivityViewModel.getCurrentUser() == null) {
-            authActivityViewModel.getNewUser(userUid);
+            if(checkBoxShop.isChecked()) {
+                // Aqui tendre que poner getNewShop
+                authActivityViewModel.getNewUser(userUid);
+            } else {
+                authActivityViewModel.getNewUser(userUid);
+
+            }
             startObservingUser();
         } else {
             authActivityViewModel.getNewUser(userUid);
@@ -138,7 +140,12 @@ public class AuthActivity extends AppCompatActivity {
 
     private void startObservingUser() {
         authActivityViewModel.getCurrentUser().observe(this, (User currentUser) -> {
-            showMainActivity(currentUser, getString(R.string.auth_action_login));
+            if(checkBoxRegister.isChecked()) {
+                showMainActivity(currentUser, "register");
+            } else {
+                showMainActivity(currentUser, getString(R.string.auth_action_login));
+            }
+
         });
     }
 
@@ -175,21 +182,28 @@ public class AuthActivity extends AppCompatActivity {
     }
 
     private void showMainActivity(User user, String action) {
+        Log.d(TAG, "Entrando en showMainActivity");
         if(switchRemember.isChecked()){
             authActivityViewModel.setPreferences();
         }
         if (action.equals(getString(R.string.auth_action_login))) {
             Intent intent = new Intent(AuthActivity.this, MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            intent.putExtra("avatar", user.getAvatar());
-            intent.putExtra("email", user.getEmail());
-            intent.putExtra("uid", user.getUserId());
+            intent.putExtra("user", user);
             startActivity(intent);
+            Log.d(TAG, "Entrando en el if de showMainActivity");
         } else {
+            Log.d(TAG, "Entrando en el else de showMainActivity");
             // Al ser un register tendremos que enviar al backend algo
-            Intent intent = new Intent(AuthActivity.this, MainActivity.class);
+            Intent intent;
+            if(checkBoxShop.isChecked()) {
+                intent = new Intent(AuthActivity.this, ShopConfiguration.class);
+            } else {
+                intent = new Intent(AuthActivity.this, MainActivity.class);
+            }
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            intent.putExtra("email", user.getEmail());
+            intent.putExtra("user", user);
+            intent.putExtra("caller", "AuthActivity");
             startActivity(intent);
         }
 
@@ -217,6 +231,7 @@ public class AuthActivity extends AppCompatActivity {
         switchRemember = findViewById(R.id.auth_activity_switch_remember);
         checkBoxRegister = findViewById(R.id.auth_activity_checkbox_register);
         btnAuthActivity = findViewById(R.id.auth_activity_btn);
+        checkBoxShop = findViewById(R.id.auth_activity_checkbox_company);
     }
 
     // Validations

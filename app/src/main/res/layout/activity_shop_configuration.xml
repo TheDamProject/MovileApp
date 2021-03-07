@@ -40,7 +40,7 @@
         android:layout_marginTop="16dp"
         android:text="@string/edittext_location"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/shopConfigImageView" />
+        app:layout_constraintTop_toBottomOf="@+id/fragmentShopProfile_imageView_shopProfileImage" />
 
     <EditText
         android:id="@+id/shopConfigEditTextNumber"
@@ -75,7 +75,7 @@
         app:layout_constraintTop_toBottomOf="@+id/shopConfigTxtViewNumber" />
 
     <ImageView
-        android:id="@+id/shopConfigImageView"
+        android:id="@+id/fragmentShopProfile_imageView_shopProfileImage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:adjustViewBounds="true"
@@ -88,13 +88,13 @@
         tools:srcCompat="@drawable/shop_header_mock" />
 
     <Button
-        android:id="@+id/shopConfigBtnUploadImage"
+        android:id="@+id/fragmentShopProfile_btn_changeShopProfileImage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="6dp"
-        android:text="Button"
-        app:layout_constraintBottom_toBottomOf="@+id/shopConfigImageView"
-        app:layout_constraintEnd_toEndOf="@+id/shopConfigImageView" />
+        android:text="CHANGE"
+        app:layout_constraintBottom_toBottomOf="@+id/fragmentShopProfile_imageView_shopProfileImage"
+        app:layout_constraintEnd_toEndOf="@+id/fragmentShopProfile_imageView_shopProfileImage" />
 
     <TextView
         android:id="@+id/textView3"
@@ -112,7 +112,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="10dp"
-        android:text="TextView"
+        android:text="Phone Number"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView3" />
 
@@ -133,7 +133,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="6dp"
         android:layout_marginTop="10dp"
-        android:text="CheckBox"
+        android:text="Have Whatsapp"
         app:layout_constraintStart_toEndOf="@+id/editTextPhone"
         app:layout_constraintTop_toBottomOf="@+id/textView5" />
 
@@ -149,14 +149,14 @@
             android:layout_height="wrap_content"
             android:maxLines="3"
             android:maxLength="255"
-            android:hint="hint" />
+            android:hint="Shop Description" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <Button
-        android:id="@+id/button2"
+        android:id="@+id/activityShopConfiguration_btn_save"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Button"
+        android:text="SAVE"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

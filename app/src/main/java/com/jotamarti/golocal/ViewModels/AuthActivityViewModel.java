@@ -6,9 +6,11 @@ import androidx.lifecycle.ViewModel;
 
 import com.jotamarti.golocal.App;
 import com.jotamarti.golocal.Models.User;
+import com.jotamarti.golocal.Repositories.ClientRepository;
 import com.jotamarti.golocal.Repositories.UserRepository;
 import com.jotamarti.golocal.SharedPreferences.DataStorage;
 import com.jotamarti.golocal.SharedPreferences.UserPreferences;
+import com.jotamarti.golocal.UseCases.Clients.ClientRepositoryFactory;
 import com.jotamarti.golocal.UseCases.Users.UserRepositoryFactory;
 import com.jotamarti.golocal.Utils.Errors.AuthErrors;
 import com.jotamarti.golocal.Utils.Errors.BackendErrors;
@@ -17,7 +19,8 @@ import com.jotamarti.golocal.Utils.Errors.BackendErrors;
 public class AuthActivityViewModel extends ViewModel {
 
     public final int MIN_PASS_LENGTH = 6;
-    private final UserRepositoryFactory repository;
+    private final ClientRepositoryFactory clientRepository;
+    private final UserRepositoryFactory userRepository;
 
     // Backend
     private LiveData<User> currentUser;
@@ -38,9 +41,10 @@ public class AuthActivityViewModel extends ViewModel {
 
     public AuthActivityViewModel(){
         super();
-        repository = new UserRepository();
-        backendError = repository.getBackendError();
-        authError = repository.getLoginUserInAuthServiceError();
+        clientRepository = new ClientRepository();
+        userRepository = new UserRepository();
+        backendError = clientRepository.getBackendError();
+        authError = clientRepository.getLoginUserInAuthServiceError();
         dataStorage = new DataStorage(App.getContext());
     }
 
@@ -49,19 +53,19 @@ public class AuthActivityViewModel extends ViewModel {
     }
 
     public void getNewUser(String uid){
-        this.currentUser = repository.getUser(uid);
+        this.currentUser = clientRepository.getUser(uid);
     }
 
     public LiveData<BackendErrors> getBackendError(){
         return this.backendError;
     }
 
-    public void loginUser(){
-        userLoggedUid = repository.loginUser(currentInsertedEmail, currentInsertedPassword);
+    public void loginUserInAuthService(){
+        userLoggedUid = userRepository.loginUserInAuthService(currentInsertedEmail, currentInsertedPassword);
     }
 
     public void registerUser(){
-        userRegisteredUid = repository.registerUserInAuthService(currentInsertedEmail, currentInsertedPassword);
+        userRegisteredUid = clientRepository.registerUserInAuthService(currentInsertedEmail, currentInsertedPassword);
     }
 
     public LiveData<String> getRegisteredUserUid(){
