@@ -13,6 +13,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
@@ -25,14 +27,11 @@ import android.widget.TextView;
 
 import com.google.android.gms.common.api.Status;
 import com.google.android.libraries.places.api.Places;
-import com.google.android.libraries.places.api.model.AddressComponent;
-import com.google.android.libraries.places.api.model.AddressComponents;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.model.TypeFilter;
-import com.google.android.libraries.places.api.net.FetchPlaceRequest;
-import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
+import com.google.android.material.textfield.TextInputEditText;
 import com.jotamarti.golocal.Models.Shop;
 import com.jotamarti.golocal.R;
 import com.jotamarti.golocal.Utils.CustomToast;
@@ -44,55 +43,52 @@ import org.jetbrains.annotations.NotNull;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.util.Arrays;
-import java.util.List;
 
 public class ShopConfiguration extends AppCompatActivity {
 
     private final String TAG = "ShopConfiguration";
     private final static int PERMISSIONS_REQUEST_CAMERA = 1;
     private final static int CAMERA_REQ_CODE = 2;
+    private EditText editTextPhone;
+    private TextInputEditText textInputShopDescription;
     private TextView txtViewNumber;
     private CheckBox checkBoxNoNumber;
     private Button btnUploadImage;
     private Button btnSave;
     private ImageView imageViewShopHeader;
-    private Uri uri;
     private AutocompleteSupportFragment autocompleteFragment;
+    private Shop shop;
+    private TextWatcher textWatcher;
+    private String directionName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_shop_configuration);
+        initializeTextWatcher();
         initializeUi();
 
-        Places.initialize(getApplicationContext(), getString(R.string.api_key));
-        PlacesClient placesClient = Places.createClient(this);
+        Intent previousIntent = getIntent();
+        shop = previousIntent.getParcelableExtra("user");
 
 
         initializeAutoCompleteFragment();
+
+
 
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(@NotNull Place place) {
                 // TODO: Get info about the selected place.
-                Log.i(TAG, "Place: " + place.getName());
-                String directionName = place.getName();
+                directionName = place.getName();
                 if (!directionHasNumber(directionName)) {
                     // TODO: tendremos que manejar cuando el usuario mete
                     showInputNumber();
-                    Log.d(TAG, place.getLatLng().toString());
                 } else {
                     hideInputNumber();
-                    Log.d(TAG, place.getLatLng().toString());
                 }
-                Log.d(TAG, String.valueOf(directionHasNumber(directionName)));
-                AddressComponents componentes = place.getAddressComponents();
-                List<AddressComponent> miLista = componentes.asList();
-                for (AddressComponent adress : miLista) {
-                    //Log.d(TAG, "Atributo Name: " + adress.getName() + "\n" + "Atributo ShorterName: " + adress.getShortName());
-                }
+                checkAllDataInserted();
             }
-
 
             @Override
             public void onError(@NotNull Status status) {
@@ -104,7 +100,6 @@ public class ShopConfiguration extends AppCompatActivity {
         checkBoxNoNumber.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                //editTextNumber.setEnabled(!isChecked);
                 CustomToast.showToast(ShopConfiguration.this, "Please, if your address have number consider inserting it", CustomToast.mode.LONGER);
             }
         });
@@ -124,10 +119,9 @@ public class ShopConfiguration extends AppCompatActivity {
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent previousIntent = getIntent();
                 String caller = previousIntent.getStringExtra("caller");
 
-                if(caller.equals("ShopProfileFragment")) {
+                if (caller.equals("ShopProfileFragment")) {
                     // TODO: Cuando le de a guardar desde ShopProfileFragment tendre que actualizar en el bancked, despues actualizar el objeto y volver al perfil
                     Shop currentShop = (Shop) previousIntent.getParcelableExtra("user");
                     Intent intent = new Intent(ShopConfiguration.this, MainActivity.class);
@@ -143,6 +137,25 @@ public class ShopConfiguration extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private void checkAllDataInserted() {
+        View autoCompleteFragmentView = autocompleteFragment.getView();
+        EditText etTextInput = autoCompleteFragmentView.findViewById(R.id.places_autocomplete_search_input);
+        autoCompleteFragmentView.findViewById(R.id.places_autocomplete_clear_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                etTextInput.setText("");
+                directionName = "";
+                btnSave.setEnabled(false);
+            }
+        });
+        Log.d(TAG, "Texto: " + directionName);
+        if (editTextPhone.getText().toString().length() > 0 && textInputShopDescription.getText().toString().length() > 0 && directionName.length() > 0) {
+            btnSave.setEnabled(true);
+        } else {
+            btnSave.setEnabled(false);
+        }
     }
 
     private Boolean haveCameraPermissions() {
@@ -173,8 +186,9 @@ public class ShopConfiguration extends AppCompatActivity {
                     Bitmap imagen = BitmapFactory.decodeStream(getContentResolver().openInputStream(uri));
                     ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                     imagen.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
-                    byte[] byteArray = byteArrayOutputStream .toByteArray();
+                    byte[] byteArray = byteArrayOutputStream.toByteArray();
                     String encoded = Base64.encodeToString(byteArray, Base64.DEFAULT);
+                    checkAllDataInserted();
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
@@ -205,14 +219,25 @@ public class ShopConfiguration extends AppCompatActivity {
     }
 
     private void initializeUi() {
+        // Iniciamos vistas
         txtViewNumber = findViewById(R.id.shopConfigTxtViewNumber);
-        checkBoxNoNumber = findViewById(R.id.shopConfigCheckBoxNoNumber);
+        checkBoxNoNumber = findViewById(R.id.ShopConfiguration_checkbox_noNumber);
         btnUploadImage = findViewById(R.id.fragmentShopProfile_btn_changeShopProfileImage);
         imageViewShopHeader = findViewById(R.id.fragmentShopProfile_imageView_shopProfileImage);
         btnSave = findViewById(R.id.activityShopConfiguration_btn_save);
+        editTextPhone = findViewById(R.id.ShopConfiguration_editText_phone);
+        textInputShopDescription = findViewById(R.id.ShopConfiguration_textField_shopDescription);
+
 
         txtViewNumber.setVisibility(View.INVISIBLE);
         checkBoxNoNumber.setVisibility(View.INVISIBLE);
+
+        btnSave.setEnabled(false);
+        Places.initialize(getApplicationContext(), getString(R.string.api_key));
+
+        // Listeners para activar el botón de guardado
+        textInputShopDescription.addTextChangedListener(textWatcher);
+        editTextPhone.addTextChangedListener(textWatcher);
     }
 
     private void initializeAutoCompleteFragment() {
@@ -224,6 +249,25 @@ public class ShopConfiguration extends AppCompatActivity {
         autocompleteFragment.setCountries("ES");
 
         autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS_COMPONENTS, Place.Field.ADDRESS, Place.Field.LAT_LNG));
+    }
+
+    private void initializeTextWatcher() {
+        textWatcher = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                checkAllDataInserted();
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        };
     }
 
     private void showInputNumber() {
