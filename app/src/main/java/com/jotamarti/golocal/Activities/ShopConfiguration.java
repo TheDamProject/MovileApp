@@ -49,6 +49,8 @@ public class ShopConfiguration extends AppCompatActivity {
     private final String TAG = "ShopConfiguration";
     private final static int PERMISSIONS_REQUEST_CAMERA = 1;
     private final static int CAMERA_REQ_CODE = 2;
+
+    // Views
     private EditText editTextPhone;
     private TextInputEditText textInputShopDescription;
     private TextView txtViewNumber;
@@ -56,6 +58,11 @@ public class ShopConfiguration extends AppCompatActivity {
     private Button btnUploadImage;
     private Button btnSave;
     private ImageView imageViewShopHeader;
+
+    // Views from the autoCompleteFragment
+    View autoCompleteFragmentView;
+    EditText autoCompleteFragmentEditText;
+
     private AutocompleteSupportFragment autocompleteFragment;
     private Shop shop;
     private TextWatcher textWatcher;
@@ -71,21 +78,19 @@ public class ShopConfiguration extends AppCompatActivity {
         Intent previousIntent = getIntent();
         shop = previousIntent.getParcelableExtra("user");
 
-
         initializeAutoCompleteFragment();
-
-
 
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(@NotNull Place place) {
                 // TODO: Get info about the selected place.
-                directionName = place.getName();
+                shop.setCordinates(place.getLatLng());
                 if (!directionHasNumber(directionName)) {
                     // TODO: tendremos que manejar cuando el usuario mete
                     showInputNumber();
                 } else {
                     hideInputNumber();
+
                 }
                 checkAllDataInserted();
             }
@@ -120,17 +125,14 @@ public class ShopConfiguration extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String caller = previousIntent.getStringExtra("caller");
-
                 if (caller.equals("ShopProfileFragment")) {
                     // TODO: Cuando le de a guardar desde ShopProfileFragment tendre que actualizar en el bancked, despues actualizar el objeto y volver al perfil
-                    Shop currentShop = (Shop) previousIntent.getParcelableExtra("user");
                     Intent intent = new Intent(ShopConfiguration.this, MainActivity.class);
-                    intent.putExtra("user", currentShop);
+                    intent.putExtra("user", shop);
                     intent.putExtra("caller", "ShopProfileFragment");
                     startActivity(intent);
                 } else {
                     Intent intent = new Intent(ShopConfiguration.this, MainActivity.class);
-                    Shop shop = new Shop();
                     intent.putExtra("user", shop);
                     intent.putExtra("caller", "ShopConfiguration");
                     startActivity(intent);
@@ -140,17 +142,6 @@ public class ShopConfiguration extends AppCompatActivity {
     }
 
     private void checkAllDataInserted() {
-        View autoCompleteFragmentView = autocompleteFragment.getView();
-        EditText etTextInput = autoCompleteFragmentView.findViewById(R.id.places_autocomplete_search_input);
-        autoCompleteFragmentView.findViewById(R.id.places_autocomplete_clear_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                etTextInput.setText("");
-                directionName = "";
-                btnSave.setEnabled(false);
-            }
-        });
-        Log.d(TAG, "Texto: " + directionName);
         if (editTextPhone.getText().toString().length() > 0 && textInputShopDescription.getText().toString().length() > 0 && directionName.length() > 0) {
             btnSave.setEnabled(true);
         } else {
@@ -174,8 +165,8 @@ public class ShopConfiguration extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         // Aqui entra despues de que aceptemos la foto que hemos hecho y nos abre el activity de crop
         if (requestCode == CropImage.PICK_IMAGE_CHOOSER_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            Uri imageuri = CropImage.getPickImageResultUri(this, data);
-            strartCrop(imageuri);
+            Uri imageUri = CropImage.getPickImageResultUri(this, data);
+            startCrop(imageUri);
         }
         // Aqui entra cuando le damos aceptar en la pantalla de crop
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
@@ -198,8 +189,8 @@ public class ShopConfiguration extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    private void strartCrop(Uri imageuri) {
-        CropImage.activity(imageuri).setGuidelines(CropImageView.Guidelines.ON).setMultiTouchEnabled(true).setAspectRatio(2, 1).start(this);
+    private void startCrop(Uri imageUri) {
+        CropImage.activity(imageUri).setGuidelines(CropImageView.Guidelines.ON).setMultiTouchEnabled(true).setAspectRatio(2, 1).start(this);
     }
 
     @Override
@@ -249,6 +240,20 @@ public class ShopConfiguration extends AppCompatActivity {
         autocompleteFragment.setCountries("ES");
 
         autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS_COMPONENTS, Place.Field.ADDRESS, Place.Field.LAT_LNG));
+
+        // Sacamos la vista del autoCompleteFragment
+        autoCompleteFragmentView = autocompleteFragment.getView();
+        autoCompleteFragmentEditText = autoCompleteFragmentView.findViewById(R.id.places_autocomplete_search_input);
+
+        // Ponemos un listener en la X para cuando el usuario clique en el, vaciamos el texto, vaciamos la variable directionName y deshabilitamos el botón de salvado.
+        autoCompleteFragmentView.findViewById(R.id.places_autocomplete_clear_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                autoCompleteFragmentEditText.setText("");
+                directionName = "";
+                btnSave.setEnabled(false);
+            }
+        });
     }
 
     private void initializeTextWatcher() {
