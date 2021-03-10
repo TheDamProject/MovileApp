@@ -1,22 +1,18 @@
 package com.jotamarti.golocal.Models;
 
-import android.graphics.Bitmap;
-import android.media.Image;
-
 import java.io.Serializable;
 import java.net.URL;
-import java.util.List;
 
 public abstract class User implements Serializable {
 
     protected URL avatar;
     protected String email;
-    protected String userId;
+    protected String userUid;
 
-    public User(URL avatar, String email, String userId) {
+    public User(URL avatar, String email, String userUid) {
         this.avatar = avatar;
         this.email = email;
-        this.userId = userId;
+        this.userUid = userUid;
     }
 
     public User() {
@@ -39,12 +35,12 @@ public abstract class User implements Serializable {
         this.email = email;
     }
 
-    public String getUserId() {
-        return userId;
+    public String getUserUid() {
+        return userUid;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setUserUid(String userUid) {
+        this.userUid = userUid;
     }
 
 }

@@ -2,9 +2,12 @@ package com.jotamarti.golocal.Models;
 
 import android.graphics.Bitmap;
 
-public class Post {
+import java.io.Serializable;
+import java.net.URL;
 
-    private Bitmap image;
+public class Post implements Serializable {
+
+    private URL image;
     private String header;
     private String message;
     private String companyId;
@@ -12,7 +15,7 @@ public class Post {
 
 
 
-    public Post(Bitmap image, String header, String message, String companyId, String postId) {
+    public Post(URL image, String header, String message, String companyId, String postId) {
         this.image = image;
         this.header = header;
         this.message = message;
@@ -20,11 +23,11 @@ public class Post {
         this.postId = postId;
     }
 
-    public Bitmap getImage() {
+    public URL getImage() {
         return image;
     }
 
-    public void setImage(Bitmap image) {
+    public void setImage(URL image) {
         this.image = image;
     }
 

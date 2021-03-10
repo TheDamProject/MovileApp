@@ -7,6 +7,8 @@ import com.jotamarti.golocal.App;
 import com.jotamarti.golocal.Models.Post;
 import com.jotamarti.golocal.R;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -45,7 +47,13 @@ public class PostsDummy {
     }
 
     private static Post createDummyItem(int position) {
-        return new Post(BitmapFactory.decodeResource(App.getContext().getResources(), R.drawable.shop_header_mock), "Naranjas " + position, "buenas naranjas", String.valueOf((position+100)), String.valueOf(position));
+        URL url = null;
+        try {
+            url = new URL("https://assets.thehansindia.com/h-upload/feeds/2019/07/19/197487-1.jpg");
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        return new Post(url, "Naranjas " + position, "buenas naranjas", String.valueOf((position+100)), String.valueOf(position));
     }
 
     private static String makeDetails(int position) {

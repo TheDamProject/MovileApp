@@ -55,6 +55,7 @@ public class ShopConfiguration extends AppCompatActivity {
     private TextInputEditText textInputShopDescription;
     private TextView txtViewNumber;
     private CheckBox checkBoxNoNumber;
+    private CheckBox isWhatsapp;
     private Button btnUploadImage;
     private Button btnSave;
     private ImageView imageViewShopHeader;
@@ -125,6 +126,13 @@ public class ShopConfiguration extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String caller = previousIntent.getStringExtra("caller");
+
+                shop.setDescription(textInputShopDescription.getText().toString());
+                shop.setTelNumber(editTextPhone.getText().toString());
+                shop.setWhatsapp(isWhatsapp.isChecked());
+
+                //TODO: Llamar al backend y actualizar la tienda
+
                 if (caller.equals("ShopProfileFragment")) {
                     // TODO: Cuando le de a guardar desde ShopProfileFragment tendre que actualizar en el bancked, despues actualizar el objeto y volver al perfil
                     Intent intent = new Intent(ShopConfiguration.this, MainActivity.class);
@@ -196,7 +204,6 @@ public class ShopConfiguration extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == PERMISSIONS_REQUEST_CAMERA) {
-            Log.d(TAG, "Lenght of grantResult" + String.valueOf(grantResults.length));
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 CropImage.startPickImageActivity(ShopConfiguration.this);
             } else {
@@ -218,6 +225,7 @@ public class ShopConfiguration extends AppCompatActivity {
         btnSave = findViewById(R.id.activityShopConfiguration_btn_save);
         editTextPhone = findViewById(R.id.ShopConfiguration_editText_phone);
         textInputShopDescription = findViewById(R.id.ShopConfiguration_textField_shopDescription);
+        isWhatsapp = findViewById(R.id.ShopConfiguration_checkBox_isWhatsapp);
 
 
         txtViewNumber.setVisibility(View.INVISIBLE);

@@ -16,6 +16,7 @@ import com.jotamarti.golocal.Activities.PostDetailActivity;
 import com.jotamarti.golocal.Models.Post;
 import com.jotamarti.golocal.R;
 import com.jotamarti.golocal.dummy.DummyContent.DummyItem;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -25,12 +26,12 @@ import java.util.List;
  */
 public class PostsRecyclerViewAdapter extends RecyclerView.Adapter<PostsRecyclerViewAdapter.ViewHolder> {
 
-    private final List<Post> mValues;
+    private final List<Post> postsList;
     private final String TAG = "POSTS_REC_VIEW_ADAPTER";
     private Context context;
 
     public PostsRecyclerViewAdapter(List<Post> items, Context context) {
-        mValues = items;
+        postsList = items;
         this.context = context;
     }
 
@@ -42,17 +43,17 @@ public class PostsRecyclerViewAdapter extends RecyclerView.Adapter<PostsRecycler
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        holder.mItem = mValues.get(position);
-        holder.cardHeader.setText(mValues.get(position).getHeader());
-        holder.cardMessage.setText(mValues.get(position).getMessage());
-        holder.postImage.setImageBitmap(mValues.get(position).getImage());
+        //holder.mItem = postValues.get(position);
+        holder.cardHeader.setText(postsList.get(position).getHeader());
+        holder.cardMessage.setText(postsList.get(position).getMessage());
+        Picasso.get().load(postsList.get(position).getImage().toString()).into(holder.postImage);
         holder.postImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
         holder.parent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "Hello from POST REC VIEW ADAPTER");
                 Intent intent = new Intent(context, PostDetailActivity.class);
-                intent.putExtra("content", mValues.get(position).getMessage());
+                intent.putExtra("post", postsList.get(position));
                 context.startActivity(intent);
             }
         });
@@ -60,7 +61,7 @@ public class PostsRecyclerViewAdapter extends RecyclerView.Adapter<PostsRecycler
 
     @Override
     public int getItemCount() {
-        return mValues.size();
+        return postsList.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -68,7 +69,7 @@ public class PostsRecyclerViewAdapter extends RecyclerView.Adapter<PostsRecycler
         public final TextView cardHeader;
         public final TextView cardMessage;
         private ImageView postImage;
-        public Post mItem;
+        //public Post mItem;
         public LinearLayout parent;
 
         public ViewHolder(View view) {
@@ -76,7 +77,7 @@ public class PostsRecyclerViewAdapter extends RecyclerView.Adapter<PostsRecycler
             mView = view;
             cardHeader = (TextView) view.findViewById(R.id.txtViewHeaderCardView);
             cardMessage = (TextView) view.findViewById(R.id.txtViewMessageCardView);
-            postImage = (ImageView) view.findViewById(R.id.imageViewCardView);
+            postImage = (ImageView) view.findViewById(R.id.PostDetailsActivity_imageView_postImage);
             parent = view.findViewById(R.id.parent);
         }
 

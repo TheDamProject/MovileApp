@@ -8,12 +8,12 @@ public class Shop extends User {
 
     private LatLng cordinates;
     private String description;
-    private String number;
+    private String telNumber;
     private boolean isWhatsapp;
 
-    public Shop(URL avatar, String email, String userId, String number, String description, boolean isWhatsapp, LatLng cordinates){
+    public Shop(URL avatar, String email, String userId, String telNumber, String description, boolean isWhatsapp, LatLng cordinates){
         super(avatar, email, userId);
-        this.number = number;
+        this.telNumber = telNumber;
         this.description = description;
         this.isWhatsapp = isWhatsapp;
         this.cordinates = cordinates;
@@ -47,11 +47,11 @@ public class Shop extends User {
         isWhatsapp = whatsapp;
     }
 
-    public String getNumber() {
-        return number;
+    public String getTelNumber() {
+        return telNumber;
     }
 
-    public void setNumber(String number) {
-        this.number = number;
+    public void setTelNumber(String telNumber) {
+        this.telNumber = telNumber;
     }
 }
