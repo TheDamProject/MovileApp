@@ -44,7 +44,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.util.Arrays;
 
-public class ShopConfiguration extends AppCompatActivity {
+public class ShopConfigurationActivity extends AppCompatActivity {
 
     private final String TAG = "ShopConfiguration";
     private final static int PERMISSIONS_REQUEST_CAMERA = 1;
@@ -106,7 +106,7 @@ public class ShopConfiguration extends AppCompatActivity {
         checkBoxNoNumber.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                CustomToast.showToast(ShopConfiguration.this, "Please, if your address have number consider inserting it", CustomToast.mode.LONGER);
+                CustomToast.showToast(ShopConfigurationActivity.this, "Please, if your address have number consider inserting it", CustomToast.mode.LONGER);
             }
         });
 
@@ -114,7 +114,7 @@ public class ShopConfiguration extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (haveCameraPermissions()) {
-                    CropImage.startPickImageActivity(ShopConfiguration.this);
+                    CropImage.startPickImageActivity(ShopConfigurationActivity.this);
                 } else {
                     askCameraPermissions();
                 }
@@ -135,12 +135,12 @@ public class ShopConfiguration extends AppCompatActivity {
 
                 if (caller.equals("ShopProfileFragment")) {
                     // TODO: Cuando le de a guardar desde ShopProfileFragment tendre que actualizar en el bancked, despues actualizar el objeto y volver al perfil
-                    Intent intent = new Intent(ShopConfiguration.this, MainActivity.class);
+                    Intent intent = new Intent(ShopConfigurationActivity.this, MainActivity.class);
                     intent.putExtra("user", shop);
                     intent.putExtra("caller", "ShopProfileFragment");
                     startActivity(intent);
                 } else {
-                    Intent intent = new Intent(ShopConfiguration.this, MainActivity.class);
+                    Intent intent = new Intent(ShopConfigurationActivity.this, MainActivity.class);
                     intent.putExtra("user", shop);
                     intent.putExtra("caller", "ShopConfiguration");
                     startActivity(intent);
@@ -205,7 +205,7 @@ public class ShopConfiguration extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == PERMISSIONS_REQUEST_CAMERA) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                CropImage.startPickImageActivity(ShopConfiguration.this);
+                CropImage.startPickImageActivity(ShopConfigurationActivity.this);
             } else {
                 CustomToast.showToast(this, "Fail to get permission", CustomToast.mode.LONGER);
             }

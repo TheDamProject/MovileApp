@@ -2,16 +2,15 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/more"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Fragments.ClientProfileFragment">
+    tools:context=".Activities.ClientConfigurationActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:background="@color/background_local_dark"
         android:id="@+id/background"
         android:layout_width="match_parent"
         android:layout_height="200dp"
+        android:background="@color/background_local_dark"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -30,27 +29,50 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/white"
+            app:fabSize="mini"
+            android:id="@+id/ClientConfigurationActivity_btn_choosePicture"
+            app:layout_constraintBottom_toBottomOf="@+id/ClientConfigurationActivity_imageView_userAvatar"
+            app:layout_constraintEnd_toEndOf="@+id/ClientConfigurationActivity_imageView_userAvatar"
+            app:srcCompat="@drawable/ic_add_foreground"
+            app:tint="@color/black" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <TextView
         android:id="@+id/textView4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
+        android:layout_marginStart="27dp"
         android:layout_marginTop="40dp"
-        android:text="Email:"
+        android:text="Nickname:"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/background" />
 
-    <TextView
-        android:id="@+id/txtViewEmail"
+    <EditText
+        android:id="@+id/ClientConfigurationActivity_editText_userNickname"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
-        android:layout_marginTop="12dp"
-        android:text="TextView"
+        android:layout_marginTop="4dp"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:hint="Nickname"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView4" />
+
+    <Button
+        android:id="@+id/ClientConfigurationActivity_btn_save"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
+        android:text="SAVE"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

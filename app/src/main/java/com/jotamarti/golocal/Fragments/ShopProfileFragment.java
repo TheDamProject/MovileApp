@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.jotamarti.golocal.Activities.ShopConfiguration;
+import com.jotamarti.golocal.Activities.ShopConfigurationActivity;
 import com.jotamarti.golocal.R;
 import com.jotamarti.golocal.ViewModels.MainActivityViewModel;
 
@@ -49,7 +49,7 @@ public class ShopProfileFragment extends Fragment {
         btnEditProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getContext(), ShopConfiguration.class);
+                Intent intent = new Intent(getContext(), ShopConfigurationActivity.class);
                 intent.putExtra("user", model.getUser());
                 intent.putExtra("caller", "ShopProfileFragment");
                 startActivity(intent);

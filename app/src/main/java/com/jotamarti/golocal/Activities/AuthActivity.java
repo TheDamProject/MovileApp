@@ -154,7 +154,7 @@ public class AuthActivity extends AppCompatActivity {
             // Al ser un register tendremos que enviar al backend algo
             Intent intent;
             if(checkBoxShop.isChecked()) {
-                intent = new Intent(AuthActivity.this, ShopConfiguration.class);
+                intent = new Intent(AuthActivity.this, ShopConfigurationActivity.class);
             } else {
                 intent = new Intent(AuthActivity.this, MainActivity.class);
             }
