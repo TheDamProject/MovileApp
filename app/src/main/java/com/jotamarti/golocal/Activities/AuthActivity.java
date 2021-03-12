@@ -23,6 +23,7 @@ import com.jotamarti.golocal.R;
 import com.jotamarti.golocal.SharedPreferences.UserPreferences;
 import com.jotamarti.golocal.Utils.CustomToast;
 import com.jotamarti.golocal.Utils.Errors.AuthErrors;
+import com.jotamarti.golocal.Utils.Errors.BackendErrors;
 import com.jotamarti.golocal.ViewModels.AuthActivityViewModel;
 
 public class AuthActivity extends AppCompatActivity {
@@ -94,7 +95,7 @@ public class AuthActivity extends AppCompatActivity {
                 case WRONG_PASSWORD:
                     if (checkBoxRegister.isChecked()) {
                         // Manage a user trying to register, if we enter here it means that the user exists
-                        CustomToast.showToast(AuthActivity.this, "El usuario ya existe", CustomToast.mode.SHORTER);
+                        CustomToast.showToast(AuthActivity.this, getString(R.string.error_email_already_use), CustomToast.mode.SHORTER);
                     } else {
                         CustomToast.showToast(AuthActivity.this, getString(R.string.error_wrong_password), CustomToast.mode.SHORTER);
                     }
@@ -110,6 +111,21 @@ public class AuthActivity extends AppCompatActivity {
                 default:
                     CustomToast.showToast(AuthActivity.this, getString(R.string.error_login_generic), CustomToast.mode.SHORTER);
                     break;
+            }
+        });
+    }
+
+    private void manageBackendErrors(){
+        authActivityViewModel.getBackendError().observe(this, (BackendErrors httpNetworkError) -> {
+            switch (httpNetworkError){
+                case REDIRECTION:
+                    CustomToast.showToast(AuthActivity.this, getString(R.string.error_login_generic), CustomToast.mode.SHORTER);
+                case CLIENT_ERROR:
+                    CustomToast.showToast(AuthActivity.this, getString(R.string.error_login_generic), CustomToast.mode.SHORTER);
+                case SERVER_ERROR:
+                    CustomToast.showToast(AuthActivity.this, getString(R.string.error_login_generic), CustomToast.mode.SHORTER);
+                default:
+                    CustomToast.showToast(AuthActivity.this, getString(R.string.error_login_generic), CustomToast.mode.SHORTER);
             }
         });
     }
@@ -168,7 +184,6 @@ public class AuthActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-
     private void setCredentialsIfExists() {
         authActivityViewModel.getSharedPreferences().observe(this, (UserPreferences userPreferences) -> {
             String userEmail = userPreferences.getEmail();
@@ -190,6 +205,7 @@ public class AuthActivity extends AppCompatActivity {
         observeFirebaseUid();
         observeUserFromBackend();
         manageAuthErrors();
+        manageBackendErrors();
     }
 
     // Initialize views
