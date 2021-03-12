@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.jotamarti.golocal.App;
+import com.jotamarti.golocal.Models.Shop;
 import com.jotamarti.golocal.Models.User;
 import com.jotamarti.golocal.Repositories.ClientRepository;
 import com.jotamarti.golocal.Repositories.UserRepository;
@@ -18,11 +19,13 @@ import com.jotamarti.golocal.Utils.Errors.BackendErrors;
 
 public class AuthActivityViewModel extends ViewModel {
 
+    private final String TAG = "AuthActivityViewModel";
+
     public final int MIN_PASS_LENGTH = 6;
 
     // Backend
     private final ClientRepositoryFactory clientRepository;
-    private LiveData<User> currentUser;
+    private LiveData<User> currentUser = new MutableLiveData<>();
     private LiveData<BackendErrors> backendError;
 
     // Activity Views data
@@ -31,8 +34,7 @@ public class AuthActivityViewModel extends ViewModel {
 
     // Auth
     private final UserRepositoryFactory userRepository;
-    private LiveData<String> firebaseUserUid;
-    private LiveData<String> userRegisteredUid;
+    private LiveData<String> firebaseUserUid = new MutableLiveData<>();
     private LiveData<AuthErrors> authError;
 
     // SharedPreferences
@@ -53,7 +55,12 @@ public class AuthActivityViewModel extends ViewModel {
         return this.currentUser;
     }
 
-    public void getNewUser(String uid){
+    public void getNewClient(String uid){
+        this.currentUser = clientRepository.getUser(uid);
+    }
+
+    public void getNewShop(String uid){
+        // TODO: Cambiar por el backend de la tienda
         this.currentUser = clientRepository.getUser(uid);
     }
 
@@ -64,10 +71,6 @@ public class AuthActivityViewModel extends ViewModel {
     // Manage Auth
     public void loginUserInAuthService(){
         firebaseUserUid = userRepository.loginUserInAuthService(currentInsertedEmail, currentInsertedPassword);
-    }
-
-    public void registerUserInAuthService(){
-        firebaseUserUid = userRepository.registerUserInAuthService(currentInsertedEmail, currentInsertedPassword);
     }
 
     public LiveData<String> getFirebaseUserUid(){
@@ -92,6 +95,7 @@ public class AuthActivityViewModel extends ViewModel {
         dataStorage.write("password", currentInsertedPassword);
     }
 
+    // Activity View Data
     public void setCurrentInsertedEmail(String email){
         currentInsertedEmail = email;
     }

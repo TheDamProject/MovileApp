@@ -1,5 +1,6 @@
 package com.jotamarti.golocal.UseCases.Users;
 
+import com.google.firebase.auth.FirebaseUser;
 import com.jotamarti.golocal.Utils.Errors.AuthErrors;
 
 public class UserCallbacks {
@@ -10,7 +11,7 @@ public class UserCallbacks {
     };
 
     public interface onResponseCallBackRegisterUserInAuthService {
-        void onResponse(String uid);
+        void onResponse(FirebaseUser firebaseUser);
         void onErrorResponse(AuthErrors error);
     };
 

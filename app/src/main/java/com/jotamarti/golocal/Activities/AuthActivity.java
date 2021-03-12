@@ -23,7 +23,6 @@ import com.jotamarti.golocal.R;
 import com.jotamarti.golocal.SharedPreferences.UserPreferences;
 import com.jotamarti.golocal.Utils.CustomToast;
 import com.jotamarti.golocal.Utils.Errors.AuthErrors;
-import com.jotamarti.golocal.Utils.Errors.BackendErrors;
 import com.jotamarti.golocal.ViewModels.AuthActivityViewModel;
 
 public class AuthActivity extends AppCompatActivity {
@@ -47,16 +46,12 @@ public class AuthActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_auth);
 
-        // Deshabilitamos modo noche
+        // Disable night mode
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
 
-        // Iniciamos variables
-        authActivityViewModel = new ViewModelProvider(this).get(AuthActivityViewModel.class);
-
         initializeUI();
+        initializeViewModel();
         setCredentialsIfExists();
-        manageBackendErrors();
-        manageAuthErrors();
 
         btnAuthActivity.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -71,11 +66,7 @@ public class AuthActivity extends AppCompatActivity {
                     CustomToast.showToast(AuthActivity.this, String.format(getString(R.string.error_short_password), authActivityViewModel.MIN_PASS_LENGTH), CustomToast.mode.SHORTER);
                     return;
                 }
-                if (checkBoxRegister.isChecked()) {
-                    registerUser();
-                } else {
-                    loginUser();
-                }
+                tryToLoginUser();
             }
         });
 
@@ -93,103 +84,28 @@ public class AuthActivity extends AppCompatActivity {
 
     }
 
-    private void loginUser() {
+    private void tryToLoginUser() {
         authActivityViewModel.loginUserInAuthService();
-        startObservingFirebaseUserUid();
     }
 
-    private void registerUser() {
-        authActivityViewModel.registerUserInAuthService();
-        startObservingFirebaseUserUid();
-    }
-
-    private void startObservingFirebaseUserUid(){
-        authActivityViewModel.getFirebaseUserUid().observe(this, (String userUid) -> {
-            if(!userUid.isEmpty()) {
-                getUserFromBackend(userUid);
-            }
-        });
-    }
-
-    private void getUserFromBackend(String userUid) {
-        if (authActivityViewModel.getCurrentUser() == null) {
-            if(checkBoxShop.isChecked()) {
-                //TODO: Aqui deberemos poner getNewShop
-                authActivityViewModel.getNewUser(userUid);
-            } else {
-                authActivityViewModel.getNewUser(userUid);
-
-            }
-            startObservingUser();
-        } else {
-            authActivityViewModel.getNewUser(userUid);
-        }
-    }
-
-    private void startObservingUser() {
-        authActivityViewModel.getCurrentUser().observe(this, (User currentUser) -> {
-            if(checkBoxRegister.isChecked()) {
-                showMainActivity(currentUser, "register");
-            } else {
-                showMainActivity(currentUser, getString(R.string.auth_action_login));
-            }
-
-        });
-    }
-
-    private void showMainActivity(User user, String action) {
-        Log.d(TAG, "Entrando en showMainActivity");
-        if(switchRemember.isChecked()){
-            authActivityViewModel.setPreferences();
-        }
-        if (action.equals(getString(R.string.auth_action_login))) {
-            Intent intent = new Intent(AuthActivity.this, MainActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            intent.putExtra("user", user);
-            intent.putExtra("caller", "AuthActivity");
-            startActivity(intent);
-            Log.d(TAG, "Entrando en el if de showMainActivity");
-        } else {
-            Log.d(TAG, "Entrando en el else de showMainActivity");
-            // Al ser un register tendremos que enviar al backend algo
-            Intent intent;
-            if(checkBoxShop.isChecked()) {
-                intent = new Intent(AuthActivity.this, ShopConfigurationActivity.class);
-            } else {
-                intent = new Intent(AuthActivity.this, MainActivity.class);
-            }
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            intent.putExtra("user", user);
-            intent.putExtra("caller", "AuthActivity");
-            startActivity(intent);
-        }
-
-    }
-
-    private void manageBackendErrors() {
-        // TODO: Manejar errores del backend
-        authActivityViewModel.getBackendError().observe(this, (BackendErrors httpNetworkError) -> {
-            Log.d(TAG, "Tipo error: " + httpNetworkError);
-        });
-    }
-
-    private void manageAuthErrors(){
+    private void manageAuthErrors() {
         authActivityViewModel.getAuthError().observe(this, (AuthErrors authError) -> {
-            switch (authError){
+            switch (authError) {
                 case WRONG_PASSWORD:
-                    CustomToast.showToast(AuthActivity.this, getString(R.string.error_wrong_password), CustomToast.mode.SHORTER);
+                    if (checkBoxRegister.isChecked()) {
+                        // Manage a user trying to register, if we enter here it means that the user exists
+                        CustomToast.showToast(AuthActivity.this, "El usuario ya existe", CustomToast.mode.SHORTER);
+                    } else {
+                        CustomToast.showToast(AuthActivity.this, getString(R.string.error_wrong_password), CustomToast.mode.SHORTER);
+                    }
                     break;
                 case EMAIL_NOT_FOUND:
-                    CustomToast.showToast(AuthActivity.this, getString(R.string.error_email_not_found), CustomToast.mode.SHORTER);
-                    break;
-                case GENERIC_LOGIN_ERROR:
-                    CustomToast.showToast(AuthActivity.this, getString(R.string.error_login_generic), CustomToast.mode.SHORTER);
-                    break;
-                case EMAIL_ALREADY_IN_USE:
-                    CustomToast.showToast(AuthActivity.this, getString(R.string.error_email_already_use), CustomToast.mode.SHORTER);
-                    break;
-                case GENERIC_REGISTER_ERROR:
-                    CustomToast.showToast(AuthActivity.this, getString(R.string.error_register_generic), CustomToast.mode.SHORTER);
+                    if (checkBoxRegister.isChecked()) {
+                        // If we reach this point trying to register a new user it means that the email is avaliable to the new user
+                        showConfigActivity();
+                    } else {
+                        CustomToast.showToast(AuthActivity.this, getString(R.string.error_email_not_found), CustomToast.mode.SHORTER);
+                    }
                     break;
                 default:
                     CustomToast.showToast(AuthActivity.this, getString(R.string.error_login_generic), CustomToast.mode.SHORTER);
@@ -198,6 +114,59 @@ public class AuthActivity extends AppCompatActivity {
         });
     }
 
+    private void showConfigActivity() {
+        if (switchRemember.isChecked()) {
+            authActivityViewModel.setPreferences();
+        }
+        Intent intent;
+        if (checkBoxShop.isChecked()) {
+            intent = new Intent(AuthActivity.this, ShopConfigurationActivity.class);
+        } else {
+            intent = new Intent(AuthActivity.this, ClientConfigurationActivity.class);
+        }
+        intent.putExtra("email", authActivityViewModel.getCurrentInsertedEmail());
+        startActivity(intent);
+    }
+
+    private void observeFirebaseUid() {
+        // We enter here only if the user login correctly
+        authActivityViewModel.getFirebaseUserUid().observe(this, (String userUid) -> {
+            if (!userUid.isEmpty()) {
+                if (!checkBoxRegister.isChecked()) {
+                    getUserFromBackend(userUid);
+                } else {
+                    // We enter here in the remote case that a user trying to register puts the same password as an existing user
+                    CustomToast.showToast(AuthActivity.this, "El usuario ya existe", CustomToast.mode.SHORTER);
+                }
+            }
+        });
+    }
+
+    private void getUserFromBackend(String userUid) {
+        if (checkBoxShop.isChecked()) {
+            authActivityViewModel.getNewShop(userUid);
+        } else {
+            authActivityViewModel.getNewClient(userUid);
+
+        }
+    }
+
+    private void observeUserFromBackend() {
+        authActivityViewModel.getCurrentUser().observe(this, (User currentUser) -> {
+            showMainActivity(currentUser);
+        });
+    }
+
+    private void showMainActivity(User user) {
+        if (switchRemember.isChecked()) {
+            authActivityViewModel.setPreferences();
+        }
+        Intent intent = new Intent(AuthActivity.this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        intent.putExtra("user", user);
+        intent.putExtra("caller", "AuthActivity");
+        startActivity(intent);
+    }
 
 
     private void setCredentialsIfExists() {
@@ -215,6 +184,15 @@ public class AuthActivity extends AppCompatActivity {
         });
     }
 
+    // ViewModel
+    private void initializeViewModel() {
+        authActivityViewModel = new ViewModelProvider(this).get(AuthActivityViewModel.class);
+        observeFirebaseUid();
+        observeUserFromBackend();
+        manageAuthErrors();
+    }
+
+    // Initialize views
     public void initializeUI() {
         setTitle(getString(R.string.auth_title));
         editTxtEmail = findViewById(R.id.AuthActivity_editText_email);

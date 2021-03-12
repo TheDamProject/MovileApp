@@ -60,7 +60,7 @@ public class UserUseCases implements UserApi {
                         if (task.isSuccessful()) {
                             Log.d(TAG, "createUserWithEmail:success");
                             FirebaseUser user = firebaseAuth.getCurrentUser();
-                            onResponseCallBackRegisterUserInAuthService.onResponse(user.getUid());
+                            onResponseCallBackRegisterUserInAuthService.onResponse(user);
                         } else {
                             Log.w(TAG, "createUserWithEmail:failure", task.getException());
                             try {

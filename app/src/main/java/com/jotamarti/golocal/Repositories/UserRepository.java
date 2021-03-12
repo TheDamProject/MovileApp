@@ -3,7 +3,7 @@ package com.jotamarti.golocal.Repositories;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.jotamarti.golocal.UseCases.Clients.ClientCallbacks;
+import com.google.firebase.auth.FirebaseUser;
 import com.jotamarti.golocal.UseCases.Users.UserCallbacks;
 import com.jotamarti.golocal.UseCases.Users.UserRepositoryFactory;
 import com.jotamarti.golocal.UseCases.Users.UserUseCases;
@@ -16,6 +16,7 @@ public class UserRepository implements UserRepositoryFactory {
     private MutableLiveData<String> userLoggedUid = new MutableLiveData<>();
     private MutableLiveData<AuthErrors> authError = new MutableLiveData<>();
     private MutableLiveData<String> userRegisteredUid = new MutableLiveData<>();
+    private MutableLiveData<FirebaseUser> fireBaseUserRegistered = new MutableLiveData<>();
 
     public UserRepository() {
         userUsecases = new UserUseCases();
@@ -46,11 +47,11 @@ public class UserRepository implements UserRepositoryFactory {
 
     // Register
     @Override
-    public LiveData<String> registerUserInAuthService(String email, String password) {
+    public LiveData<FirebaseUser> registerUserInAuthService(String email, String password) {
         userUsecases.registerUserInAuthService(email, password, new UserCallbacks.onResponseCallBackRegisterUserInAuthService() {
             @Override
-            public void onResponse(String uid) {
-                userRegisteredUid.setValue(uid);
+            public void onResponse(FirebaseUser firebaseUser) {
+                fireBaseUserRegistered.setValue(firebaseUser);
             }
 
             @Override
@@ -58,7 +59,7 @@ public class UserRepository implements UserRepositoryFactory {
                 authError.setValue(error);
             }
         });
-        return userRegisteredUid;
+        return fireBaseUserRegistered;
     }
 
     @Override
