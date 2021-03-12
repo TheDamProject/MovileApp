@@ -25,7 +25,7 @@ public class AuthActivityViewModel extends ViewModel {
 
     // Backend
     private final ClientRepositoryFactory clientRepository;
-    private LiveData<User> currentUser = new MutableLiveData<>();
+    private LiveData<User> currentUser;
     private LiveData<BackendErrors> backendError;
 
     // Activity Views data
@@ -34,7 +34,7 @@ public class AuthActivityViewModel extends ViewModel {
 
     // Auth
     private final UserRepositoryFactory userRepository;
-    private LiveData<String> firebaseUserUid = new MutableLiveData<>();
+    private LiveData<String> firebaseUserUid;
     private LiveData<AuthErrors> authError;
 
     // SharedPreferences
@@ -52,6 +52,9 @@ public class AuthActivityViewModel extends ViewModel {
 
     // Manage Backend
     public LiveData<User> getCurrentUser() {
+        if (currentUser == null) {
+            currentUser = new MutableLiveData<User>();
+        }
         return this.currentUser;
     }
 

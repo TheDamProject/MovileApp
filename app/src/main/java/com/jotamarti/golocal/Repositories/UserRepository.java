@@ -1,5 +1,7 @@
 package com.jotamarti.golocal.Repositories;
 
+import android.util.Log;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
@@ -11,7 +13,9 @@ import com.jotamarti.golocal.Utils.Errors.AuthErrors;
 
 public class UserRepository implements UserRepositoryFactory {
 
-    UserUseCases userUsecases;
+    private final String TAG = "UserRepository";
+
+    private UserUseCases userUsecases;
     // Auth
     private MutableLiveData<String> userLoggedUid = new MutableLiveData<>();
     private MutableLiveData<AuthErrors> authError = new MutableLiveData<>();
@@ -51,6 +55,8 @@ public class UserRepository implements UserRepositoryFactory {
         userUsecases.registerUserInAuthService(email, password, new UserCallbacks.onResponseCallBackRegisterUserInAuthService() {
             @Override
             public void onResponse(FirebaseUser firebaseUser) {
+                Log.d(TAG, "He llegado el repositorio");
+                Log.d(TAG, firebaseUser.getEmail());
                 fireBaseUserRegistered.setValue(firebaseUser);
             }
 

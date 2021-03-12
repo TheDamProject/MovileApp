@@ -1,5 +1,6 @@
 package com.jotamarti.golocal.Activities;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
@@ -15,6 +16,7 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 
 import androidx.appcompat.widget.SwitchCompat;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.jotamarti.golocal.App;
@@ -87,6 +89,7 @@ public class AuthActivity extends AppCompatActivity {
 
     private void tryToLoginUser() {
         authActivityViewModel.loginUserInAuthService();
+        observeFirebaseUid();
     }
 
     private void manageAuthErrors() {
@@ -116,8 +119,8 @@ public class AuthActivity extends AppCompatActivity {
     }
 
     private void manageBackendErrors(){
-        authActivityViewModel.getBackendError().observe(this, (BackendErrors httpNetworkError) -> {
-            switch (httpNetworkError){
+        authActivityViewModel.getBackendError().observe(this, (BackendErrors error) -> {
+            switch (error){
                 case REDIRECTION:
                     CustomToast.showToast(AuthActivity.this, getString(R.string.error_login_generic), CustomToast.mode.SHORTER);
                 case CLIENT_ERROR:
@@ -141,12 +144,13 @@ public class AuthActivity extends AppCompatActivity {
             intent = new Intent(AuthActivity.this, ClientConfigurationActivity.class);
         }
         intent.putExtra("email", authActivityViewModel.getCurrentInsertedEmail());
+        intent.putExtra("password", authActivityViewModel.getCurrentInsertedPassword());
         startActivity(intent);
     }
 
     private void observeFirebaseUid() {
-        // We enter here only if the user login correctly
         authActivityViewModel.getFirebaseUserUid().observe(this, (String userUid) -> {
+            Log.d(TAG, "Me ha llegado el firebaseUid");
             if (!userUid.isEmpty()) {
                 if (!checkBoxRegister.isChecked()) {
                     getUserFromBackend(userUid);
@@ -155,21 +159,26 @@ public class AuthActivity extends AppCompatActivity {
                     CustomToast.showToast(AuthActivity.this, "El usuario ya existe", CustomToast.mode.SHORTER);
                 }
             }
+            authActivityViewModel.getFirebaseUserUid().removeObservers(this);
         });
     }
 
     private void getUserFromBackend(String userUid) {
+        Log.d(TAG, "Entrando getUserFromBackend");
         if (checkBoxShop.isChecked()) {
             authActivityViewModel.getNewShop(userUid);
         } else {
             authActivityViewModel.getNewClient(userUid);
-
         }
+        observeUserFromBackend();
     }
 
     private void observeUserFromBackend() {
+        Log.d(TAG, "He llegado al observeUserFromBackend");
         authActivityViewModel.getCurrentUser().observe(this, (User currentUser) -> {
+            Log.d(TAG, "Entro en observeUserFromBackend");
             showMainActivity(currentUser);
+            authActivityViewModel.getCurrentUser().removeObservers(this);
         });
     }
 
@@ -202,8 +211,6 @@ public class AuthActivity extends AppCompatActivity {
     // ViewModel
     private void initializeViewModel() {
         authActivityViewModel = new ViewModelProvider(this).get(AuthActivityViewModel.class);
-        observeFirebaseUid();
-        observeUserFromBackend();
         manageAuthErrors();
         manageBackendErrors();
     }

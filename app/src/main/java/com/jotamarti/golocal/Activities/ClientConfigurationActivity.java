@@ -4,7 +4,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.Manifest;
@@ -18,6 +17,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Base64;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -26,12 +26,11 @@ import android.widget.ImageView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseUser;
 import com.jotamarti.golocal.Models.Client;
+import com.jotamarti.golocal.Models.User;
 import com.jotamarti.golocal.R;
-import com.jotamarti.golocal.UseCases.Users.UserRepositoryFactory;
 import com.jotamarti.golocal.Utils.CustomToast;
 import com.jotamarti.golocal.Utils.Errors.AuthErrors;
 import com.jotamarti.golocal.Utils.Errors.BackendErrors;
-import com.jotamarti.golocal.ViewModels.AuthActivityViewModel;
 import com.jotamarti.golocal.ViewModels.ClientConfigurationViewModel;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
@@ -41,7 +40,7 @@ import java.io.FileNotFoundException;
 
 public class ClientConfigurationActivity extends AppCompatActivity {
 
-    private final String TAG = "ClientConfigurationActivity";
+    private final String TAG = "ClientConfigurationAct";
     private final static int PERMISSIONS_REQUEST_CAMERA = 1;
 
     private ImageView clientAvatar;
@@ -49,7 +48,13 @@ public class ClientConfigurationActivity extends AppCompatActivity {
     private Button btnSave;
     private EditText clientNickName;
 
+    private FirebaseUser firebaseUser;
+
     private TextWatcher textWatcher;
+    private boolean avatarInserted = false;
+
+    private String email;
+    private String password;
 
     // ViewModel
     private ClientConfigurationViewModel clientConfigurationViewModel;
@@ -61,10 +66,14 @@ public class ClientConfigurationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_client_configuration);
 
-        initializeUi();
+        Intent AuthActivityIntent = getIntent();
+
+        email = AuthActivityIntent.getStringExtra("email");
+        password = AuthActivityIntent.getStringExtra("password");
+
         initializeTextWatcher();
-        // Iniciamos variables
-        clientConfigurationViewModel = new ViewModelProvider(this).get(ClientConfigurationViewModel.class);
+        initializeUi();
+        initializeViewModel();
 
         btnChoosePicture.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -81,43 +90,76 @@ public class ClientConfigurationActivity extends AppCompatActivity {
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                clientConfigurationViewModel.registerClientInAuthService("test", "test");
-                startObservingRegisteredUserInAuthService();
+                Log.d(TAG, "MACHOOOOOOOOOOOOOOOOOOO");
+                clientConfigurationViewModel.registerClientInAuthService(email, password);
             }
         });
     }
 
-    private void startObservingRegisteredUserInAuthService(){
-        clientConfigurationViewModel.getFirebaseUser().observe(this, (FirebaseUser firebaseUser) -> {
+    private void initializeViewModel(){
+        clientConfigurationViewModel = new ViewModelProvider(this).get(ClientConfigurationViewModel.class);
+        manageBackendErrors();
+        manageAuthServiceErrors();
+        observeRegisteredUserInAuthService();
+        observeRegisteredUserInBackend();
+    }
+
+    private void observeRegisteredUserInAuthService(){
+        Log.d(TAG, "Observando userFirebase");
+        clientConfigurationViewModel.getAuthUser().observe(this, (FirebaseUser firebaseUser) -> {
+            this.firebaseUser = firebaseUser;
+            Log.d(TAG, "Me ha llegado el user de firebase");
             // Si llegamos aqui hemos creado correctamente el usuario en firebase. Ahora tenemos que crearlo en nuestro backend.
             clientConfigurationViewModel.registerClientInBackend(firebaseUser.getUid());
 
         });
     }
 
-    private void startObservingRegisteredUserInBackend(){
-        clientConfigurationViewModel.getClient().observe(this, (Client client) -> {
-            // Si llegamos aqui hemos creado
+    private void observeRegisteredUserInBackend(){
+        clientConfigurationViewModel.getClient().observe(this, (User client) -> {
+            // Si llegamos aqui hemos creado el cliente en el backend, por tanto podemos pasar al mainActivity
+            showMainActivity(client);
         });
+    }
+
+    private void showMainActivity(User client) {
+        Intent intent = new Intent(ClientConfigurationActivity.this, MainActivity.class);
+        intent.putExtra("user", client);
     }
 
     private void manageBackendErrors(){
         clientConfigurationViewModel.getBackendError().observe(this, (BackendErrors error) -> {
-            // TODO: Manejar errores del backend, si no se crea bien el usuario tendremos que borrarlo de firebase. firebaseUser.delete()
+            switch (error){
+                case REDIRECTION:
+                    CustomToast.showToast(ClientConfigurationActivity.this, getString(R.string.error_register_generic), CustomToast.mode.SHORTER);
+                case CLIENT_ERROR:
+                    CustomToast.showToast(ClientConfigurationActivity.this, getString(R.string.error_register_generic), CustomToast.mode.SHORTER);
+                case SERVER_ERROR:
+                    CustomToast.showToast(ClientConfigurationActivity.this, getString(R.string.error_register_generic), CustomToast.mode.SHORTER);
+                default:
+                    CustomToast.showToast(ClientConfigurationActivity.this, getString(R.string.error_register_generic), CustomToast.mode.SHORTER);
+            }
+            // If we reach this point we delete the user in firebase becasue we are not able to regsiter it in our backend
+            firebaseUser.delete();
         });
     }
 
     private void manageAuthServiceErrors(){
         clientConfigurationViewModel.getAuthError().observe(this, (AuthErrors error) -> {
-            // TODO: manejar errores de firebase
+            CustomToast.showToast(ClientConfigurationActivity.this, getString(R.string.error_register_generic), CustomToast.mode.SHORTER);
         });
     }
 
     private void initializeUi(){
+        setTitle("User Configuration");
         clientAvatar = findViewById(R.id.ClientConfigurationActivity_imageView_userAvatar);
         btnChoosePicture = findViewById(R.id.ClientConfigurationActivity_btn_choosePicture);
         btnSave = findViewById(R.id.ClientConfigurationActivity_btn_save);
         clientNickName = findViewById(R.id.ClientConfigurationActivity_editText_userNickname);
+
+        clientNickName.addTextChangedListener(textWatcher);
+
+        btnSave.setEnabled(false);
     }
 
     private Boolean haveCameraPermissions() {
@@ -155,13 +197,14 @@ public class ClientConfigurationActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
                 clientAvatar.setImageURI(result.getUri());
+                avatarInserted = true;
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
 
     private void startCrop(Uri imageUri) {
-        CropImage.activity(imageUri).setGuidelines(CropImageView.Guidelines.ON).setMultiTouchEnabled(true).setAspectRatio(4, 3).start(this);
+        CropImage.activity(imageUri).setGuidelines(CropImageView.Guidelines.ON).setMultiTouchEnabled(true).setAspectRatio(4, 4).setCropShape(CropImageView.CropShape.OVAL).start(this);
     }
 
     @Override
@@ -176,7 +219,7 @@ public class ClientConfigurationActivity extends AppCompatActivity {
     }
 
     private void checkAllDataInserted() {
-        if (clientNickName.getText().toString().length() > 0) {
+        if (clientNickName.getText().toString().length() > 0 && avatarInserted) {
             btnSave.setEnabled(true);
         } else {
             btnSave.setEnabled(false);
