@@ -18,12 +18,12 @@ public class ClientConfigurationViewModel extends ViewModel {
 
     // Backend
     private final ClientRepositoryFactory clientRepository;
-    private LiveData<User> client = new MutableLiveData<>();
+    private LiveData<User> client;
     private LiveData<BackendErrors> backendError;
 
     // Auth
     private final UserRepositoryFactory userRepository;
-    private LiveData<FirebaseUser> authUserRegistered = new MutableLiveData<>();
+    private LiveData<FirebaseUser> authUserRegistered;
     private LiveData<AuthErrors> authError;
 
     public ClientConfigurationViewModel(){

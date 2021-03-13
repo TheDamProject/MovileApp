@@ -1,5 +1,7 @@
 package com.jotamarti.golocal.ViewModels;
 
+import android.util.Log;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -72,8 +74,13 @@ public class AuthActivityViewModel extends ViewModel {
     }
 
     // Manage Auth
-    public void loginUserInAuthService(){
-        firebaseUserUid = userRepository.loginUserInAuthService(currentInsertedEmail, currentInsertedPassword);
+    public void loginUserInAuthService(String mode){
+        if(mode.equals("register")) {
+            firebaseUserUid = userRepository.loginUserInAuthService(currentInsertedEmail, "a");
+        } else {
+            firebaseUserUid = userRepository.loginUserInAuthService(currentInsertedEmail, currentInsertedPassword);
+        }
+
     }
 
     public LiveData<String> getFirebaseUserUid(){

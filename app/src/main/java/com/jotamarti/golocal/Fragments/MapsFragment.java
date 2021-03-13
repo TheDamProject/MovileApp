@@ -65,13 +65,11 @@ public class MapsFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
         return inflater.inflate(R.layout.fragment_maps, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        Log.d(TAG, "Ejecutado onViewCreated en maps fragment");
         model = new ViewModelProvider(requireActivity()).get(MainActivityViewModel.class);
         model.setTitle("Explore Shops");
 
@@ -86,7 +84,6 @@ public class MapsFragment extends Fragment {
 
 
     public void requestPermission() {
-        // Pido los permisos
         requestPermissions(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, PERMISSIONS_REQUEST_ACCESS_LOCATION);
     }
 

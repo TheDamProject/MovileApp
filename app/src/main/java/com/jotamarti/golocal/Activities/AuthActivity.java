@@ -1,10 +1,13 @@
 package com.jotamarti.golocal.Activities;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -14,11 +17,15 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.appcompat.widget.SwitchCompat;
+import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.LatLng;
 import com.jotamarti.golocal.App;
 import com.jotamarti.golocal.Models.User;
 import com.jotamarti.golocal.R;
@@ -30,6 +37,8 @@ import com.jotamarti.golocal.ViewModels.AuthActivityViewModel;
 
 public class AuthActivity extends AppCompatActivity {
 
+    private final static int PERMISSIONS_REQUEST_ACCESS_LOCATION = 1;
+
     private final String TAG = "AuthActivity";
 
     // ViewModel
@@ -38,10 +47,15 @@ public class AuthActivity extends AppCompatActivity {
     // UI Views
     private EditText editTxtEmail;
     private EditText editTxtPassword;
+    private TextView txtViewMessagePermission;
     private SwitchCompat switchRemember;
     private CheckBox checkBoxRegister;
     private CheckBox checkBoxShop;
     private Button btnAuthActivity;
+    private Button btnGivePermission;
+
+    private String previousFirebaseUid = "";
+    private boolean eventHandled = false;
 
 
     @Override
@@ -55,6 +69,7 @@ public class AuthActivity extends AppCompatActivity {
         initializeUI();
         initializeViewModel();
         setCredentialsIfExists();
+        handleLocationPermission();
 
         btnAuthActivity.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -70,6 +85,7 @@ public class AuthActivity extends AppCompatActivity {
                     return;
                 }
                 tryToLoginUser();
+                //TODO: Tendremos que desactivar el botón mientras consultamos en firebase
             }
         });
 
@@ -84,11 +100,23 @@ public class AuthActivity extends AppCompatActivity {
             }
         });
 
+        btnGivePermission.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                handleLocationPermission();
+            }
+        });
+
 
     }
 
+
     private void tryToLoginUser() {
-        authActivityViewModel.loginUserInAuthService();
+        if (checkBoxRegister.isChecked()) {
+            authActivityViewModel.loginUserInAuthService("register");
+        } else {
+            authActivityViewModel.loginUserInAuthService("login");
+        }
         observeFirebaseUid();
     }
 
@@ -118,9 +146,9 @@ public class AuthActivity extends AppCompatActivity {
         });
     }
 
-    private void manageBackendErrors(){
+    private void manageBackendErrors() {
         authActivityViewModel.getBackendError().observe(this, (BackendErrors error) -> {
-            switch (error){
+            switch (error) {
                 case REDIRECTION:
                     CustomToast.showToast(AuthActivity.this, getString(R.string.error_login_generic), CustomToast.mode.SHORTER);
                 case CLIENT_ERROR:
@@ -150,13 +178,17 @@ public class AuthActivity extends AppCompatActivity {
 
     private void observeFirebaseUid() {
         authActivityViewModel.getFirebaseUserUid().observe(this, (String userUid) -> {
-            Log.d(TAG, "Me ha llegado el firebaseUid");
+            Log.d(TAG, "Me ha llegado el firebaseUid:" + userUid);
             if (!userUid.isEmpty()) {
                 if (!checkBoxRegister.isChecked()) {
                     getUserFromBackend(userUid);
                 } else {
-                    // We enter here in the remote case that a user trying to register puts the same password as an existing user
-                    CustomToast.showToast(AuthActivity.this, "El usuario ya existe", CustomToast.mode.SHORTER);
+                    if (!userUid.equals(previousFirebaseUid)) {
+                        // We enter here in the remote case that a user trying to register puts the same password as an existing user
+                        CustomToast.showToast(AuthActivity.this, "El usuario ya existe", CustomToast.mode.SHORTER);
+                    }
+
+
                 }
             }
             authActivityViewModel.getFirebaseUserUid().removeObservers(this);
@@ -193,6 +225,51 @@ public class AuthActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    // Location
+    private Boolean checkHaveLocationPermission() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    private void handleLocationPermission() {
+        if (!checkHaveLocationPermission()) {
+            requestPermission();
+        } else {
+            handlePermissionGranted();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case PERMISSIONS_REQUEST_ACCESS_LOCATION: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    if (!checkHaveLocationPermission()) {
+                        return;
+                    }
+                    handlePermissionGranted();
+                } else {
+                    CustomToast.showToast(this, "Permission not granted", CustomToast.mode.LONGER);
+                }
+            }
+        }
+    }
+
+    private void handlePermissionGranted() {
+        btnGivePermission.setEnabled(false);
+        btnAuthActivity.setEnabled(true);
+        btnGivePermission.setVisibility(View.INVISIBLE);
+        txtViewMessagePermission.setVisibility(View.INVISIBLE);
+    }
+
+    public void requestPermission() {
+        requestPermissions(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, PERMISSIONS_REQUEST_ACCESS_LOCATION);
+    }
+
+    // SharedPreferences
     private void setCredentialsIfExists() {
         authActivityViewModel.getSharedPreferences().observe(this, (UserPreferences userPreferences) -> {
             String userEmail = userPreferences.getEmail();
@@ -224,6 +301,9 @@ public class AuthActivity extends AppCompatActivity {
         checkBoxRegister = findViewById(R.id.AuthActivity_checkBox_register);
         checkBoxShop = findViewById(R.id.AuthActivity_checkBox_Shop);
         btnAuthActivity = findViewById(R.id.AuthActivity_btn);
+        txtViewMessagePermission = findViewById(R.id.AuthActivity_txtView_askPermission);
+        btnGivePermission = findViewById(R.id.AuthActivity_btn_askPermission);
+        btnAuthActivity.setEnabled(false);
     }
 
     // Validations

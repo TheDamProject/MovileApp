@@ -43,6 +43,7 @@ public class ClientConfigurationActivity extends AppCompatActivity {
     private final String TAG = "ClientConfigurationAct";
     private final static int PERMISSIONS_REQUEST_CAMERA = 1;
 
+    //Views
     private ImageView clientAvatar;
     private FloatingActionButton btnChoosePicture;
     private Button btnSave;
@@ -90,8 +91,8 @@ public class ClientConfigurationActivity extends AppCompatActivity {
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG, "MACHOOOOOOOOOOOOOOOOOOO");
                 clientConfigurationViewModel.registerClientInAuthService(email, password);
+                observeRegisteredUserInAuthService();
             }
         });
     }
@@ -100,31 +101,30 @@ public class ClientConfigurationActivity extends AppCompatActivity {
         clientConfigurationViewModel = new ViewModelProvider(this).get(ClientConfigurationViewModel.class);
         manageBackendErrors();
         manageAuthServiceErrors();
-        observeRegisteredUserInAuthService();
-        observeRegisteredUserInBackend();
     }
 
     private void observeRegisteredUserInAuthService(){
-        Log.d(TAG, "Observando userFirebase");
         clientConfigurationViewModel.getAuthUser().observe(this, (FirebaseUser firebaseUser) -> {
             this.firebaseUser = firebaseUser;
-            Log.d(TAG, "Me ha llegado el user de firebase");
             // Si llegamos aqui hemos creado correctamente el usuario en firebase. Ahora tenemos que crearlo en nuestro backend.
             clientConfigurationViewModel.registerClientInBackend(firebaseUser.getUid());
-
+            observeRegisteredUserInBackend();
+            clientConfigurationViewModel.getAuthUser().removeObservers(this);
         });
     }
 
     private void observeRegisteredUserInBackend(){
         clientConfigurationViewModel.getClient().observe(this, (User client) -> {
-            // Si llegamos aqui hemos creado el cliente en el backend, por tanto podemos pasar al mainActivity
             showMainActivity(client);
+            clientConfigurationViewModel.getClient().removeObservers(this);
         });
     }
 
     private void showMainActivity(User client) {
         Intent intent = new Intent(ClientConfigurationActivity.this, MainActivity.class);
         intent.putExtra("user", client);
+        intent.putExtra("caller", "ClientConfigurationActivity");
+        startActivity(intent);
     }
 
     private void manageBackendErrors(){
@@ -139,7 +139,7 @@ public class ClientConfigurationActivity extends AppCompatActivity {
                 default:
                     CustomToast.showToast(ClientConfigurationActivity.this, getString(R.string.error_register_generic), CustomToast.mode.SHORTER);
             }
-            // If we reach this point we delete the user in firebase becasue we are not able to regsiter it in our backend
+            // If we reach this point we delete the user in firebase becasue we are not able to regiter it in our backend
             firebaseUser.delete();
         });
     }
@@ -156,9 +156,7 @@ public class ClientConfigurationActivity extends AppCompatActivity {
         btnChoosePicture = findViewById(R.id.ClientConfigurationActivity_btn_choosePicture);
         btnSave = findViewById(R.id.ClientConfigurationActivity_btn_save);
         clientNickName = findViewById(R.id.ClientConfigurationActivity_editText_userNickname);
-
         clientNickName.addTextChangedListener(textWatcher);
-
         btnSave.setEnabled(false);
     }
 

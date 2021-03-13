@@ -33,7 +33,7 @@ public class UserUseCases implements UserApi {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             Log.d(TAG, "signInWithEmail:success");
-                            FirebaseUser user = firebaseAuth.getCurrentUser();
+                            FirebaseUser user = task.getResult().getUser();
                             onResponseCallBackLoginUserInAuthService.onResponse(user.getUid());
                         } else {
                             Log.w(TAG, "signInWithEmail:failure", task.getException());
