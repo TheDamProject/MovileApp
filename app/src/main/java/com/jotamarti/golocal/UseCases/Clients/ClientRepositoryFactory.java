@@ -10,6 +10,6 @@ import com.jotamarti.golocal.Utils.Errors.BackendErrors;
 public interface ClientRepositoryFactory {
 
     // Backend calls
-    LiveData<User> getUser(String userUid);
+    LiveData<User> getUser(String userUid, String avatar);
     MutableLiveData<BackendErrors> getBackendError();
 }

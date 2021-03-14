@@ -61,12 +61,12 @@ public class AuthActivityViewModel extends ViewModel {
     }
 
     public void getNewClient(String uid){
-        this.currentUser = clientRepository.getUser(uid);
+        //this.currentUser = clientRepository.getUser(uid);
     }
 
     public void getNewShop(String uid){
         // TODO: Cambiar por el backend de la tienda
-        this.currentUser = clientRepository.getUser(uid);
+        //this.currentUser = clientRepository.getUser(uid);
     }
 
     public LiveData<BackendErrors> getBackendError(){

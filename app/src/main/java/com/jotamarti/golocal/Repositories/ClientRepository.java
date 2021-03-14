@@ -46,8 +46,8 @@ public class ClientRepository implements ClientRepositoryFactory {
     }
 
     @Override
-    public LiveData<User> getUser(String userUid) {
-        userUsecases.getClient("1234", new ClientCallbacks.onResponseCallBackGetClient() {
+    public LiveData<User> getUser(String userUid, String avatar) {
+        userUsecases.getClient(userUid, avatar, new ClientCallbacks.onResponseCallBackGetClient() {
             @Override
             public void onResponse(JSONObject json) {
                 try {

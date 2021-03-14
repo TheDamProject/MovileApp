@@ -57,6 +57,8 @@ public class ClientConfigurationActivity extends AppCompatActivity {
     private String email;
     private String password;
 
+    String encoded;
+
     // ViewModel
     private ClientConfigurationViewModel clientConfigurationViewModel;
 
@@ -107,7 +109,7 @@ public class ClientConfigurationActivity extends AppCompatActivity {
         clientConfigurationViewModel.getAuthUser().observe(this, (FirebaseUser firebaseUser) -> {
             this.firebaseUser = firebaseUser;
             // Si llegamos aqui hemos creado correctamente el usuario en firebase. Ahora tenemos que crearlo en nuestro backend.
-            clientConfigurationViewModel.registerClientInBackend(firebaseUser.getUid());
+            clientConfigurationViewModel.registerClientInBackend(firebaseUser.getUid(), encoded);
             observeRegisteredUserInBackend();
             clientConfigurationViewModel.getAuthUser().removeObservers(this);
         });
@@ -189,7 +191,8 @@ public class ClientConfigurationActivity extends AppCompatActivity {
                     ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                     imagen.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
                     byte[] byteArray = byteArrayOutputStream.toByteArray();
-                    String encoded = Base64.encodeToString(byteArray, Base64.DEFAULT);
+                    encoded = Base64.encodeToString(byteArray, Base64.DEFAULT);
+                    Log.d(TAG, encoded);
                     checkAllDataInserted();
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();

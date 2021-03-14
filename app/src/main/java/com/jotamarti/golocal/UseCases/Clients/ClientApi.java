@@ -5,8 +5,8 @@ import com.google.gson.JsonObject;
 public interface ClientApi {
 
     // Backend
-    void getClient(String uid, ClientCallbacks.onResponseCallBackGetClient onResponseCallBackGetClient);
-    void registerClientInBackend(String uid);
+    void getClient(String uid, String avatar, ClientCallbacks.onResponseCallBackGetClient onResponseCallBackGetClient);
+    void registerClientInBackend(String uid, String avatar, ClientCallbacks.onResponseCallBackGetClient onResponseCallBackGetClient);
     void modifyClient(String uid, JsonObject newValues);
     void deleteClient(String uid);
 

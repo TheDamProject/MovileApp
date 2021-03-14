@@ -34,8 +34,8 @@ public class ClientConfigurationViewModel extends ViewModel {
     }
 
     // Backend
-    public void registerClientInBackend(String uid){
-        client = clientRepository.getUser(uid);
+    public void registerClientInBackend(String uid, String avatar){
+        client = clientRepository.getUser(uid, avatar);
     }
 
     public LiveData<User> getClient(){
