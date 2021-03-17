@@ -155,7 +155,7 @@ public class ClientConfigurationActivity extends AppCompatActivity {
     }
 
     private void initializeUi(){
-        setTitle("User Configuration");
+        setTitle(getString(R.string.ClientConfigurationActivity_title));
         clientAvatar = findViewById(R.id.ClientConfigurationActivity_imageView_userAvatar);
         btnChoosePicture = findViewById(R.id.ClientConfigurationActivity_btn_choosePicture);
         btnSave = findViewById(R.id.ClientConfigurationActivity_btn_save);

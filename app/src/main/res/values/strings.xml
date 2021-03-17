@@ -2,21 +2,23 @@
     <string name="app_name">GoLocal</string>
     <string name="brand_title">Go Local!</string>
     <!-- AuthActivity Text -->
-    <string name="auth_title">Welcome to Go Local!</string>
-    <string name="auth_action_login">login</string>
-    <string name="auth_action_register">register</string>
-    <string name="auth_checkbox_company">I\'m a Store</string>
-    <string name="auth_checkbox_register">Register</string>
-    <string name="auth_switch_remember">Remember</string>
-    <string name="auth_edittext_email_hint">Email</string>
-    <string name="auth_edittext_password_hint">Password</string>
-    <string name="auth_logo_description">Go Local logo</string>
-    <string name="auth_btn_login">LOGIN</string>
-    <string name="auth_btn_register">REGISTER</string>
-    <!-- Activity Shop Configuration Text -->
-    <string name="edittext_location">Adress (With number)</string>
-    <string name="txtview_number">Number</string>
-    <string name="checkbox_wn">No number</string>
+    <string name="authActivity_title">Welcome to Go Local!</string>
+    <string name="authActivity_action_login">login</string>
+    <string name="authActivity_action_register">register</string>
+    <string name="authActivity_checkBox_company">I\'m a Store</string>
+    <string name="authActivity_checkBox_register">Register</string>
+    <string name="authActivity_switch_remember">Remember</string>
+    <string name="authActivity_editText_emailHint">Email</string>
+    <string name="authActivity_editText_passwordHint">Password</string>
+    <string name="authActivity_logo_description">Go Local logo</string>
+    <string name="authActivity_btn_login">LOGIN</string>
+    <string name="authActivity_btn_register">REGISTER</string>
+    <!-- ShopConfigurationActivity Text -->
+    <string name="ShopConfigurationActivity_editTextLocation">Adress (With number)</string>
+    <string name="ShopConfigurationActivity_textView_number">Number</string>
+    <string name="ShopConfigurationActivity_check_noNumber">No number</string>
+    <!-- ClientConfigurationActivity Text -->
+    <string name="ClientConfigurationActivity_title">Client Configuration</string>
     <!-- Errors -->
     <string name="error_invalid_email">Please check your email.</string>
     <string name="error_email_not_found">This account doesn\'t exists.</string>

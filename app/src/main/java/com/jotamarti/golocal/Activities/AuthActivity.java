@@ -1,7 +1,6 @@
 package com.jotamarti.golocal.Activities;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
@@ -21,11 +20,8 @@ import android.widget.TextView;
 
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.app.ActivityCompat;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.LatLng;
 import com.jotamarti.golocal.App;
 import com.jotamarti.golocal.Models.User;
 import com.jotamarti.golocal.R;
@@ -89,9 +85,9 @@ public class AuthActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    btnAuthActivity.setText(R.string.auth_btn_register);
+                    btnAuthActivity.setText(R.string.authActivity_btn_register);
                 } else {
-                    btnAuthActivity.setText(R.string.auth_btn_login);
+                    btnAuthActivity.setText(R.string.authActivity_btn_login);
                 }
             }
         });
@@ -283,7 +279,7 @@ public class AuthActivity extends AppCompatActivity {
 
     // Initialize views
     public void initializeUI() {
-        setTitle(getString(R.string.auth_title));
+        setTitle(getString(R.string.authActivity_title));
         editTxtEmail = findViewById(R.id.AuthActivity_editText_email);
         editTxtPassword = findViewById(R.id.AuthActivity_editText_password);
         switchRemember = findViewById(R.id.AuthActivity_switch_remember);

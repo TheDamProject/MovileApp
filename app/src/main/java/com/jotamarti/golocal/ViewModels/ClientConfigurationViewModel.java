@@ -28,16 +28,12 @@ public class ClientConfigurationViewModel extends ViewModel {
         userRepository = new UserRepository();
         clientRepository = new ClientRepository();
         backendError = clientRepository.getBackendError();
-        authError = userRepository.getRegisterUserInAuthServiceError();
+        authError = userRepository.getAuthServiceError();
     }
 
     // Backend
     public void registerClientInBackend(String uid, String avatar, String nickName){
         client = clientRepository.registerClientInBackend(uid, avatar, nickName);
-    }
-
-    public void getClientFromBackend(String uid){
-        client = clientRepository.getClientFromBackend(uid);
     }
 
     public LiveData<User> getClient(){
