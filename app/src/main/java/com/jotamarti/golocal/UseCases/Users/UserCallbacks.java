@@ -2,8 +2,16 @@ package com.jotamarti.golocal.UseCases.Users;
 
 import com.google.firebase.auth.FirebaseUser;
 import com.jotamarti.golocal.Utils.Errors.AuthErrors;
+import com.jotamarti.golocal.Utils.Errors.BackendErrors;
+
+import org.json.JSONObject;
 
 public class UserCallbacks {
+
+    public interface onResponseCallBackGetUserFromBackend {
+        void onResponse(JSONObject jsonObject);
+        void onErrorResponse(BackendErrors backendError);
+    };
 
     public interface onResponseCallBackLoginUserInAuthService {
         void onResponse(String uid);

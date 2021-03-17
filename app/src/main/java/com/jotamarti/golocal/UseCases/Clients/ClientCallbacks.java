@@ -12,10 +12,9 @@ public class ClientCallbacks {
         void onErrorResponse(BackendErrors httpNetworkError);
     }
 
-    public interface onResponseCallBackAuthClient {
-        void onResponse(String uid);
-        void onErrorResponse(AuthErrors error);
+    public interface onResponseRegisterClientInBackend {
+        void onResponse(JSONObject json);
+        void onErrorResponse(BackendErrors httpNetworkError);
     }
-
 
 }

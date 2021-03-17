@@ -42,26 +42,11 @@ public class ClientUsecases implements ClientApi {
 
 
     @Override
-    public void getClient(String uid, String avatar, ClientCallbacks.onResponseCallBackGetClient onResponseCallBackGetClient) {
-        //String baseUrl = String.valueOf(App.getContext().getResources().getText(R.string.api_base_url));
-        String baseUrl = "http://37.133.227.193:30180";
-        String uri = baseUrl + "/api/client/add";
-        Map<String, String> mParams = new HashMap<String, String>();
-        mParams.put("uid", uid);
-        mParams.put("avatar", "data:image/png;base64," + avatar);
-        mParams.put("nick", "tu culo");
+    public void getClientFromBackend(String uid, ClientCallbacks.onResponseCallBackGetClient onResponseCallBackGetClient) {
+        String baseUrl = String.valueOf(App.getContext().getResources().getText(R.string.api_base_url));
+        String uri = baseUrl + "/api/client/" + uid;
 
-        JSONObject jsonBodyObj = new JSONObject();
-        try{
-            jsonBodyObj.put("uid", uid);
-            jsonBodyObj.put("avatar", avatar);
-            jsonBodyObj.put("nick", "tu culo");
-        }catch (JSONException e){
-            e.printStackTrace();
-        }
-        final String requestBody = jsonBodyObj.toString();
-
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, uri, new JSONObject(mParams), new Response.Listener<JSONObject>() {
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, uri, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 onResponseCallBackGetClient.onResponse(response);
@@ -84,55 +69,36 @@ public class ClientUsecases implements ClientApi {
                 params.put("X-AUTH-TOKEN", "TC9[L7<D4gd)5{6<!=H!jUYE7mum<H~NS4yJo/a+7(3v>f5n+_49u|_a4|7W");
                 return params;
             }
-
-            /*@Override
-            public byte[] getBody() {
-                try {
-                    return requestBody == null ? null : requestBody.getBytes("utf-8");
-                } catch (UnsupportedEncodingException uee) {
-                    VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", requestBody, "utf-8");
-                    return null;
-                }
-            }*/
         };
-        jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(0, 1, 10.0f));
+        jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(0, 1, 5.0f));
         RequestQueueSingleton.getInstance().addToRequestQueue(jsonObjectRequest);
     }
 
     @Override
-    public void registerClientInBackend(String uid, String avatar, ClientCallbacks.onResponseCallBackGetClient onResponseCallBackGetClient) {
-        //String baseUrl = String.valueOf(App.getContext().getResources().getText(R.string.api_base_url));
-        String baseUrl = "http://jotamarti.ddns.net:30180";
-        String uri = baseUrl + "/api/client/add";
+    public void registerClientInBackend(String uid, String avatar, String nickName, ClientCallbacks.onResponseRegisterClientInBackend onResponseRegisterClientInBackend) {
+        String baseUrl = String.valueOf(App.getContext().getResources().getText(R.string.api_base_url));
+        String uri = baseUrl + "/api/clients/add";
+
+        // Params
         Map<String, String> mParams = new HashMap<String, String>();
-        //mParams.put("X-AUTH-TOKEN", "TC9[L7<D4gd)5{6<!=H!jUYE7mum<H~NS4yJo/a+7(3v>f5n+_49u|_a4|7W");
         mParams.put("uid", uid);
-        mParams.put("avatar", avatar);
-        mParams.put("nick", "tu culo");
+        mParams.put("avatar", "data:image/png;base64," + avatar);
+        mParams.put("nick", nickName);
 
-        JSONObject jsonBodyObj = new JSONObject();
-        try{
-            jsonBodyObj.put("uid", uid);
-            jsonBodyObj.put("avatar", avatar);
-            jsonBodyObj.put("nick", "tu culo");
-        }catch (JSONException e){
-            e.printStackTrace();
-        }
-        final String requestBody = jsonBodyObj.toString();
-
-
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, uri, null, new Response.Listener<JSONObject>() {
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, uri, new JSONObject(mParams), new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-                //callerObject.onResponse(response, TAG);
-                onResponseCallBackGetClient.onResponse(response);
+                onResponseRegisterClientInBackend.onResponse(response);
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.d(TAG, error.getMessage());
+                if(error == null) {
+                    onResponseRegisterClientInBackend.onErrorResponse(BackendErrors.SERVER_ERROR);
+                }
+                Log.d(TAG, error.toString());
                 BackendErrors httpNetworkError = BackendErrors.getBackendError(error.networkResponse.statusCode);
-                onResponseCallBackGetClient.onErrorResponse(httpNetworkError);
+                onResponseRegisterClientInBackend.onErrorResponse(httpNetworkError);
             }
         }) {
             @Override
@@ -143,86 +109,19 @@ public class ClientUsecases implements ClientApi {
                 return params;
             }
 
-            @Override
-            public byte[] getBody() {
-                try {
-                    return requestBody == null ? null : requestBody.getBytes("utf-8");
-                } catch (UnsupportedEncodingException uee) {
-                    VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s",
-                            requestBody, "utf-8");
-                    return null;
-                }
-            }
         };
+        jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(0, 1, 5.0f));
         RequestQueueSingleton.getInstance().addToRequestQueue(jsonObjectRequest);
 
     }
 
     @Override
     public void modifyClient(String uid, JsonObject newValues) {
-        // Esto es el get
-
-
-
 
     }
 
     @Override
     public void deleteClient(String uid) {
-
-    }
-
-    // Auth
-    @Override
-    public void loginClient(String email, String password, ClientCallbacks.onResponseCallBackAuthClient onResponseCallbackAuthUser) {
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
-        mAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(TaskExecutors.MAIN_THREAD, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            Log.d(TAG, "signInWithEmail:success");
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            onResponseCallbackAuthUser.onResponse(user.getUid());
-                        } else {
-                            Log.w(TAG, "signInWithEmail:failure", task.getException());
-                            try {
-                                throw task.getException();
-                            } catch (FirebaseAuthInvalidCredentialsException e) {
-                                onResponseCallbackAuthUser.onErrorResponse(AuthErrors.WRONG_PASSWORD);
-                            } catch (FirebaseAuthInvalidUserException e) {
-                                onResponseCallbackAuthUser.onErrorResponse(AuthErrors.EMAIL_NOT_FOUND);
-                            } catch (Exception e) {
-                                onResponseCallbackAuthUser.onErrorResponse(AuthErrors.GENERIC_LOGIN_ERROR);
-                            }
-                        }
-                    }
-                });
-    }
-
-    @Override
-    public void registerClientInAuthService(String email, String password, ClientCallbacks.onResponseCallBackAuthClient onResponseCallbackAuthUser) {
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
-        mAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(TaskExecutors.MAIN_THREAD, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            Log.d(TAG, "createUserWithEmail:success");
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            onResponseCallbackAuthUser.onResponse(user.getUid());
-                        } else {
-                            Log.w(TAG, "createUserWithEmail:failure", task.getException());
-                            try {
-                                throw task.getException();
-                            } catch (FirebaseAuthUserCollisionException e) {
-                                onResponseCallbackAuthUser.onErrorResponse(AuthErrors.EMAIL_ALREADY_IN_USE);
-                            } catch (Exception e) {
-                                onResponseCallbackAuthUser.onErrorResponse(AuthErrors.GENERIC_REGISTER_ERROR);
-                            }
-                        }
-                    }
-                });
 
     }
 

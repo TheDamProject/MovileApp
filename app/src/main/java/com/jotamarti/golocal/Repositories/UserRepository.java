@@ -6,28 +6,52 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.google.firebase.auth.FirebaseUser;
+import com.jotamarti.golocal.Models.User;
 import com.jotamarti.golocal.UseCases.Users.UserCallbacks;
 import com.jotamarti.golocal.UseCases.Users.UserRepositoryFactory;
 import com.jotamarti.golocal.UseCases.Users.UserUseCases;
 import com.jotamarti.golocal.Utils.Errors.AuthErrors;
+import com.jotamarti.golocal.Utils.Errors.BackendErrors;
+
+import org.json.JSONObject;
 
 public class UserRepository implements UserRepositoryFactory {
 
     private final String TAG = "UserRepository";
 
     private UserUseCases userUsecases;
+
     // Auth
     private MutableLiveData<String> userLoggedUid = new MutableLiveData<>();
     private MutableLiveData<AuthErrors> authError = new MutableLiveData<>();
-    private MutableLiveData<String> userRegisteredUid = new MutableLiveData<>();
     private MutableLiveData<FirebaseUser> fireBaseUserRegistered = new MutableLiveData<>();
+
+    // Backend
+    private MutableLiveData<User> user = new MutableLiveData<>();
+    private MutableLiveData<BackendErrors> backendErrorGetUser = new MutableLiveData<>();
 
     public UserRepository() {
         userUsecases = new UserUseCases();
     }
 
+    // Backend
+    @Override
+    public LiveData<User> getUserFromBackend(String uid) {
+        userUsecases.getUserFromBackend(uid, new UserCallbacks.onResponseCallBackGetUserFromBackend() {
+            @Override
+            public void onResponse(JSONObject jsonObject) {
+                // TODO: Coger el user del backend, ver si es cliente o tienda y devolverlo
+            }
 
-    // Login
+            @Override
+            public void onErrorResponse(BackendErrors backendError) {
+                backendErrorGetUser.setValue(backendError);
+            }
+        });
+        return user;
+    }
+
+    // Auth Service
     @Override
     public LiveData<String> loginUserInAuthService(String email, String password) {
         userUsecases.loginUserInAuthService(email, password, new UserCallbacks.onResponseCallBackLoginUserInAuthService() {
@@ -44,12 +68,6 @@ public class UserRepository implements UserRepositoryFactory {
         return userLoggedUid;
     }
 
-    @Override
-    public LiveData<AuthErrors> getLoginUserInAuthServiceError() {
-        return authError;
-    }
-
-    // Register
     @Override
     public LiveData<FirebaseUser> registerUserInAuthService(String email, String password) {
         userUsecases.registerUserInAuthService(email, password, new UserCallbacks.onResponseCallBackRegisterUserInAuthService() {
@@ -69,7 +87,7 @@ public class UserRepository implements UserRepositoryFactory {
     }
 
     @Override
-    public LiveData<AuthErrors> getRegisterUserInAuthServiceError() {
+    public LiveData<AuthErrors> getAuthServiceError() {
         return authError;
     }
 }

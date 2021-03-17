@@ -46,8 +46,56 @@ public class ClientRepository implements ClientRepositoryFactory {
     }
 
     @Override
-    public LiveData<User> getUser(String userUid, String avatar) {
-        userUsecases.getClient(userUid, avatar, new ClientCallbacks.onResponseCallBackGetClient() {
+    public LiveData<User> registerClientInBackend(String userUid, String avatar, String nickName) {
+        userUsecases.registerClientInBackend(userUid, avatar, nickName, new ClientCallbacks.onResponseRegisterClientInBackend() {
+            @Override
+            public void onResponse(JSONObject json) {
+                try {
+                    // TODO: Aqui tendremos que ver que tipo de usuario es y pasarle a current user una shop o un client.
+                    JSONArray jsonArray = json.getJSONArray("results");
+                    JSONObject userObject = jsonArray.getJSONObject(0);
+                    JSONObject loginObject = userObject.getJSONObject("login");
+                    JSONObject pictureObject = userObject.getJSONObject("picture");
+                    String uid = loginObject.getString("uuid");
+                    String userName = loginObject.getString("username");
+                    String email = userObject.getString("email");
+                    String imageUrl = pictureObject.getString("medium");
+                    URL url;
+                    url = new URL(imageUrl);
+
+
+                    Runnable runnable = new Runnable() {
+                        @Override
+                        public void run() {
+                            Bitmap bitmap = null;
+                            InputStream inputStream = null;
+                            try {
+                                inputStream = new URL(imageUrl).openStream();
+                                bitmap = BitmapFactory.decodeStream(inputStream);
+                                User user = new Client(url, email, uid, userName);
+                                currentUser.postValue(user);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    };
+                    new Thread(runnable).start();
+                } catch (JSONException | MalformedURLException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onErrorResponse(BackendErrors httpNetworkError) {
+                haveHttpNetworkError.setValue(httpNetworkError);
+            }
+        });
+        return currentUser;
+    }
+
+    @Override
+    public LiveData<User> getClientFromBackend(String userUid) {
+        userUsecases.getClientFromBackend(userUid, new ClientCallbacks.onResponseCallBackGetClient() {
             @Override
             public void onResponse(JSONObject json) {
                 try {

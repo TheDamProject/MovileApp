@@ -1,13 +1,10 @@
 package com.jotamarti.golocal.ViewModels;
 
-import android.util.Log;
-
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.jotamarti.golocal.App;
-import com.jotamarti.golocal.Models.Shop;
 import com.jotamarti.golocal.Models.User;
 import com.jotamarti.golocal.Repositories.ClientRepository;
 import com.jotamarti.golocal.Repositories.UserRepository;
@@ -48,25 +45,20 @@ public class AuthActivityViewModel extends ViewModel {
         clientRepository = new ClientRepository();
         userRepository = new UserRepository();
         backendError = clientRepository.getBackendError();
-        authError = userRepository.getLoginUserInAuthServiceError();
+        authError = userRepository.getAuthServiceError();
         dataStorage = new DataStorage(App.getContext());
     }
 
     // Manage Backend
+    public void getUserFromBackend(String uid){
+        this.currentUser = userRepository.getUserFromBackend(uid);
+    }
+
     public LiveData<User> getCurrentUser() {
         if (currentUser == null) {
             currentUser = new MutableLiveData<User>();
         }
         return this.currentUser;
-    }
-
-    public void getNewClient(String uid){
-        //this.currentUser = clientRepository.getUser(uid);
-    }
-
-    public void getNewShop(String uid){
-        // TODO: Cambiar por el backend de la tienda
-        //this.currentUser = clientRepository.getUser(uid);
     }
 
     public LiveData<BackendErrors> getBackendError(){

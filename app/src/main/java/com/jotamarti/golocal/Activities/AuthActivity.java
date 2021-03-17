@@ -54,10 +54,6 @@ public class AuthActivity extends AppCompatActivity {
     private Button btnAuthActivity;
     private Button btnGivePermission;
 
-    private String previousFirebaseUid = "";
-    private boolean eventHandled = false;
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -120,6 +116,33 @@ public class AuthActivity extends AppCompatActivity {
         observeFirebaseUid();
     }
 
+    private void observeFirebaseUid() {
+        authActivityViewModel.getFirebaseUserUid().observe(this, (String userUid) -> {
+            Log.d(TAG, "Firebase UID incoming:" + userUid);
+            if (!userUid.isEmpty()) {
+                if (!checkBoxRegister.isChecked()) {
+                    // If the user is not trying to register we ask the backend for that user
+                    getUserFromBackend(userUid);
+                } else {
+                    CustomToast.showToast(AuthActivity.this, getString(R.string.error_email_already_use), CustomToast.mode.SHORTER);
+                }
+            }
+            authActivityViewModel.getFirebaseUserUid().removeObservers(this);
+        });
+    }
+
+    private void getUserFromBackend(String userUid) {
+        authActivityViewModel.getUserFromBackend(userUid);
+        observeUserFromBackend();
+    }
+
+    private void observeUserFromBackend() {
+        authActivityViewModel.getCurrentUser().observe(this, (User currentUser) -> {
+            showMainActivity(currentUser);
+            authActivityViewModel.getCurrentUser().removeObservers(this);
+        });
+    }
+
     private void manageAuthErrors() {
         authActivityViewModel.getAuthError().observe(this, (AuthErrors authError) -> {
             switch (authError) {
@@ -176,43 +199,9 @@ public class AuthActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    private void observeFirebaseUid() {
-        authActivityViewModel.getFirebaseUserUid().observe(this, (String userUid) -> {
-            Log.d(TAG, "Me ha llegado el firebaseUid:" + userUid);
-            if (!userUid.isEmpty()) {
-                if (!checkBoxRegister.isChecked()) {
-                    getUserFromBackend(userUid);
-                } else {
-                    if (!userUid.equals(previousFirebaseUid)) {
-                        // We enter here in the remote case that a user trying to register puts the same password as an existing user
-                        CustomToast.showToast(AuthActivity.this, "El usuario ya existe", CustomToast.mode.SHORTER);
-                    }
 
 
-                }
-            }
-            authActivityViewModel.getFirebaseUserUid().removeObservers(this);
-        });
-    }
 
-    private void getUserFromBackend(String userUid) {
-        Log.d(TAG, "Entrando getUserFromBackend");
-        if (checkBoxShop.isChecked()) {
-            authActivityViewModel.getNewShop(userUid);
-        } else {
-            authActivityViewModel.getNewClient(userUid);
-        }
-        observeUserFromBackend();
-    }
-
-    private void observeUserFromBackend() {
-        Log.d(TAG, "He llegado al observeUserFromBackend");
-        authActivityViewModel.getCurrentUser().observe(this, (User currentUser) -> {
-            Log.d(TAG, "Entro en observeUserFromBackend");
-            showMainActivity(currentUser);
-            authActivityViewModel.getCurrentUser().removeObservers(this);
-        });
-    }
 
     private void showMainActivity(User user) {
         if (switchRemember.isChecked()) {
@@ -252,7 +241,7 @@ public class AuthActivity extends AppCompatActivity {
                     }
                     handlePermissionGranted();
                 } else {
-                    CustomToast.showToast(this, "Permission not granted", CustomToast.mode.LONGER);
+                    CustomToast.showToast(this, getString(R.string.error_failed_get_privileges), CustomToast.mode.LONGER);
                 }
             }
         }

@@ -1,11 +1,9 @@
 package com.jotamarti.golocal.ViewModels;
 
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.google.firebase.auth.FirebaseUser;
-import com.jotamarti.golocal.Models.Client;
 import com.jotamarti.golocal.Models.User;
 import com.jotamarti.golocal.Repositories.ClientRepository;
 import com.jotamarti.golocal.Repositories.UserRepository;
@@ -34,8 +32,12 @@ public class ClientConfigurationViewModel extends ViewModel {
     }
 
     // Backend
-    public void registerClientInBackend(String uid, String avatar){
-        client = clientRepository.getUser(uid, avatar);
+    public void registerClientInBackend(String uid, String avatar, String nickName){
+        client = clientRepository.registerClientInBackend(uid, avatar, nickName);
+    }
+
+    public void getClientFromBackend(String uid){
+        client = clientRepository.getClientFromBackend(uid);
     }
 
     public LiveData<User> getClient(){

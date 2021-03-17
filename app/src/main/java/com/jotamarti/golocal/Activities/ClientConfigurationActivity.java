@@ -56,8 +56,9 @@ public class ClientConfigurationActivity extends AppCompatActivity {
 
     private String email;
     private String password;
+    private String nickName;
 
-    String encoded;
+    private String encoded;
 
     // ViewModel
     private ClientConfigurationViewModel clientConfigurationViewModel;
@@ -93,6 +94,7 @@ public class ClientConfigurationActivity extends AppCompatActivity {
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                nickName = clientNickName.getText().toString();
                 clientConfigurationViewModel.registerClientInAuthService(email, password);
                 observeRegisteredUserInAuthService();
             }
@@ -109,7 +111,7 @@ public class ClientConfigurationActivity extends AppCompatActivity {
         clientConfigurationViewModel.getAuthUser().observe(this, (FirebaseUser firebaseUser) -> {
             this.firebaseUser = firebaseUser;
             // Si llegamos aqui hemos creado correctamente el usuario en firebase. Ahora tenemos que crearlo en nuestro backend.
-            clientConfigurationViewModel.registerClientInBackend(firebaseUser.getUid(), encoded);
+            clientConfigurationViewModel.registerClientInBackend(firebaseUser.getUid(), encoded, nickName);
             observeRegisteredUserInBackend();
             clientConfigurationViewModel.getAuthUser().removeObservers(this);
         });
