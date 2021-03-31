@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.google.firebase.auth.FirebaseUser;
+import com.jotamarti.golocal.Models.Client;
 import com.jotamarti.golocal.Models.User;
 import com.jotamarti.golocal.UseCases.Users.UserCallbacks;
 import com.jotamarti.golocal.UseCases.Users.UserRepositoryFactory;
@@ -13,7 +14,11 @@ import com.jotamarti.golocal.UseCases.Users.UserUseCases;
 import com.jotamarti.golocal.Utils.Errors.AuthErrors;
 import com.jotamarti.golocal.Utils.Errors.BackendErrors;
 
+import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.net.MalformedURLException;
+import java.net.URL;
 
 public class UserRepository implements UserRepositoryFactory {
 
@@ -27,7 +32,7 @@ public class UserRepository implements UserRepositoryFactory {
     private MutableLiveData<FirebaseUser> fireBaseUserRegistered = new MutableLiveData<>();
 
     // Backend
-    private MutableLiveData<User> user = new MutableLiveData<>();
+    private MutableLiveData<User> backendUser = new MutableLiveData<>();
     private MutableLiveData<BackendErrors> backendErrorGetUser = new MutableLiveData<>();
 
     public UserRepository() {
@@ -40,7 +45,19 @@ public class UserRepository implements UserRepositoryFactory {
         userUsecases.getUserFromBackend(uid, new UserCallbacks.onResponseCallBackGetUserFromBackend() {
             @Override
             public void onResponse(JSONObject jsonObject) {
-                // TODO: Coger el user del backend, ver si es cliente o tienda y devolverlo
+                User user = new Client();
+
+                try {
+                    String uid = jsonObject.getString("uid");
+                    String url = jsonObject.getString("avatar");
+                    String nickName = jsonObject.getString("nick");
+                    user.setAvatar(new URL(url));
+                    user.setUserUid(uid);
+                    ((Client)user).setUserName(nickName);
+                    backendUser.setValue(user);
+                } catch (JSONException | MalformedURLException e) {
+                    backendErrorGetUser.setValue(BackendErrors.CLIENT_ERROR);
+                }
             }
 
             @Override
@@ -48,7 +65,7 @@ public class UserRepository implements UserRepositoryFactory {
                 backendErrorGetUser.setValue(backendError);
             }
         });
-        return user;
+        return backendUser;
     }
 
     // Auth Service

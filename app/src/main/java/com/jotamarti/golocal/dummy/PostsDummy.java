@@ -28,11 +28,24 @@ public class PostsDummy {
 
     private static final int COUNT = 25;
 
+    public static void generateContent(String companyId) {
+        // Add some sample items.
+        for (int i = 1; i <= COUNT; i++) {
+            addItem(createDummyItem(i, companyId));
+        }
+    }
+
     public static void generateContent() {
         // Add some sample items.
         for (int i = 1; i <= COUNT; i++) {
             addItem(createDummyItem(i));
         }
+    }
+
+    public static List<Post> getITems(String companyId){
+        ITEMS.clear();
+        generateContent(companyId);
+        return ITEMS;
     }
 
     public static List<Post> getITems(){
@@ -46,6 +59,16 @@ public class PostsDummy {
         ITEM_MAP.put(item.getPostId(), item);
     }
 
+    private static Post createDummyItem(int position, String companyId) {
+        URL url = null;
+        try {
+            url = new URL("https://assets.thehansindia.com/h-upload/feeds/2019/07/19/197487-1.jpg");
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        return new Post(url, "Naranjas " + position, "buenas naranjas", companyId, String.valueOf(position));
+    }
+
     private static Post createDummyItem(int position) {
         URL url = null;
         try {
@@ -53,7 +76,7 @@ public class PostsDummy {
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
-        return new Post(url, "Naranjas " + position, "buenas naranjas", String.valueOf((position+100)), String.valueOf(position));
+        return new Post(url, "Naranjas " + position, "buenas naranjas", "1234", String.valueOf(position));
     }
 
     private static String makeDetails(int position) {

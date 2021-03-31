@@ -25,7 +25,6 @@ import android.widget.ImageView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseUser;
-import com.jotamarti.golocal.Models.Client;
 import com.jotamarti.golocal.Models.User;
 import com.jotamarti.golocal.R;
 import com.jotamarti.golocal.Utils.CustomToast;
@@ -58,7 +57,7 @@ public class ClientConfigurationActivity extends AppCompatActivity {
     private String password;
     private String nickName;
 
-    private String encoded;
+    private String imageBase64;
 
     // ViewModel
     private ClientConfigurationViewModel clientConfigurationViewModel;
@@ -111,7 +110,7 @@ public class ClientConfigurationActivity extends AppCompatActivity {
         clientConfigurationViewModel.getAuthUser().observe(this, (FirebaseUser firebaseUser) -> {
             this.firebaseUser = firebaseUser;
             // Si llegamos aqui hemos creado correctamente el usuario en firebase. Ahora tenemos que crearlo en nuestro backend.
-            clientConfigurationViewModel.registerClientInBackend(firebaseUser.getUid(), encoded, nickName);
+            clientConfigurationViewModel.registerClientInBackend(firebaseUser.getUid(), imageBase64, nickName);
             observeRegisteredUserInBackend();
             clientConfigurationViewModel.getAuthUser().removeObservers(this);
         });
@@ -193,8 +192,8 @@ public class ClientConfigurationActivity extends AppCompatActivity {
                     ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                     imagen.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
                     byte[] byteArray = byteArrayOutputStream.toByteArray();
-                    encoded = Base64.encodeToString(byteArray, Base64.DEFAULT);
-                    Log.d(TAG, encoded);
+                    imageBase64 = Base64.encodeToString(byteArray, Base64.DEFAULT);
+                    Log.d(TAG, imageBase64);
                     checkAllDataInserted();
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();

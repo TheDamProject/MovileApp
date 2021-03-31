@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -38,7 +39,9 @@ public class MainActivity extends AppCompatActivity {
 
         initializeUi();
         manageFragmentSelected();
-        setUserInViewModel();
+        if(caller.equals("AuthActivity")) {
+            setUserInViewModel();
+        }
         manageChangeTitle();
 
     }
@@ -86,6 +89,8 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+
+
     private void setCurrentFragment(Fragment fragment) {
         getSupportFragmentManager().beginTransaction().replace(R.id.MainActivity_fragment_parent, fragment).commit();
     }
@@ -95,6 +100,8 @@ public class MainActivity extends AppCompatActivity {
 
         mainActivityViewModel.setUser(user);
         mainActivityViewModel.setPosts();
+        mainActivityViewModel.setShops();
+
         /*final Observer<List<Post>> observador = new Observer<List<Post>>() {
             @Override
             public void onChanged(List<Post> posts) {

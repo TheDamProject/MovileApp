@@ -1,5 +1,6 @@
 package com.jotamarti.golocal.Adapters;
 
+import androidx.lifecycle.ViewModel;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
@@ -14,7 +15,9 @@ import android.widget.TextView;
 
 import com.jotamarti.golocal.Activities.PostDetailActivity;
 import com.jotamarti.golocal.Models.Post;
+import com.jotamarti.golocal.Models.Shop;
 import com.jotamarti.golocal.R;
+import com.jotamarti.golocal.ViewModels.MainActivityViewModel;
 import com.jotamarti.golocal.dummy.DummyContent.DummyItem;
 import com.squareup.picasso.Picasso;
 
@@ -27,8 +30,10 @@ import java.util.List;
 public class PostsRecyclerViewAdapter extends RecyclerView.Adapter<PostsRecyclerViewAdapter.ViewHolder> {
 
     private final List<Post> postsList;
-    private final String TAG = "POSTS_REC_VIEW_ADAPTER";
+    private List<Shop> shopList;
+    private final String TAG = "PostsRecyclerVAdapter";
     private Context context;
+    private MainActivityViewModel model;
 
     public PostsRecyclerViewAdapter(List<Post> items, Context context) {
         postsList = items;
@@ -54,6 +59,20 @@ public class PostsRecyclerViewAdapter extends RecyclerView.Adapter<PostsRecycler
                 Log.d(TAG, "Hello from POST REC VIEW ADAPTER");
                 Intent intent = new Intent(context, PostDetailActivity.class);
                 intent.putExtra("post", postsList.get(position));
+                intent.putExtra("caller", "MainActivity");
+
+                String shopId = postsList.get(position).getCompanyId();
+                Shop theShop = null;
+                Log.d(TAG, String.valueOf(shopList.size()));
+                for (int i = 0; i < shopList.size(); i++){
+                    Log.d(TAG, "El shop actual ID " + shopList.get(i).getUserUid());
+                    Log.d(TAG, "El shopId" + shopId);
+                    if(shopList.get(i).getUserUid().equals(shopId)){
+                        theShop = shopList.get(i);
+                        break;
+                    }
+                }
+                intent.putExtra("shop", theShop);
                 context.startActivity(intent);
             }
         });
@@ -62,6 +81,10 @@ public class PostsRecyclerViewAdapter extends RecyclerView.Adapter<PostsRecycler
     @Override
     public int getItemCount() {
         return postsList.size();
+    }
+
+    public void setShopList(List<Shop> shopList){
+        this.shopList = shopList;
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

@@ -43,7 +43,7 @@ public class UserUseCases implements UserApi {
     @Override
     public void getUserFromBackend(String uid, UserCallbacks.onResponseCallBackGetUserFromBackend onResponseCallBackGetUserFromBackend) {
         String baseUrl = String.valueOf(App.getContext().getResources().getText(R.string.api_base_url));
-        String uri = baseUrl + "/api/user/" + uid;
+        String uri = baseUrl + "/api/client/5";
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, uri, null, new Response.Listener<JSONObject>() {
             @Override
