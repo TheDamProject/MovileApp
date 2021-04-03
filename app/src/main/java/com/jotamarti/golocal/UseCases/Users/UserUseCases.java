@@ -130,6 +130,7 @@ public class UserUseCases implements UserApi {
                         if (task.isSuccessful()) {
                             Log.d(TAG, "signInWithEmail:success");
                             FirebaseUser user = task.getResult().getUser();
+                            Log.d(TAG, "Me ha llegado el firebase user con el siguiente UID: " + user.getUid());
                             onResponseCallBackLoginUserInAuthService.onResponse(user.getUid());
                         } else {
                             Log.w(TAG, "signInWithEmail:failure", task.getException());
@@ -156,6 +157,7 @@ public class UserUseCases implements UserApi {
                         if (task.isSuccessful()) {
                             Log.d(TAG, "createUserWithEmail:success");
                             FirebaseUser user = task.getResult().getUser();
+                            Log.d(TAG, "Me ha llegado el firebase user con el siguiente UID: " + user.getUid());
                             onResponseCallBackRegisterUserInAuthService.onResponse(user);
                         } else {
                             Log.w(TAG, "createUserWithEmail:failure", task.getException());

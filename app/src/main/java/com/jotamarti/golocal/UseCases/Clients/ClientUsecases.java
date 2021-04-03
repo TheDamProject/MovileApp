@@ -54,7 +54,7 @@ public class ClientUsecases implements ClientApi {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                if(error == null) {
+                if (error == null) {
                     onResponseCallBackGetClient.onErrorResponse(BackendErrors.SERVER_ERROR);
                 }
                 Log.d(TAG, error.toString());
@@ -96,11 +96,12 @@ public class ClientUsecases implements ClientApi {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Log.d(TAG, "Ha saltado el onErrorResponse de registerClientInBackend");
-                if(error == null) {
+                if (error == null || error.networkResponse == null) {
                     onResponseRegisterClientInBackend.onErrorResponse(BackendErrors.SERVER_ERROR);
+                } else {
+                    BackendErrors httpNetworkError = BackendErrors.getBackendError(error.networkResponse.statusCode);
+                    onResponseRegisterClientInBackend.onErrorResponse(httpNetworkError);
                 }
-                BackendErrors httpNetworkError = BackendErrors.getBackendError(error.networkResponse.statusCode);
-                onResponseRegisterClientInBackend.onErrorResponse(httpNetworkError);
             }
         }) {
             @Override
@@ -112,7 +113,7 @@ public class ClientUsecases implements ClientApi {
             }
 
         };
-        jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(0, 1, 1f));
+        jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(2000, 1, 2f));
         RequestQueueSingleton.getInstance().addToRequestQueue(jsonObjectRequest);
 
     }

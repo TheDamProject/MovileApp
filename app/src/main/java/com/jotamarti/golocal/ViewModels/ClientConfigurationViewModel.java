@@ -3,6 +3,7 @@ package com.jotamarti.golocal.ViewModels;
 import android.text.TextWatcher;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.google.firebase.auth.FirebaseUser;
@@ -38,7 +39,7 @@ public class ClientConfigurationViewModel extends ViewModel {
     private LiveData<FirebaseUser> authUserRegistered;
     private LiveData<AuthErrors> authError;
 
-    public ClientConfigurationViewModel(){
+    public ClientConfigurationViewModel() {
         userRepository = new UserRepository();
         clientRepository = new ClientRepository();
         backendError = clientRepository.getBackendError();
@@ -46,28 +47,31 @@ public class ClientConfigurationViewModel extends ViewModel {
     }
 
     // Backend
-    public void registerClientInBackend(String uid, String avatar, String nickName){
+    public void registerClientInBackend(String uid, String avatar, String nickName) {
         client = clientRepository.registerClientInBackend(uid, avatar, nickName);
     }
 
-    public LiveData<User> getClient(){
+    public LiveData<User> getClient() {
         return client;
     }
 
-    public LiveData<BackendErrors> getBackendError(){
+    public LiveData<BackendErrors> getBackendError() {
         return this.backendError;
     }
 
     // Auth
-    public void registerClientInAuthService(String email, String password){
-       authUserRegistered = userRepository.registerUserInAuthService(email, password);
+    public void registerClientInAuthService(String email, String password) {
+        authUserRegistered = userRepository.registerUserInAuthService(email, password);
     }
 
-    public LiveData<FirebaseUser> getAuthUser(){
+    public LiveData<FirebaseUser> getAuthUser() {
+        if(authUserRegistered == null){
+            authUserRegistered = new MutableLiveData<>();
+        }
         return authUserRegistered;
     }
 
-    public LiveData<AuthErrors> getAuthError(){
+    public LiveData<AuthErrors> getAuthError() {
         return authError;
     }
 

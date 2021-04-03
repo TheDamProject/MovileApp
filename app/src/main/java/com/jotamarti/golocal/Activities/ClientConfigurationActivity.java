@@ -73,6 +73,7 @@ public class ClientConfigurationActivity extends AppCompatActivity {
         initializeTextWatcher();
         initializeUi();
 
+
         btnChoosePicture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -81,7 +82,6 @@ public class ClientConfigurationActivity extends AppCompatActivity {
                 } else {
                     askCameraPermissions();
                 }
-
             }
         });
 
@@ -98,6 +98,8 @@ public class ClientConfigurationActivity extends AppCompatActivity {
     private void observeRegisteredUserInAuthService(){
         clientConfigurationViewModel.getAuthUser().observe(this, (FirebaseUser firebaseUser) -> {
             clientConfigurationViewModel.firebaseUser = firebaseUser;
+            Log.d(TAG, "UID recibido por el observador " + firebaseUser.getUid());
+            Log.d(TAG, "UID recibido en el ViewModel " + clientConfigurationViewModel.firebaseUser.getUid());
             // Si llegamos aqui hemos creado correctamente el usuario en firebase. Ahora tenemos que crearlo en nuestro backend.
             clientConfigurationViewModel.registerClientInBackend(firebaseUser.getUid(), clientConfigurationViewModel.imageBase64, clientConfigurationViewModel.nickName);
             observeRegisteredUserInBackend();
@@ -135,6 +137,7 @@ public class ClientConfigurationActivity extends AppCompatActivity {
                     CustomToast.showToast(ClientConfigurationActivity.this, getString(R.string.error_register_generic), CustomToast.mode.SHORTER);
             }
             // If we reach this point we delete the user in firebase because we are not able to register it in our backend
+            Log.d(TAG, "El uid del cliente a borrar " + clientConfigurationViewModel.firebaseUser.getUid());
             clientConfigurationViewModel.firebaseUser.delete();
         });
     }

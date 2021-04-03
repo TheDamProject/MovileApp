@@ -10,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
@@ -124,10 +125,14 @@ public class AuthActivity extends AppCompatActivity {
 
     private void observeFirebaseUid() {
         authActivityViewModel.getFirebaseUserUid().observe(this, (String userUid) -> {
+            Log.d(TAG,"Me ha llegaod el siguiente UID " + userUid);
             if (!userUid.isEmpty()) {
                 if (!checkBoxRegister.isChecked()) {
+                    //TODO cambiar esto para que logee, quitar lo del manageuserinput
                     // If the user is not trying to register we ask the backend for that user
-                    getUserFromBackend(userUid);
+                    //getUserFromBackend(userUid);
+                    manageUserInput(true);
+
                 } else {
                     CustomToast.showToast(AuthActivity.this, getString(R.string.error_email_already_use), CustomToast.mode.LONGER);
                 }

@@ -32,7 +32,7 @@ public class UserRepository implements UserRepositoryFactory {
     // Auth
     private MutableLiveData<String> userLoggedUid = new MutableLiveData<>();
     private MutableLiveData<AuthErrors> authError = new MutableLiveData<>();
-    private MutableLiveData<FirebaseUser> fireBaseUserRegistered = new MutableLiveData<>();
+    private MutableLiveData<FirebaseUser> fireBaseUserRegistered;
 
     // Backend
     private MutableLiveData<User> backendUser = new MutableLiveData<>();
@@ -42,6 +42,7 @@ public class UserRepository implements UserRepositoryFactory {
 
     public UserRepository() {
         userUsecases = new UserUseCases();
+        fireBaseUserRegistered = new MutableLiveData<>();
     }
 
     // Backend
@@ -99,6 +100,7 @@ public class UserRepository implements UserRepositoryFactory {
     // Auth Service
     @Override
     public LiveData<String> loginUserInAuthService(String email, String password) {
+        userLoggedUid = new MutableLiveData<>();
         userUsecases.loginUserInAuthService(email, password, new UserCallbacks.onResponseCallBackLoginUserInAuthService() {
             @Override
             public void onResponse(String uid) {
@@ -115,11 +117,12 @@ public class UserRepository implements UserRepositoryFactory {
 
     @Override
     public LiveData<FirebaseUser> registerUserInAuthService(String email, String password) {
+        fireBaseUserRegistered = new MutableLiveData<>();
         userUsecases.registerUserInAuthService(email, password, new UserCallbacks.onResponseCallBackRegisterUserInAuthService() {
             @Override
             public void onResponse(FirebaseUser firebaseUser) {
-                Log.d(TAG, "He llegado el repositorio");
-                Log.d(TAG, firebaseUser.getEmail());
+                Log.d(TAG, "Estoy haciendo un setValue");
+                Log.d(TAG, firebaseUser.getUid());
                 fireBaseUserRegistered.setValue(firebaseUser);
             }
 
