@@ -1,6 +1,5 @@
 package com.jotamarti.golocal.Adapters;
 
-import androidx.lifecycle.ViewModel;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
@@ -51,7 +50,7 @@ public class PostsRecyclerViewAdapter extends RecyclerView.Adapter<PostsRecycler
         //holder.mItem = postValues.get(position);
         holder.cardHeader.setText(postsList.get(position).getHeader());
         holder.cardMessage.setText(postsList.get(position).getMessage());
-        Picasso.get().load(postsList.get(position).getImage().toString()).into(holder.postImage);
+        Picasso.get().load(postsList.get(position).getImageUrl().toString()).into(holder.postImage);
         holder.postImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
         holder.parent.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -61,7 +60,7 @@ public class PostsRecyclerViewAdapter extends RecyclerView.Adapter<PostsRecycler
                 intent.putExtra("post", postsList.get(position));
                 intent.putExtra("caller", "MainActivity");
 
-                String shopId = postsList.get(position).getCompanyId();
+                String shopId = postsList.get(position).getCompanyUid();
                 Shop theShop = null;
                 Log.d(TAG, String.valueOf(shopList.size()));
                 for (int i = 0; i < shopList.size(); i++){

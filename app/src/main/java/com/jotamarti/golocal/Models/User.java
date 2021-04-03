@@ -1,14 +1,16 @@
 package com.jotamarti.golocal.Models;
 
+import android.os.Parcelable;
+
 import java.io.Serializable;
 import java.net.URL;
 
-public abstract class User implements Serializable {
+public abstract class User implements Parcelable {
 
-    protected URL avatar;
+    protected String avatar;
     protected String userUid;
 
-    public User(URL avatar, String email, String userUid) {
+    public User(String avatar, String userUid) {
         this.avatar = avatar;
         this.userUid = userUid;
     }
@@ -17,11 +19,11 @@ public abstract class User implements Serializable {
 
     }
 
-    public URL getAvatar() {
+    public String getAvatar() {
         return avatar;
     }
 
-    public void setAvatar(URL avatar) {
+    public void setAvatar(String avatar) {
         this.avatar = avatar;
     }
 

@@ -1,40 +1,50 @@
 package com.jotamarti.golocal.Models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.android.gms.maps.model.LatLng;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
-import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
-public class Shop extends User implements Serializable {
+public class Shop extends User implements Parcelable {
 
-    private transient LatLng cordinates;
+    private transient LatLng coordinates;
     private String description;
     private String telNumber;
     private boolean isWhatsapp;
     private List<Post> shopPosts;
 
-    public Shop(URL avatar, String email, String userId, String telNumber, String description, boolean isWhatsapp, LatLng cordinates){
-        super(avatar, email, userId);
+    public Shop(String avatar, String userUid, String telNumber, String description, boolean isWhatsapp, LatLng coordinates, List<Post> shopPosts){
+        super(avatar, userUid);
         this.telNumber = telNumber;
         this.description = description;
         this.isWhatsapp = isWhatsapp;
-        this.cordinates = cordinates;
+        this.coordinates = coordinates;
+        this.shopPosts = shopPosts;
+    }
+
+    public Shop(Parcel parcel){
+        super(parcel.readString(), parcel.readString());
+        this.telNumber = parcel.readString();
+        this.description = parcel.readString();
+        this.isWhatsapp = parcel.readInt() == 1;
+        this.coordinates = parcel.readParcelable(LatLng.class.getClassLoader());
+        shopPosts = new ArrayList<>();
+        this.shopPosts = parcel.createTypedArrayList(Post.CREATOR);
     }
 
     public Shop(){
 
     }
 
-    public LatLng getCordinates() {
-        return cordinates;
+    public LatLng getCoordinates() {
+        return coordinates;
     }
 
-    public void setCordinates(LatLng cordinates) {
-        this.cordinates = cordinates;
+    public void setCoordinates(LatLng coordinates) {
+        this.coordinates = coordinates;
     }
 
     public String getDescription() {
@@ -69,16 +79,30 @@ public class Shop extends User implements Serializable {
         this.shopPosts = shopPosts;
     }
 
-    private void writeObject(ObjectOutputStream out) throws IOException {
-        out.defaultWriteObject();
-        out.writeDouble(cordinates.latitude);
-        out.writeDouble(cordinates.longitude);
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        in.defaultReadObject();
-        cordinates = new LatLng(in.readDouble(), in.readDouble());
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(avatar);
+        dest.writeString(userUid);
+        dest.writeString(telNumber);
+        dest.writeString(description);
+        dest.writeInt(isWhatsapp ? 1 : 0);
+        dest.writeParcelable(this.coordinates, flags);
+        dest.writeTypedList(shopPosts);
     }
 
+    public static final Parcelable.Creator<Shop> CREATOR
+            = new Parcelable.Creator<Shop>() {
+        public Shop createFromParcel(Parcel in) {
+            return new Shop(in);
+        }
 
+        public Shop[] newArray(int size) {
+            return new Shop[size];
+        }
+    };
 }

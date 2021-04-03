@@ -1,34 +1,42 @@
 package com.jotamarti.golocal.Models;
 
-import android.graphics.Bitmap;
+import android.os.Parcel;
+import android.os.Parcelable;
 
-import java.io.Serializable;
 import java.net.URL;
 
-public class Post implements Serializable {
+public class Post implements Parcelable {
 
-    private URL image;
+    private String imageUrl;
     private String header;
     private String message;
-    private String companyId;
+    private String companyUid;
     private String postId;
 
 
 
-    public Post(URL image, String header, String message, String companyId, String postId) {
-        this.image = image;
+    public Post(String imageUrl, String header, String message, String companyUid, String postId) {
+        this.imageUrl = imageUrl;
         this.header = header;
         this.message = message;
-        this.companyId = companyId;
+        this.companyUid = companyUid;
         this.postId = postId;
     }
 
-    public URL getImage() {
-        return image;
+    public Post(Parcel parcel){
+        this.header = parcel.readString();
+        this.message = parcel.readString();
+        this.companyUid = parcel.readString();
+        this.postId = parcel.readString();
+        this.imageUrl = parcel.readString();
     }
 
-    public void setImage(URL image) {
-        this.image = image;
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
     public String getHeader() {
@@ -47,12 +55,12 @@ public class Post implements Serializable {
         this.message = message;
     }
 
-    public String getCompanyId() {
-        return companyId;
+    public String getCompanyUid() {
+        return companyUid;
     }
 
-    public void setCompanyId(String companyId) {
-        this.companyId = companyId;
+    public void setCompanyUid(String companyUid) {
+        this.companyUid = companyUid;
     }
 
     public String getPostId() {
@@ -62,4 +70,30 @@ public class Post implements Serializable {
     public void setPostId(String postId) {
         this.postId = postId;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(header);
+        dest.writeString(message);
+        dest.writeString(companyUid);
+        dest.writeString(postId);
+        dest.writeString(imageUrl);
+
+    }
+
+    public static final Parcelable.Creator<Post> CREATOR
+            = new Parcelable.Creator<Post>() {
+        public Post createFromParcel(Parcel in) {
+            return new Post(in);
+        }
+
+        public Post[] newArray(int size) {
+            return new Post[size];
+        }
+    };
 }

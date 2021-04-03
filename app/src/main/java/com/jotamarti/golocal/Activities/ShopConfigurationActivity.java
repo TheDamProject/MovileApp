@@ -85,7 +85,7 @@ public class ShopConfigurationActivity extends AppCompatActivity {
             @Override
             public void onPlaceSelected(@NotNull Place place) {
                 // TODO: Get info about the selected place.
-                shop.setCordinates(place.getLatLng());
+                shop.setCoordinates(place.getLatLng());
                 if (!directionHasNumber(directionName)) {
                     // TODO: tendremos que manejar cuando el usuario mete
                     showInputNumber();

@@ -47,12 +47,7 @@ public class ShopsDummy {
 
     private static Shop createDummyItem(int position) {
         Random rand = new Random();
-        URL url = null;
-        try {
-            url = new URL("https://assets.thehansindia.com/h-upload/feeds/2019/07/19/197487-1.jpg");
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
+        String url = "https://assets.thehansindia.com/h-upload/feeds/2019/07/19/197487-1.jpg";
 
         Shop shop = new Shop();
         if(position == 1) {
@@ -74,7 +69,7 @@ public class ShopsDummy {
         int lang = (int) (Math.random() * (maxLangNumber - minLangNumber + 1) + maxLangNumber);
         lat = lat / 100000;
         lang = lang / 10000;
-        shop.setCordinates(new LatLng(lat, lang));
+        shop.setCoordinates(new LatLng(lat, lang));
 
 
         int numberTel = rand.nextInt(9999999);

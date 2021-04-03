@@ -37,7 +37,7 @@ public class ShopDetailActivity extends AppCompatActivity {
         FragmentTransaction transaction = manager.beginTransaction();
         Bundle bundle = new Bundle();
         bundle.putString("caller", "visit");
-        bundle.putSerializable("shop", visitShopViewModel.getShop());
+        bundle.putParcelable("shop", visitShopViewModel.getShop());
         transaction.add(R.id.activityShop_fragment_parent, ShopProfileFragment.class, bundle);
         transaction.addToBackStack(null);
         transaction.commit();

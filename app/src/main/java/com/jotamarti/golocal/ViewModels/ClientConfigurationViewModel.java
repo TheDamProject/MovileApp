@@ -1,9 +1,12 @@
 package com.jotamarti.golocal.ViewModels;
 
+import android.text.TextWatcher;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.google.firebase.auth.FirebaseUser;
+import com.jotamarti.golocal.Models.Shop;
 import com.jotamarti.golocal.Models.User;
 import com.jotamarti.golocal.Repositories.ClientRepository;
 import com.jotamarti.golocal.Repositories.UserRepository;
@@ -12,7 +15,18 @@ import com.jotamarti.golocal.UseCases.Users.UserRepositoryFactory;
 import com.jotamarti.golocal.Utils.Errors.AuthErrors;
 import com.jotamarti.golocal.Utils.Errors.BackendErrors;
 
+import java.util.ArrayList;
+
 public class ClientConfigurationViewModel extends ViewModel {
+
+    // Activity Data
+    public FirebaseUser firebaseUser;
+    public boolean avatarInserted = false;
+    public String email;
+    public String password;
+    public String nickName;
+    public String imageBase64;
+    public ArrayList<Shop> nearbyShops;
 
     // Backend
     private final ClientRepositoryFactory clientRepository;

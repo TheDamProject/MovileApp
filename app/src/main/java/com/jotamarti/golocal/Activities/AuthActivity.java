@@ -7,9 +7,9 @@ import androidx.appcompat.app.AppCompatDelegate;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
@@ -22,7 +22,12 @@ import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.jotamarti.golocal.App;
+import com.jotamarti.golocal.Models.Shop;
 import com.jotamarti.golocal.Models.User;
 import com.jotamarti.golocal.R;
 import com.jotamarti.golocal.SharedPreferences.UserPreferences;
@@ -30,6 +35,8 @@ import com.jotamarti.golocal.Utils.CustomToast;
 import com.jotamarti.golocal.Utils.Errors.AuthErrors;
 import com.jotamarti.golocal.Utils.Errors.BackendErrors;
 import com.jotamarti.golocal.ViewModels.AuthActivityViewModel;
+
+import java.util.List;
 
 public class AuthActivity extends AppCompatActivity {
 
@@ -49,6 +56,9 @@ public class AuthActivity extends AppCompatActivity {
     private CheckBox checkBoxShop;
     private Button btnAuthActivity;
     private Button btnGivePermission;
+    private CircularProgressIndicator spinnerLoading;
+
+    private FusedLocationProviderClient fusedLocationClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,7 +87,7 @@ public class AuthActivity extends AppCompatActivity {
                     return;
                 }
                 tryToLoginUser();
-                //TODO: Tendremos que desactivar el botón mientras consultamos en firebase
+                manageUserInput(false);
             }
         });
 
@@ -114,13 +124,12 @@ public class AuthActivity extends AppCompatActivity {
 
     private void observeFirebaseUid() {
         authActivityViewModel.getFirebaseUserUid().observe(this, (String userUid) -> {
-            Log.d(TAG, "Firebase UID incoming:" + userUid);
             if (!userUid.isEmpty()) {
                 if (!checkBoxRegister.isChecked()) {
                     // If the user is not trying to register we ask the backend for that user
                     getUserFromBackend(userUid);
                 } else {
-                    CustomToast.showToast(AuthActivity.this, getString(R.string.error_email_already_use), CustomToast.mode.SHORTER);
+                    CustomToast.showToast(AuthActivity.this, getString(R.string.error_email_already_use), CustomToast.mode.LONGER);
                 }
             }
             authActivityViewModel.getFirebaseUserUid().removeObservers(this);
@@ -134,8 +143,17 @@ public class AuthActivity extends AppCompatActivity {
 
     private void observeUserFromBackend() {
         authActivityViewModel.getCurrentUser().observe(this, (User currentUser) -> {
-            showMainActivity(currentUser);
+            authActivityViewModel.user = currentUser;
+            authActivityViewModel.getNearbyShops();
+            showMainActivity();
             authActivityViewModel.getCurrentUser().removeObservers(this);
+        });
+    }
+
+    private void observeListShopsFromBackend(){
+        authActivityViewModel.getNearbyShopsList().observe(this, (List<Shop> shopsNearby) -> {
+            showMainActivity();
+            authActivityViewModel.getNearbyShopsList().removeObservers(this);
         });
     }
 
@@ -152,7 +170,7 @@ public class AuthActivity extends AppCompatActivity {
                     break;
                 case EMAIL_NOT_FOUND:
                     if (checkBoxRegister.isChecked()) {
-                        // If we reach this point trying to register a new user it means that the email is avaliable to the new user
+                        // If we reach this point trying to register a new user it means that the email is available to the new user
                         showConfigActivity();
                     } else {
                         CustomToast.showToast(AuthActivity.this, getString(R.string.error_email_not_found), CustomToast.mode.SHORTER);
@@ -162,6 +180,7 @@ public class AuthActivity extends AppCompatActivity {
                     CustomToast.showToast(AuthActivity.this, getString(R.string.error_login_generic), CustomToast.mode.SHORTER);
                     break;
             }
+            manageUserInput(true);
         });
     }
 
@@ -177,6 +196,7 @@ public class AuthActivity extends AppCompatActivity {
                 default:
                     CustomToast.showToast(AuthActivity.this, getString(R.string.error_login_generic), CustomToast.mode.SHORTER);
             }
+            manageUserInput(true);
         });
     }
 
@@ -192,20 +212,18 @@ public class AuthActivity extends AppCompatActivity {
         }
         intent.putExtra("email", authActivityViewModel.getCurrentInsertedEmail());
         intent.putExtra("password", authActivityViewModel.getCurrentInsertedPassword());
+        intent.putExtra("nearbyShops", authActivityViewModel.getNearbyShopsList().getValue());
         startActivity(intent);
     }
 
-
-
-
-
-    private void showMainActivity(User user) {
+    private void showMainActivity() {
         if (switchRemember.isChecked()) {
             authActivityViewModel.setPreferences();
         }
         Intent intent = new Intent(AuthActivity.this, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        intent.putExtra("user", user);
+        intent.putExtra("user", authActivityViewModel.user);
+        intent.putParcelableArrayListExtra("nearbyShops", authActivityViewModel.getNearbyShopsList().getValue());
         intent.putExtra("caller", "AuthActivity");
         startActivity(intent);
     }
@@ -227,20 +245,8 @@ public class AuthActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case PERMISSIONS_REQUEST_ACCESS_LOCATION: {
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    if (!checkHaveLocationPermission()) {
-                        return;
-                    }
-                    handlePermissionGranted();
-                } else {
-                    CustomToast.showToast(this, getString(R.string.error_failed_get_privileges), CustomToast.mode.LONGER);
-                }
-            }
-        }
+    public void requestPermission() {
+        requestPermissions(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, PERMISSIONS_REQUEST_ACCESS_LOCATION);
     }
 
     private void handlePermissionGranted() {
@@ -250,8 +256,36 @@ public class AuthActivity extends AppCompatActivity {
         txtViewMessagePermission.setVisibility(View.INVISIBLE);
     }
 
-    public void requestPermission() {
-        requestPermissions(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, PERMISSIONS_REQUEST_ACCESS_LOCATION);
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case PERMISSIONS_REQUEST_ACCESS_LOCATION: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    if (!checkHaveLocationPermission()) {
+                        return;
+                    }
+                    handlePermissionGranted();
+                    getUserCoordinates();
+                } else {
+                    CustomToast.showToast(this, getString(R.string.error_failed_get_privileges), CustomToast.mode.LONGER);
+                }
+            }
+        }
+    }
+
+    private void getUserCoordinates() {
+        if (!checkHaveLocationPermission()) {
+            return;
+        }
+        fusedLocationClient.requestLocationUpdates(null, null);
+        fusedLocationClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
+            @Override
+            public void onSuccess(Location location) {
+                if (location != null){
+                    authActivityViewModel.userCoordinates = new LatLng(location.getLatitude(), location.getLongitude());
+                }
+            }
+        });
     }
 
     // SharedPreferences
@@ -288,7 +322,24 @@ public class AuthActivity extends AppCompatActivity {
         btnAuthActivity = findViewById(R.id.AuthActivity_btn);
         txtViewMessagePermission = findViewById(R.id.AuthActivity_txtView_askPermission);
         btnGivePermission = findViewById(R.id.AuthActivity_btn_askPermission);
+        spinnerLoading = findViewById(R.id.AuthActivity_spinner_loading);
         btnAuthActivity.setEnabled(false);
+        spinnerLoading.setVisibility(View.INVISIBLE);
+    }
+
+    public void manageUserInput(Boolean state){
+        btnAuthActivity.setEnabled(state);
+        btnGivePermission.setEnabled(state);
+        switchRemember.setEnabled(state);
+        editTxtPassword.setEnabled(state);
+        editTxtEmail.setEnabled(state);
+        checkBoxRegister.setEnabled(state);
+        checkBoxShop.setEnabled(state);
+        if(state){
+            spinnerLoading.setVisibility(View.INVISIBLE);
+        } else {
+            spinnerLoading.setVisibility(View.VISIBLE);
+        }
     }
 
     // Validations

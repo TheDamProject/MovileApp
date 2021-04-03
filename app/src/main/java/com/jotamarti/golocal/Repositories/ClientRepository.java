@@ -51,40 +51,17 @@ public class ClientRepository implements ClientRepositoryFactory {
             @Override
             public void onResponse(JSONObject json) {
                 try {
-                    // TODO: Aqui tendremos que ver que tipo de usuario es y pasarle a current user una shop o un client.
-                    JSONArray jsonArray = json.getJSONArray("results");
-                    JSONObject userObject = jsonArray.getJSONObject(0);
-                    JSONObject loginObject = userObject.getJSONObject("login");
-                    JSONObject pictureObject = userObject.getJSONObject("picture");
-                    String uid = loginObject.getString("uuid");
-                    String userName = loginObject.getString("username");
-                    String email = userObject.getString("email");
-                    String imageUrl = pictureObject.getString("medium");
-                    URL url;
-                    url = new URL(imageUrl);
+                    String uid = json.getString("uid");
+                    String userName = json.getString("nick");
+                    String imageUrl = json.getString("avatar");
 
-
-                    Runnable runnable = new Runnable() {
-                        @Override
-                        public void run() {
-                            Bitmap bitmap = null;
-                            InputStream inputStream = null;
-                            try {
-                                inputStream = new URL(imageUrl).openStream();
-                                bitmap = BitmapFactory.decodeStream(inputStream);
-                                User user = new Client(url, email, uid, userName);
-                                currentUser.postValue(user);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    };
-                    new Thread(runnable).start();
-                } catch (JSONException | MalformedURLException e) {
+                    User user = new Client(imageUrl, uid, userName);
+                    currentUser.postValue(user);
+                } catch (JSONException e) {
                     e.printStackTrace();
+                    haveHttpNetworkError.setValue(BackendErrors.CLIENT_ERROR);
                 }
             }
-
             @Override
             public void onErrorResponse(BackendErrors httpNetworkError) {
                 haveHttpNetworkError.setValue(httpNetworkError);
@@ -93,13 +70,13 @@ public class ClientRepository implements ClientRepositoryFactory {
         return currentUser;
     }
 
-    @Override
+    //TODO: Borrar esto por que tener el getUserFromBackend
+    /*@Override
     public LiveData<User> getClientFromBackend(String userUid) {
         userUsecases.getClientFromBackend(userUid, new ClientCallbacks.onResponseCallBackGetClient() {
             @Override
             public void onResponse(JSONObject json) {
                 try {
-                    // TODO: Aqui tendremos que ver que tipo de usuario es y pasarle a current user una shop o un client.
                     JSONArray jsonArray = json.getJSONArray("results");
                     JSONObject userObject = jsonArray.getJSONObject(0);
                     JSONObject loginObject = userObject.getJSONObject("login");
@@ -139,7 +116,7 @@ public class ClientRepository implements ClientRepositoryFactory {
             }
         });
         return currentUser;
-    }
+    }*/
 
     @Override
     public MutableLiveData<BackendErrors> getBackendError(){

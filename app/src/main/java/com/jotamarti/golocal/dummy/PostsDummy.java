@@ -60,22 +60,12 @@ public class PostsDummy {
     }
 
     private static Post createDummyItem(int position, String companyId) {
-        URL url = null;
-        try {
-            url = new URL("https://assets.thehansindia.com/h-upload/feeds/2019/07/19/197487-1.jpg");
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
+        String url = "https://assets.thehansindia.com/h-upload/feeds/2019/07/19/197487-1.jpg";
         return new Post(url, "Naranjas " + position, "buenas naranjas", companyId, String.valueOf(position));
     }
 
     private static Post createDummyItem(int position) {
-        URL url = null;
-        try {
-            url = new URL("https://assets.thehansindia.com/h-upload/feeds/2019/07/19/197487-1.jpg");
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
+        String url = "https://assets.thehansindia.com/h-upload/feeds/2019/07/19/197487-1.jpg";
         return new Post(url, "Naranjas " + position, "buenas naranjas", "1234", String.valueOf(position));
     }
 

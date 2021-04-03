@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.content.Intent;
-import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -17,7 +16,6 @@ import android.widget.TextView;
 import com.jotamarti.golocal.Models.Post;
 import com.jotamarti.golocal.Models.Shop;
 import com.jotamarti.golocal.R;
-import com.jotamarti.golocal.ViewModels.MainActivityViewModel;
 import com.jotamarti.golocal.ViewModels.PostDetailActivityViewModel;
 import com.squareup.picasso.Picasso;
 
@@ -55,7 +53,7 @@ public class PostDetailActivity extends AppCompatActivity {
         Log.d(TAG, "Imprimiendo post: " + postDetailActivityViewModel.getPost().getMessage());
         txtViewPostDetail.setText(postDetailActivityViewModel.getPost().getMessage());
         txtViewPostHeader.setText(postDetailActivityViewModel.getPost().getHeader());
-        Picasso.get().load(postDetailActivityViewModel.getPost().getImage().toString()).into(imageViewPostImage);
+        Picasso.get().load(postDetailActivityViewModel.getPost().getImageUrl().toString()).into(imageViewPostImage);
 
         btnVisitShop.setOnClickListener(new View.OnClickListener() {
             @Override

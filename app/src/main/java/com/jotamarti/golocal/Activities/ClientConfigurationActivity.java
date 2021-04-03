@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
@@ -23,8 +24,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseUser;
+import com.jotamarti.golocal.Models.Shop;
 import com.jotamarti.golocal.Models.User;
 import com.jotamarti.golocal.R;
 import com.jotamarti.golocal.Utils.CustomToast;
@@ -36,6 +43,7 @@ import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 
 public class ClientConfigurationActivity extends AppCompatActivity {
 
@@ -48,35 +56,22 @@ public class ClientConfigurationActivity extends AppCompatActivity {
     private Button btnSave;
     private EditText clientNickName;
 
-    private FirebaseUser firebaseUser;
-
     private TextWatcher textWatcher;
-    private boolean avatarInserted = false;
 
-    private String email;
-    private String password;
-    private String nickName;
 
-    private String imageBase64;
 
     // ViewModel
     private ClientConfigurationViewModel clientConfigurationViewModel;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_client_configuration);
 
-        Intent AuthActivityIntent = getIntent();
-
-        email = AuthActivityIntent.getStringExtra("email");
-        password = AuthActivityIntent.getStringExtra("password");
-
+        initializeViewModel();
+        getDataFromAuthActivity();
         initializeTextWatcher();
         initializeUi();
-        initializeViewModel();
 
         btnChoosePicture.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -93,24 +88,18 @@ public class ClientConfigurationActivity extends AppCompatActivity {
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                nickName = clientNickName.getText().toString();
-                clientConfigurationViewModel.registerClientInAuthService(email, password);
+                clientConfigurationViewModel.nickName = clientNickName.getText().toString();
+                clientConfigurationViewModel.registerClientInAuthService(clientConfigurationViewModel.email, clientConfigurationViewModel.password);
                 observeRegisteredUserInAuthService();
             }
         });
     }
 
-    private void initializeViewModel(){
-        clientConfigurationViewModel = new ViewModelProvider(this).get(ClientConfigurationViewModel.class);
-        manageBackendErrors();
-        manageAuthServiceErrors();
-    }
-
     private void observeRegisteredUserInAuthService(){
         clientConfigurationViewModel.getAuthUser().observe(this, (FirebaseUser firebaseUser) -> {
-            this.firebaseUser = firebaseUser;
+            clientConfigurationViewModel.firebaseUser = firebaseUser;
             // Si llegamos aqui hemos creado correctamente el usuario en firebase. Ahora tenemos que crearlo en nuestro backend.
-            clientConfigurationViewModel.registerClientInBackend(firebaseUser.getUid(), imageBase64, nickName);
+            clientConfigurationViewModel.registerClientInBackend(firebaseUser.getUid(), clientConfigurationViewModel.imageBase64, clientConfigurationViewModel.nickName);
             observeRegisteredUserInBackend();
             clientConfigurationViewModel.getAuthUser().removeObservers(this);
         });
@@ -125,11 +114,14 @@ public class ClientConfigurationActivity extends AppCompatActivity {
 
     private void showMainActivity(User client) {
         Intent intent = new Intent(ClientConfigurationActivity.this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         intent.putExtra("user", client);
+        intent.putParcelableArrayListExtra("nearbyShops", clientConfigurationViewModel.nearbyShops);
         intent.putExtra("caller", "ClientConfigurationActivity");
         startActivity(intent);
     }
 
+    // Errors handling
     private void manageBackendErrors(){
         clientConfigurationViewModel.getBackendError().observe(this, (BackendErrors error) -> {
             switch (error){
@@ -142,8 +134,8 @@ public class ClientConfigurationActivity extends AppCompatActivity {
                 default:
                     CustomToast.showToast(ClientConfigurationActivity.this, getString(R.string.error_register_generic), CustomToast.mode.SHORTER);
             }
-            // If we reach this point we delete the user in firebase becasue we are not able to regiter it in our backend
-            firebaseUser.delete();
+            // If we reach this point we delete the user in firebase because we are not able to register it in our backend
+            clientConfigurationViewModel.firebaseUser.delete();
         });
     }
 
@@ -153,16 +145,7 @@ public class ClientConfigurationActivity extends AppCompatActivity {
         });
     }
 
-    private void initializeUi(){
-        setTitle(getString(R.string.ClientConfigurationActivity_title));
-        clientAvatar = findViewById(R.id.ClientConfigurationActivity_imageView_userAvatar);
-        btnChoosePicture = findViewById(R.id.ClientConfigurationActivity_btn_choosePicture);
-        btnSave = findViewById(R.id.ClientConfigurationActivity_btn_save);
-        clientNickName = findViewById(R.id.ClientConfigurationActivity_editText_userNickname);
-        clientNickName.addTextChangedListener(textWatcher);
-        btnSave.setEnabled(false);
-    }
-
+    // Permission and camera handlers
     private Boolean haveCameraPermissions() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             return false;
@@ -173,6 +156,17 @@ public class ClientConfigurationActivity extends AppCompatActivity {
 
     private void askCameraPermissions() {
         requestPermissions(new String[]{Manifest.permission.CAMERA}, PERMISSIONS_REQUEST_CAMERA);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == PERMISSIONS_REQUEST_CAMERA) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                CropImage.startPickImageActivity(ClientConfigurationActivity.this);
+            } else {
+                CustomToast.showToast(this, getString(R.string.error_failed_get_privileges), CustomToast.mode.LONGER);
+            }
+        }
     }
 
     @Override
@@ -192,14 +186,13 @@ public class ClientConfigurationActivity extends AppCompatActivity {
                     ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                     imagen.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
                     byte[] byteArray = byteArrayOutputStream.toByteArray();
-                    imageBase64 = Base64.encodeToString(byteArray, Base64.DEFAULT);
-                    Log.d(TAG, imageBase64);
+                    clientConfigurationViewModel.imageBase64 = Base64.encodeToString(byteArray, Base64.DEFAULT);
                     checkAllDataInserted();
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
                 clientAvatar.setImageURI(result.getUri());
-                avatarInserted = true;
+                clientConfigurationViewModel.avatarInserted = true;
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
@@ -209,23 +202,37 @@ public class ClientConfigurationActivity extends AppCompatActivity {
         CropImage.activity(imageUri).setGuidelines(CropImageView.Guidelines.ON).setMultiTouchEnabled(true).setAspectRatio(4, 4).setCropShape(CropImageView.CropShape.OVAL).start(this);
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == PERMISSIONS_REQUEST_CAMERA) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                CropImage.startPickImageActivity(ClientConfigurationActivity.this);
-            } else {
-                CustomToast.showToast(this, "Fail to get permission", CustomToast.mode.LONGER);
-            }
-        }
-    }
-
     private void checkAllDataInserted() {
-        if (clientNickName.getText().toString().length() > 0 && avatarInserted) {
+        if (clientNickName.getText().toString().length() > 0 && clientConfigurationViewModel.avatarInserted) {
             btnSave.setEnabled(true);
         } else {
             btnSave.setEnabled(false);
         }
+    }
+
+    // Initialization
+    private void initializeUi(){
+        setTitle(getString(R.string.ClientConfigurationActivity_title));
+        clientAvatar = findViewById(R.id.ClientConfigurationActivity_imageView_userAvatar);
+        btnChoosePicture = findViewById(R.id.ClientConfigurationActivity_btn_choosePicture);
+        btnSave = findViewById(R.id.ClientConfigurationActivity_btn_save);
+        clientNickName = findViewById(R.id.ClientConfigurationActivity_editText_userNickname);
+        clientNickName.addTextChangedListener(textWatcher);
+        btnSave.setEnabled(false);
+    }
+
+
+    private void initializeViewModel(){
+        clientConfigurationViewModel = new ViewModelProvider(this).get(ClientConfigurationViewModel.class);
+        manageBackendErrors();
+        manageAuthServiceErrors();
+    }
+
+    private void getDataFromAuthActivity() {
+        Intent AuthActivityIntent = getIntent();
+        clientConfigurationViewModel.email = AuthActivityIntent.getStringExtra("email");
+        clientConfigurationViewModel.password = AuthActivityIntent.getStringExtra("password");
+        clientConfigurationViewModel.nearbyShops = AuthActivityIntent.getParcelableExtra("nearbyShops");
     }
 
     private void initializeTextWatcher() {

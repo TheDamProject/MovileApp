@@ -4,7 +4,9 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.jotamarti.golocal.App;
+import com.jotamarti.golocal.Models.Shop;
 import com.jotamarti.golocal.Models.User;
 import com.jotamarti.golocal.Repositories.ClientRepository;
 import com.jotamarti.golocal.Repositories.UserRepository;
@@ -14,6 +16,9 @@ import com.jotamarti.golocal.UseCases.Clients.ClientRepositoryFactory;
 import com.jotamarti.golocal.UseCases.Users.UserRepositoryFactory;
 import com.jotamarti.golocal.Utils.Errors.AuthErrors;
 import com.jotamarti.golocal.Utils.Errors.BackendErrors;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class AuthActivityViewModel extends ViewModel {
@@ -26,10 +31,13 @@ public class AuthActivityViewModel extends ViewModel {
     private final ClientRepositoryFactory clientRepository;
     private LiveData<User> currentUser;
     private LiveData<BackendErrors> backendError;
+    private LiveData<ArrayList<Shop>> nearbyShops;
 
     // Activity Views data
-    private String currentInsertedEmail;
-    private String currentInsertedPassword;
+    public String currentInsertedEmail;
+    public String currentInsertedPassword;
+    public LatLng userCoordinates;
+    public User user;
 
     // Auth
     private final UserRepositoryFactory userRepository;
@@ -56,13 +64,24 @@ public class AuthActivityViewModel extends ViewModel {
 
     public LiveData<User> getCurrentUser() {
         if (currentUser == null) {
-            currentUser = new MutableLiveData<User>();
+            currentUser = new MutableLiveData<>();
         }
         return this.currentUser;
     }
 
     public LiveData<BackendErrors> getBackendError(){
         return this.backendError;
+    }
+
+    public void getNearbyShops() {
+        this.nearbyShops = userRepository.getShopsNearby(String.valueOf(userCoordinates.latitude), String.valueOf(userCoordinates.longitude));
+    }
+
+    public LiveData<ArrayList<Shop>> getNearbyShopsList(){
+        if (nearbyShops == null) {
+            nearbyShops = new MutableLiveData<>();
+        }
+        return this.nearbyShops;
     }
 
     // Manage Auth

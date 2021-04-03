@@ -77,26 +77,28 @@ public class ClientUsecases implements ClientApi {
     @Override
     public void registerClientInBackend(String uid, String avatar, String nickName, ClientCallbacks.onResponseRegisterClientInBackend onResponseRegisterClientInBackend) {
         String baseUrl = String.valueOf(App.getContext().getResources().getText(R.string.api_base_url));
-        String uri = baseUrl + "/api/clients/add";
+        String uri = baseUrl + "/api/client/add";
 
         // Params
         Map<String, String> mParams = new HashMap<String, String>();
         mParams.put("uid", uid);
-        mParams.put("avatar", "data:image/png;base64," + avatar);
         mParams.put("nick", nickName);
+        mParams.put("avatar", "data:image/png;base64," + avatar);
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, uri, new JSONObject(mParams), new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
+                Log.d(TAG, "Ha saltado el onResponse de registerClientInBackend");
+                Log.d(TAG, response.toString());
                 onResponseRegisterClientInBackend.onResponse(response);
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                Log.d(TAG, "Ha saltado el onErrorResponse de registerClientInBackend");
                 if(error == null) {
                     onResponseRegisterClientInBackend.onErrorResponse(BackendErrors.SERVER_ERROR);
                 }
-                Log.d(TAG, error.toString());
                 BackendErrors httpNetworkError = BackendErrors.getBackendError(error.networkResponse.statusCode);
                 onResponseRegisterClientInBackend.onErrorResponse(httpNetworkError);
             }
@@ -110,7 +112,7 @@ public class ClientUsecases implements ClientApi {
             }
 
         };
-        jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(0, 1, 5.0f));
+        jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(0, 1, 1f));
         RequestQueueSingleton.getInstance().addToRequestQueue(jsonObjectRequest);
 
     }

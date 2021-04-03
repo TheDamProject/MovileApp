@@ -11,6 +11,6 @@ public interface ClientRepositoryFactory {
 
     // Backend calls
     LiveData<User> registerClientInBackend(String userUid, String avatar, String nickName);
-    LiveData<User> getClientFromBackend(String userUid);
+    //LiveData<User> getClientFromBackend(String userUid);
     MutableLiveData<BackendErrors> getBackendError();
 }

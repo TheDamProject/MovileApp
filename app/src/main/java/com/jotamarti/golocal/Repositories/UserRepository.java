@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.google.firebase.auth.FirebaseUser;
 import com.jotamarti.golocal.Models.Client;
+import com.jotamarti.golocal.Models.Shop;
 import com.jotamarti.golocal.Models.User;
 import com.jotamarti.golocal.UseCases.Users.UserCallbacks;
 import com.jotamarti.golocal.UseCases.Users.UserRepositoryFactory;
@@ -19,6 +20,8 @@ import org.json.JSONObject;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UserRepository implements UserRepositoryFactory {
 
@@ -34,6 +37,8 @@ public class UserRepository implements UserRepositoryFactory {
     // Backend
     private MutableLiveData<User> backendUser = new MutableLiveData<>();
     private MutableLiveData<BackendErrors> backendErrorGetUser = new MutableLiveData<>();
+    private MutableLiveData<ArrayList<Shop>> nearbyShops = new MutableLiveData<>();
+    private MutableLiveData<BackendErrors> backendErrorGetNearbyShops = new MutableLiveData<>();
 
     public UserRepository() {
         userUsecases = new UserUseCases();
@@ -45,17 +50,22 @@ public class UserRepository implements UserRepositoryFactory {
         userUsecases.getUserFromBackend(uid, new UserCallbacks.onResponseCallBackGetUserFromBackend() {
             @Override
             public void onResponse(JSONObject jsonObject) {
-                User user = new Client();
-
+                User user = null;
                 try {
+                    String type = jsonObject.getString("type");
                     String uid = jsonObject.getString("uid");
                     String url = jsonObject.getString("avatar");
-                    String nickName = jsonObject.getString("nick");
-                    user.setAvatar(new URL(url));
-                    user.setUserUid(uid);
-                    ((Client)user).setUserName(nickName);
+                    if(type.equals("client")) {
+                        String nickName = jsonObject.getString("nick");
+                        user = new Client();
+                        user.setAvatar(url);
+                        user.setUserUid(uid);
+                        ((Client)user).setNickName(nickName);
+                    } else {
+                        // TODO: Si es tienda
+                    }
                     backendUser.setValue(user);
-                } catch (JSONException | MalformedURLException e) {
+                } catch (JSONException e) {
                     backendErrorGetUser.setValue(BackendErrors.CLIENT_ERROR);
                 }
             }
@@ -66,6 +76,24 @@ public class UserRepository implements UserRepositoryFactory {
             }
         });
         return backendUser;
+    }
+
+    @Override
+    public LiveData<ArrayList<Shop>> getShopsNearby(String lat, String lang) {
+        userUsecases.getShopsNearby(Double.parseDouble(lat), Double.parseDouble(lang), new UserCallbacks.onResponseCallBackGetShopsNearby() {
+            @Override
+            public void onResponse(JSONObject jsonObject) {
+                // TODO: Devolver lista de tiendas
+                ArrayList<Shop> shops = new ArrayList<>();
+                nearbyShops.setValue(shops);
+            }
+
+            @Override
+            public void onErrorResponse(BackendErrors backendError) {
+                backendErrorGetNearbyShops.setValue(backendError);
+            }
+        });
+        return nearbyShops;
     }
 
     // Auth Service

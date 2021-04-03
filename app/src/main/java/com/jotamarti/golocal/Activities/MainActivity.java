@@ -16,9 +16,13 @@ import com.jotamarti.golocal.Fragments.ClientProfileFragment;
 import com.jotamarti.golocal.Fragments.PostsFragment;
 import com.jotamarti.golocal.Fragments.ShopProfileFragment;
 import com.jotamarti.golocal.Models.Client;
+import com.jotamarti.golocal.Models.Post;
+import com.jotamarti.golocal.Models.Shop;
 import com.jotamarti.golocal.Models.User;
 import com.jotamarti.golocal.R;
 import com.jotamarti.golocal.ViewModels.MainActivityViewModel;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -39,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
 
         initializeUi();
         manageFragmentSelected();
-        if(caller.equals("AuthActivity")) {
+        if(caller.equals("AuthActivity") || caller.equals("ClientConfigurationActivity")) {
             setUserInViewModel();
         }
         manageChangeTitle();
@@ -96,7 +100,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setUserInViewModel() {
-        User user = (User) intent.getSerializableExtra("user");
+        User user = intent.getParcelableExtra("user");
+        List<Shop> nearbyShops = intent.getParcelableArrayListExtra("nearbyShops");
 
         mainActivityViewModel.setUser(user);
         mainActivityViewModel.setPosts();

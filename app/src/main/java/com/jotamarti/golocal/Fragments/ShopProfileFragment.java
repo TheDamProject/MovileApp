@@ -54,7 +54,7 @@ public class ShopProfileFragment extends Fragment {
             FragmentTransaction transaction = manager.beginTransaction();
             Bundle bundle = new Bundle();
             bundle.putString("caller", "visit");
-            bundle.putSerializable("shop", shop);
+            bundle.putParcelable("shop", shop);
             transaction.add(R.id.fragmentShopProfile_fragmentParent_shopsPosts, PostsFragment.class, bundle);
             transaction.addToBackStack(null);
             transaction.commit();

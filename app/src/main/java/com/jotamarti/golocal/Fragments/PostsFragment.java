@@ -53,6 +53,7 @@ public class PostsFragment extends Fragment {
 
 
         if (caller.equals("visit")) {
+            Log.d(TAG, "Entrado en Visit");
             if (view instanceof RecyclerView) {
                 Context context = view.getContext();
                 RecyclerView recyclerView = (RecyclerView) view;
@@ -61,6 +62,7 @@ public class PostsFragment extends Fragment {
                 recyclerView.setAdapter(adapter);
             }
         } else {
+            Log.d(TAG, "Entrado en el else");
             model = new ViewModelProvider(requireActivity()).get(MainActivityViewModel.class);
             List<Post> posts = model.getPosts().getValue();
             model.setTitle("Posts List");
