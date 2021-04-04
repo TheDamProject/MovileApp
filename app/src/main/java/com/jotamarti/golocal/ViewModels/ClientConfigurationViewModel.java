@@ -65,9 +65,6 @@ public class ClientConfigurationViewModel extends ViewModel {
     }
 
     public LiveData<FirebaseUser> getAuthUser() {
-        if(authUserRegistered == null){
-            authUserRegistered = new MutableLiveData<>();
-        }
         return authUserRegistered;
     }
 

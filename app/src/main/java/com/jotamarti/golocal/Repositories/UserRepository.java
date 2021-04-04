@@ -1,7 +1,5 @@
 package com.jotamarti.golocal.Repositories;
 
-import android.util.Log;
-
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
@@ -18,10 +16,7 @@ import com.jotamarti.golocal.Utils.Errors.BackendErrors;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
 
 public class UserRepository implements UserRepositoryFactory {
 
@@ -36,9 +31,8 @@ public class UserRepository implements UserRepositoryFactory {
 
     // Backend
     private MutableLiveData<User> backendUser = new MutableLiveData<>();
-    private MutableLiveData<BackendErrors> backendErrorGetUser = new MutableLiveData<>();
+    private MutableLiveData<BackendErrors> backendErrorData = new MutableLiveData<>();
     private MutableLiveData<ArrayList<Shop>> nearbyShops = new MutableLiveData<>();
-    private MutableLiveData<BackendErrors> backendErrorGetNearbyShops = new MutableLiveData<>();
 
     public UserRepository() {
         userUsecases = new UserUseCases();
@@ -48,6 +42,7 @@ public class UserRepository implements UserRepositoryFactory {
     // Backend
     @Override
     public LiveData<User> getUserFromBackend(String uid) {
+        backendUser = new MutableLiveData<>();
         userUsecases.getUserFromBackend(uid, new UserCallbacks.onResponseCallBackGetUserFromBackend() {
             @Override
             public void onResponse(JSONObject jsonObject) {
@@ -56,24 +51,24 @@ public class UserRepository implements UserRepositoryFactory {
                     String type = jsonObject.getString("type");
                     String uid = jsonObject.getString("uid");
                     String url = jsonObject.getString("avatar");
-                    if(type.equals("client")) {
+                    if (type.equals("client")) {
                         String nickName = jsonObject.getString("nick");
                         user = new Client();
                         user.setAvatar(url);
                         user.setUserUid(uid);
-                        ((Client)user).setNickName(nickName);
+                        ((Client) user).setNickName(nickName);
                     } else {
                         // TODO: Si es tienda
                     }
                     backendUser.setValue(user);
                 } catch (JSONException e) {
-                    backendErrorGetUser.setValue(BackendErrors.CLIENT_ERROR);
+                    backendErrorData.setValue(BackendErrors.CLIENT_ERROR);
                 }
             }
 
             @Override
             public void onErrorResponse(BackendErrors backendError) {
-                backendErrorGetUser.setValue(backendError);
+                backendErrorData.setValue(backendError);
             }
         });
         return backendUser;
@@ -81,20 +76,26 @@ public class UserRepository implements UserRepositoryFactory {
 
     @Override
     public LiveData<ArrayList<Shop>> getShopsNearby(String lat, String lang) {
+        nearbyShops = new MutableLiveData<>();
         userUsecases.getShopsNearby(Double.parseDouble(lat), Double.parseDouble(lang), new UserCallbacks.onResponseCallBackGetShopsNearby() {
             @Override
             public void onResponse(JSONObject jsonObject) {
-                // TODO: Devolver lista de tiendas
+                // TODO: Parsear la lista de tiendas.
                 ArrayList<Shop> shops = new ArrayList<>();
                 nearbyShops.setValue(shops);
             }
 
             @Override
             public void onErrorResponse(BackendErrors backendError) {
-                backendErrorGetNearbyShops.setValue(backendError);
+                backendErrorData.setValue(backendError);
             }
         });
         return nearbyShops;
+    }
+
+    @Override
+    public MutableLiveData<BackendErrors> getBackendError() {
+        return backendErrorData;
     }
 
     // Auth Service
@@ -121,8 +122,6 @@ public class UserRepository implements UserRepositoryFactory {
         userUsecases.registerUserInAuthService(email, password, new UserCallbacks.onResponseCallBackRegisterUserInAuthService() {
             @Override
             public void onResponse(FirebaseUser firebaseUser) {
-                Log.d(TAG, "Estoy haciendo un setValue");
-                Log.d(TAG, firebaseUser.getUid());
                 fireBaseUserRegistered.setValue(firebaseUser);
             }
 

@@ -10,7 +10,6 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
@@ -24,6 +23,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
@@ -68,6 +68,8 @@ public class AuthActivity extends AppCompatActivity {
 
         // Disable night mode
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
         initializeUI();
         initializeViewModel();
@@ -125,14 +127,10 @@ public class AuthActivity extends AppCompatActivity {
 
     private void observeFirebaseUid() {
         authActivityViewModel.getFirebaseUserUid().observe(this, (String userUid) -> {
-            Log.d(TAG,"Me ha llegaod el siguiente UID " + userUid);
             if (!userUid.isEmpty()) {
                 if (!checkBoxRegister.isChecked()) {
-                    //TODO cambiar esto para que logee, quitar lo del manageuserinput
                     // If the user is not trying to register we ask the backend for that user
-                    //getUserFromBackend(userUid);
-                    manageUserInput(true);
-
+                    getUserFromBackend(userUid);
                 } else {
                     CustomToast.showToast(AuthActivity.this, getString(R.string.error_email_already_use), CustomToast.mode.LONGER);
                 }
@@ -150,7 +148,7 @@ public class AuthActivity extends AppCompatActivity {
         authActivityViewModel.getCurrentUser().observe(this, (User currentUser) -> {
             authActivityViewModel.user = currentUser;
             authActivityViewModel.getNearbyShops();
-            showMainActivity();
+            observeListShopsFromBackend();
             authActivityViewModel.getCurrentUser().removeObservers(this);
         });
     }
@@ -158,6 +156,7 @@ public class AuthActivity extends AppCompatActivity {
     private void observeListShopsFromBackend(){
         authActivityViewModel.getNearbyShopsList().observe(this, (List<Shop> shopsNearby) -> {
             showMainActivity();
+            //TODO: Meter la lista de tiendas en el view model.
             authActivityViewModel.getNearbyShopsList().removeObservers(this);
         });
     }
@@ -190,7 +189,20 @@ public class AuthActivity extends AppCompatActivity {
     }
 
     private void manageBackendErrors() {
-        authActivityViewModel.getBackendError().observe(this, (BackendErrors error) -> {
+        authActivityViewModel.getClientBackendError().observe(this, (BackendErrors error) -> {
+            switch (error) {
+                case REDIRECTION:
+                    CustomToast.showToast(AuthActivity.this, getString(R.string.error_login_generic), CustomToast.mode.SHORTER);
+                case CLIENT_ERROR:
+                    CustomToast.showToast(AuthActivity.this, getString(R.string.error_login_generic), CustomToast.mode.SHORTER);
+                case SERVER_ERROR:
+                    CustomToast.showToast(AuthActivity.this, getString(R.string.error_login_generic), CustomToast.mode.SHORTER);
+                default:
+                    CustomToast.showToast(AuthActivity.this, getString(R.string.error_login_generic), CustomToast.mode.SHORTER);
+            }
+            manageUserInput(true);
+        });
+        authActivityViewModel.getUserBackendError().observe(this, (BackendErrors error) -> {
             switch (error) {
                 case REDIRECTION:
                     CustomToast.showToast(AuthActivity.this, getString(R.string.error_login_generic), CustomToast.mode.SHORTER);
@@ -259,6 +271,7 @@ public class AuthActivity extends AppCompatActivity {
         btnAuthActivity.setEnabled(true);
         btnGivePermission.setVisibility(View.INVISIBLE);
         txtViewMessagePermission.setVisibility(View.INVISIBLE);
+        getUserCoordinates();
     }
 
     @Override

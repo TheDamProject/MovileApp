@@ -8,11 +8,13 @@ import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.ParseError;
 import com.android.volley.Request;
+import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.TaskExecutors;
@@ -38,7 +40,7 @@ import java.util.Map;
 
 public class ClientUsecases implements ClientApi {
 
-    private final String TAG = "UserUsecases";
+    private final String TAG = "ClientUsecases";
 
 
     @Override
@@ -79,23 +81,23 @@ public class ClientUsecases implements ClientApi {
         String baseUrl = String.valueOf(App.getContext().getResources().getText(R.string.api_base_url));
         String uri = baseUrl + "/api/client/add";
 
-        // Params
-        Map<String, String> mParams = new HashMap<String, String>();
-        mParams.put("uid", uid);
-        mParams.put("nick", nickName);
-        mParams.put("avatar", "data:image/png;base64," + avatar);
+        JSONObject params = new JSONObject();
+        try {
+            params.put("uid", uid);
+            params.put("nick", nickName);
+            params.put("avatar",  avatar);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, uri, new JSONObject(mParams), new Response.Listener<JSONObject>() {
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, uri, params, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-                Log.d(TAG, "Ha saltado el onResponse de registerClientInBackend");
-                Log.d(TAG, response.toString());
                 onResponseRegisterClientInBackend.onResponse(response);
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.d(TAG, "Ha saltado el onErrorResponse de registerClientInBackend");
                 if (error == null || error.networkResponse == null) {
                     onResponseRegisterClientInBackend.onErrorResponse(BackendErrors.SERVER_ERROR);
                 } else {
@@ -112,8 +114,12 @@ public class ClientUsecases implements ClientApi {
                 return params;
             }
 
+            @Override
+            public Priority getPriority() {
+                return Priority.HIGH;
+            }
         };
-        jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(2000, 1, 2f));
+        jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(0, 0, 5f));
         RequestQueueSingleton.getInstance().addToRequestQueue(jsonObjectRequest);
 
     }

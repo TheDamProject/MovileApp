@@ -18,7 +18,6 @@ import com.jotamarti.golocal.Utils.Errors.AuthErrors;
 import com.jotamarti.golocal.Utils.Errors.BackendErrors;
 
 import java.util.ArrayList;
-import java.util.List;
 
 
 public class AuthActivityViewModel extends ViewModel {
@@ -30,7 +29,8 @@ public class AuthActivityViewModel extends ViewModel {
     // Backend
     private final ClientRepositoryFactory clientRepository;
     private LiveData<User> currentUser;
-    private LiveData<BackendErrors> backendError;
+    private LiveData<BackendErrors> clientBackendError;
+    private LiveData<BackendErrors> userBackendError;
     private LiveData<ArrayList<Shop>> nearbyShops;
 
     // Activity Views data
@@ -52,7 +52,8 @@ public class AuthActivityViewModel extends ViewModel {
         super();
         clientRepository = new ClientRepository();
         userRepository = new UserRepository();
-        backendError = clientRepository.getBackendError();
+        clientBackendError = clientRepository.getBackendError();
+        userBackendError = userRepository.getBackendError();
         authError = userRepository.getAuthServiceError();
         dataStorage = new DataStorage(App.getContext());
     }
@@ -63,14 +64,15 @@ public class AuthActivityViewModel extends ViewModel {
     }
 
     public LiveData<User> getCurrentUser() {
-        if (currentUser == null) {
-            currentUser = new MutableLiveData<>();
-        }
         return this.currentUser;
     }
 
-    public LiveData<BackendErrors> getBackendError(){
-        return this.backendError;
+    public LiveData<BackendErrors> getClientBackendError(){
+        return this.clientBackendError;
+    }
+
+    public LiveData<BackendErrors> getUserBackendError(){
+        return this.userBackendError;
     }
 
     public void getNearbyShops() {
@@ -78,9 +80,6 @@ public class AuthActivityViewModel extends ViewModel {
     }
 
     public LiveData<ArrayList<Shop>> getNearbyShopsList(){
-        if (nearbyShops == null) {
-            nearbyShops = new MutableLiveData<>();
-        }
         return this.nearbyShops;
     }
 

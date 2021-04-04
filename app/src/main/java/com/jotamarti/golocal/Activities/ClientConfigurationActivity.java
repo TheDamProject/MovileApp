@@ -31,12 +31,14 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseUser;
+import com.jotamarti.golocal.App;
 import com.jotamarti.golocal.Models.Shop;
 import com.jotamarti.golocal.Models.User;
 import com.jotamarti.golocal.R;
 import com.jotamarti.golocal.Utils.CustomToast;
 import com.jotamarti.golocal.Utils.Errors.AuthErrors;
 import com.jotamarti.golocal.Utils.Errors.BackendErrors;
+import com.jotamarti.golocal.Utils.ImageUtil;
 import com.jotamarti.golocal.ViewModels.ClientConfigurationViewModel;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
@@ -184,16 +186,8 @@ public class ClientConfigurationActivity extends AppCompatActivity {
             CropImage.ActivityResult result = CropImage.getActivityResult(data);
             if (resultCode == RESULT_OK) {
                 Uri uri = result.getUri();
-                try {
-                    Bitmap imagen = BitmapFactory.decodeStream(getContentResolver().openInputStream(uri));
-                    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                    imagen.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
-                    byte[] byteArray = byteArrayOutputStream.toByteArray();
-                    clientConfigurationViewModel.imageBase64 = Base64.encodeToString(byteArray, Base64.DEFAULT);
-                    checkAllDataInserted();
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
+                clientConfigurationViewModel.imageBase64 = ImageUtil.UriToBase64(uri);
+                checkAllDataInserted();
                 clientAvatar.setImageURI(result.getUri());
                 clientConfigurationViewModel.avatarInserted = true;
             }

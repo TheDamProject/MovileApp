@@ -88,6 +88,7 @@ public class UserUseCases implements UserApi {
         try {
             mParams.put("lat", lat);
             mParams.put("lat", lang);
+            mParams.put("range", 5000);
         } catch (JSONException e) {
             e.printStackTrace();
         }

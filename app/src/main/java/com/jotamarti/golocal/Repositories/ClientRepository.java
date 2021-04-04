@@ -47,6 +47,7 @@ public class ClientRepository implements ClientRepositoryFactory {
 
     @Override
     public LiveData<User> registerClientInBackend(String userUid, String avatar, String nickName) {
+        currentUser = new MutableLiveData<>();
         userUsecases.registerClientInBackend(userUid, avatar, nickName, new ClientCallbacks.onResponseRegisterClientInBackend() {
             @Override
             public void onResponse(JSONObject json) {
