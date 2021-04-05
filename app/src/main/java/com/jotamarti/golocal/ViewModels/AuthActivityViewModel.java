@@ -18,6 +18,7 @@ import com.jotamarti.golocal.Utils.Errors.AuthErrors;
 import com.jotamarti.golocal.Utils.Errors.BackendErrors;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class AuthActivityViewModel extends ViewModel {

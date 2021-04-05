@@ -12,11 +12,13 @@ import com.jotamarti.golocal.UseCases.Users.UserRepositoryFactory;
 import com.jotamarti.golocal.UseCases.Users.UserUseCases;
 import com.jotamarti.golocal.Utils.Errors.AuthErrors;
 import com.jotamarti.golocal.Utils.Errors.BackendErrors;
+import com.jotamarti.golocal.dummy.ShopsDummy;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class UserRepository implements UserRepositoryFactory {
 
@@ -81,7 +83,7 @@ public class UserRepository implements UserRepositoryFactory {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 // TODO: Parsear la lista de tiendas.
-                ArrayList<Shop> shops = new ArrayList<>();
+                ArrayList<Shop> shops = ShopsDummy.getITems();
                 nearbyShops.setValue(shops);
             }
 

@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.Manifest;
 import android.app.Activity;
@@ -35,6 +36,9 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.jotamarti.golocal.Models.Shop;
 import com.jotamarti.golocal.R;
 import com.jotamarti.golocal.Utils.CustomToast;
+import com.jotamarti.golocal.Utils.ImageUtil;
+import com.jotamarti.golocal.ViewModels.ClientConfigurationViewModel;
+import com.jotamarti.golocal.ViewModels.ShopConfigurationViewModel;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
@@ -64,8 +68,10 @@ public class ShopConfigurationActivity extends AppCompatActivity {
     View autoCompleteFragmentView;
     EditText autoCompleteFragmentEditText;
 
+    private ShopConfigurationViewModel shopConfigurationViewModel;
+
     private AutocompleteSupportFragment autocompleteFragment;
-    private Shop shop;
+
     private TextWatcher textWatcher;
     private String directionName;
 
@@ -73,21 +79,20 @@ public class ShopConfigurationActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_shop_configuration);
+
+        initializeViewModel();
+        getDataFromAuthActivity();
         initializeTextWatcher();
         initializeUi();
-
-        Intent previousIntent = getIntent();
-        shop = previousIntent.getParcelableExtra("user");
-
         initializeAutoCompleteFragment();
 
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(@NotNull Place place) {
                 // TODO: Get info about the selected place.
-                shop.setCoordinates(place.getLatLng());
+                shopConfigurationViewModel.shop.setCoordinates(place.getLatLng());
+                Log.d(TAG, directionName);
                 if (!directionHasNumber(directionName)) {
-                    // TODO: tendremos que manejar cuando el usuario mete
                     showInputNumber();
                 } else {
                     hideInputNumber();
@@ -125,23 +130,22 @@ public class ShopConfigurationActivity extends AppCompatActivity {
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String caller = previousIntent.getStringExtra("caller");
 
-                shop.setDescription(textInputShopDescription.getText().toString());
-                shop.setTelNumber(editTextPhone.getText().toString());
-                shop.setWhatsapp(isWhatsapp.isChecked());
+                shopConfigurationViewModel.shop.setDescription(textInputShopDescription.getText().toString());
+                shopConfigurationViewModel.shop.setTelNumber(editTextPhone.getText().toString());
+                shopConfigurationViewModel.shop.setWhatsapp(isWhatsapp.isChecked());
 
                 //TODO: Llamar al backend y actualizar la tienda
 
-                if (caller.equals("ShopProfileFragment")) {
+                if (shopConfigurationViewModel.caller.equals("ShopProfileFragment")) {
                     // TODO: Cuando le de a guardar desde ShopProfileFragment tendre que actualizar en el bancked, despues actualizar el objeto y volver al perfil
                     Intent intent = new Intent(ShopConfigurationActivity.this, MainActivity.class);
-                    intent.putExtra("user", shop);
+                    intent.putExtra("user", shopConfigurationViewModel.shop);
                     intent.putExtra("caller", "ShopProfileFragment");
                     startActivity(intent);
                 } else {
                     Intent intent = new Intent(ShopConfigurationActivity.this, MainActivity.class);
-                    intent.putExtra("user", shop);
+                    intent.putExtra("user", shopConfigurationViewModel.shop);
                     intent.putExtra("caller", "ShopConfiguration");
                     startActivity(intent);
                 }
@@ -181,17 +185,8 @@ public class ShopConfigurationActivity extends AppCompatActivity {
             CropImage.ActivityResult result = CropImage.getActivityResult(data);
             if (resultCode == RESULT_OK) {
                 Uri uri = result.getUri();
-                try {
-                    Bitmap imagen = BitmapFactory.decodeStream(getContentResolver().openInputStream(uri));
-                    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                    imagen.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
-                    byte[] byteArray = byteArrayOutputStream.toByteArray();
-                    String encoded = Base64.encodeToString(byteArray, Base64.DEFAULT);
-                    checkAllDataInserted();
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
-                imageViewShopHeader.setImageURI(result.getUri());
+                shopConfigurationViewModel.imageBase64 = ImageUtil.UriToBase64(uri);
+                imageViewShopHeader.setImageURI(uri);
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
@@ -291,5 +286,31 @@ public class ShopConfigurationActivity extends AppCompatActivity {
     private void hideInputNumber() {
         txtViewNumber.setVisibility(View.INVISIBLE);
         checkBoxNoNumber.setVisibility(View.INVISIBLE);
+    }
+
+    private void initializeViewModel(){
+        shopConfigurationViewModel = new ViewModelProvider(this).get(ShopConfigurationViewModel.class);
+        manageBackendErrors();
+        manageAuthServiceErrors();
+    }
+
+    private void manageAuthServiceErrors() {
+    }
+
+    private void manageBackendErrors() {
+    }
+
+    private void getDataFromAuthActivity() {
+        Intent AuthActivityIntent = getIntent();
+        shopConfigurationViewModel.caller = AuthActivityIntent.getStringExtra("caller");
+        if(shopConfigurationViewModel.caller.equals("AuthActivity")){
+            shopConfigurationViewModel.email = AuthActivityIntent.getStringExtra("email");
+            shopConfigurationViewModel.password = AuthActivityIntent.getStringExtra("password");
+            shopConfigurationViewModel.nearbyShops = AuthActivityIntent.getParcelableArrayListExtra("nearbyShops");
+            shopConfigurationViewModel.shop = new Shop();
+        } else {
+            shopConfigurationViewModel.shop = AuthActivityIntent.getParcelableExtra("user");
+        }
+
     }
 }

@@ -25,6 +25,7 @@ import com.jotamarti.golocal.R;
 import com.jotamarti.golocal.Utils.Errors.AuthErrors;
 import com.jotamarti.golocal.Utils.Errors.BackendErrors;
 import com.jotamarti.golocal.Utils.RequestQueueSingleton;
+import com.jotamarti.golocal.dummy.ShopsDummy;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -102,12 +103,13 @@ public class UserUseCases implements UserApi {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                if(error == null) {
+                onResponseCallBackGetShopsNearby.onResponse(new JSONObject());
+                /*if(error == null) {
                     onResponseCallBackGetShopsNearby.onErrorResponse(BackendErrors.SERVER_ERROR);
                 }
                 Log.d(TAG, error.toString());
                 BackendErrors httpNetworkError = BackendErrors.getBackendError(error.networkResponse.statusCode);
-                onResponseCallBackGetShopsNearby.onErrorResponse(httpNetworkError);
+                onResponseCallBackGetShopsNearby.onErrorResponse(httpNetworkError);*/
             }
         }) {
             @Override

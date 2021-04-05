@@ -5,11 +5,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Looper;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
@@ -23,9 +27,15 @@ import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationAvailability;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.jotamarti.golocal.App;
 import com.jotamarti.golocal.Models.Shop;
@@ -36,6 +46,8 @@ import com.jotamarti.golocal.Utils.CustomToast;
 import com.jotamarti.golocal.Utils.Errors.AuthErrors;
 import com.jotamarti.golocal.Utils.Errors.BackendErrors;
 import com.jotamarti.golocal.ViewModels.AuthActivityViewModel;
+
+import org.w3c.dom.Text;
 
 import java.util.List;
 
@@ -52,6 +64,8 @@ public class AuthActivity extends AppCompatActivity {
     private EditText editTxtEmail;
     private EditText editTxtPassword;
     private TextView txtViewMessagePermission;
+    private TextView txtViewLocationStatus;
+    private TextView txtViewGettingLocation;
     private SwitchCompat switchRemember;
     private CheckBox checkBoxRegister;
     private CheckBox checkBoxShop;
@@ -155,7 +169,11 @@ public class AuthActivity extends AppCompatActivity {
 
     private void observeListShopsFromBackend(){
         authActivityViewModel.getNearbyShopsList().observe(this, (List<Shop> shopsNearby) -> {
-            showMainActivity();
+            if(checkBoxRegister.isChecked()){
+                showConfigActivity();
+            } else {
+                showMainActivity();
+            }
             //TODO: Meter la lista de tiendas en el view model.
             authActivityViewModel.getNearbyShopsList().removeObservers(this);
         });
@@ -175,7 +193,8 @@ public class AuthActivity extends AppCompatActivity {
                 case EMAIL_NOT_FOUND:
                     if (checkBoxRegister.isChecked()) {
                         // If we reach this point trying to register a new user it means that the email is available to the new user
-                        showConfigActivity();
+                        authActivityViewModel.getNearbyShops();
+                        observeListShopsFromBackend();
                     } else {
                         CustomToast.showToast(AuthActivity.this, getString(R.string.error_email_not_found), CustomToast.mode.SHORTER);
                     }
@@ -229,7 +248,8 @@ public class AuthActivity extends AppCompatActivity {
         }
         intent.putExtra("email", authActivityViewModel.getCurrentInsertedEmail());
         intent.putExtra("password", authActivityViewModel.getCurrentInsertedPassword());
-        intent.putExtra("nearbyShops", authActivityViewModel.getNearbyShopsList().getValue());
+        intent.putParcelableArrayListExtra("nearbyShops", authActivityViewModel.getNearbyShopsList().getValue());
+        intent.putExtra("caller", "AuthActivity");
         startActivity(intent);
     }
 
@@ -248,8 +268,10 @@ public class AuthActivity extends AppCompatActivity {
     // Location
     private Boolean checkHaveLocationPermission() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            Log.d(TAG, "Estoy devolviendo false");
             return false;
         } else {
+            Log.d(TAG, "Estoy devolviendo true");
             return true;
         }
     }
@@ -267,11 +289,21 @@ public class AuthActivity extends AppCompatActivity {
     }
 
     private void handlePermissionGranted() {
+        if(!isLocationEnabled()){
+            // TODO: Menajera la ubicación apagada.
+            CustomToast.showToast(this, "Please, enable the location in you'r device", CustomToast.mode.LONGER);
+            txtViewLocationStatus.setVisibility(View.VISIBLE);
+        }
+        btnGivePermission.setVisibility(View.INVISIBLE);
+        getUserCoordinates();
+    }
+
+    private void handleLocatioFinded(){
         btnGivePermission.setEnabled(false);
         btnAuthActivity.setEnabled(true);
         btnGivePermission.setVisibility(View.INVISIBLE);
         txtViewMessagePermission.setVisibility(View.INVISIBLE);
-        getUserCoordinates();
+        txtViewLocationStatus.setVisibility(View.INVISIBLE);
     }
 
     @Override
@@ -295,15 +327,82 @@ public class AuthActivity extends AppCompatActivity {
         if (!checkHaveLocationPermission()) {
             return;
         }
-        fusedLocationClient.requestLocationUpdates(null, null);
-        fusedLocationClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
+        //requestNewLocationData();
+        /*if(!isLocationEnabled()){
+            // TODO: Menajera la ubicación apagada.
+            CustomToast.showToast(this, "Please enable the ubcation in your phone", CustomToast.mode.LONGER);
+            return;
+        }*/
+        requestNewLocationData();
+        LocationRequest locationRequest = LocationRequest.create();
+        locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+        fusedLocationClient.requestLocationUpdates(locationRequest, null);
+        fusedLocationClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
             @Override
-            public void onSuccess(Location location) {
-                if (location != null){
+            public void onComplete(@NonNull Task<Location> task) {
+                Location location = task.getResult();
+                if (location == null) {
+                    Log.d(TAG, "Me ha llegado la location como null");
+                    requestNewLocationData();
+                } else {
                     authActivityViewModel.userCoordinates = new LatLng(location.getLatitude(), location.getLongitude());
+                    Log.d(TAG, "onSuccess del getUserCoordinates " + authActivityViewModel.userCoordinates.toString());
+                    handleLocatioFinded();
                 }
             }
         });
+    }
+
+    private void requestNewLocationData() {
+
+        // Initializing LocationRequest
+        // object with appropriate methods
+        LocationRequest mLocationRequest = LocationRequest.create();
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+        mLocationRequest.setInterval(5);
+        mLocationRequest.setFastestInterval(0);
+
+        // setting LocationRequest
+        // on FusedLocationClient
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        if(checkHaveLocationPermission()){
+            fusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
+        }
+
+    }
+
+    private LocationCallback mLocationCallback = new LocationCallback() {
+
+        @Override
+        public void onLocationAvailability(@NonNull LocationAvailability locationAvailability) {
+           if(locationAvailability.isLocationAvailable()){
+               Log.d(TAG, "AVALIABLEEEEE");
+               spinnerLoading.setVisibility(View.VISIBLE);
+               txtViewGettingLocation.setVisibility(View.VISIBLE);
+               txtViewLocationStatus.setVisibility(View.INVISIBLE);
+               txtViewMessagePermission.setVisibility(View.INVISIBLE);
+           } else {
+               Log.d(TAG, "NO AVALIABLEEEE!!!");
+           }
+        }
+
+        @Override
+        public void onLocationResult(LocationResult locationResult) {
+            Location mLastLocation = locationResult.getLastLocation();
+            authActivityViewModel.userCoordinates = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+            spinnerLoading.setVisibility(View.INVISIBLE);
+            txtViewGettingLocation.setVisibility(View.INVISIBLE);
+            Log.d(TAG, mLastLocation.getLatitude() + "");
+            Log.d(TAG, mLastLocation.getLongitude() + "");
+            handleLocatioFinded();
+        }
+    };
+
+
+
+    private boolean isLocationEnabled() {
+        LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
     }
 
     // SharedPreferences
@@ -341,8 +440,12 @@ public class AuthActivity extends AppCompatActivity {
         txtViewMessagePermission = findViewById(R.id.AuthActivity_txtView_askPermission);
         btnGivePermission = findViewById(R.id.AuthActivity_btn_askPermission);
         spinnerLoading = findViewById(R.id.AuthActivity_spinner_loading);
+        txtViewLocationStatus = findViewById(R.id.AuthActivity_textView_locationStatus);
+        txtViewGettingLocation = findViewById(R.id.AuthActivity_textView_gettingLocation);
         btnAuthActivity.setEnabled(false);
         spinnerLoading.setVisibility(View.INVISIBLE);
+        txtViewLocationStatus.setVisibility(View.INVISIBLE);
+        txtViewGettingLocation.setVisibility(View.INVISIBLE);
     }
 
     public void manageUserInput(Boolean state){

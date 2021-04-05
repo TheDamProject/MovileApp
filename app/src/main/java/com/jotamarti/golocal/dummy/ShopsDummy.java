@@ -17,7 +17,7 @@ public class ShopsDummy {
     /**
      * An array of sample (dummy) items.
      */
-    public static final List<Shop> ITEMS = new ArrayList<>();
+    public static final ArrayList<Shop> ITEMS = new ArrayList<>();
 
     /**
      * A map of sample (dummy) items, by ID.
@@ -34,7 +34,7 @@ public class ShopsDummy {
         }
     }
 
-    public static List<Shop> getITems(){
+    public static ArrayList<Shop> getITems(){
         ITEMS.clear();
         generateContent();
         return ITEMS;
