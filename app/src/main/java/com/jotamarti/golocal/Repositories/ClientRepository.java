@@ -35,12 +35,6 @@ public class ClientRepository implements ClientRepositoryFactory {
     private MutableLiveData<User> currentUser = new MutableLiveData<>();
     private MutableLiveData<BackendErrors> haveHttpNetworkError = new MutableLiveData<>();
 
-    // Auth
-    private MutableLiveData<String> userLoggedUid = new MutableLiveData<>();
-    private MutableLiveData<AuthErrors> authError = new MutableLiveData<>();
-    private MutableLiveData<String> userRegisteredUid = new MutableLiveData<>();
-
-
     public ClientRepository(){
         userUsecases = new ClientUsecases();
     }

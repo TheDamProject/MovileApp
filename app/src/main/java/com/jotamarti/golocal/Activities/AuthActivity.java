@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -34,7 +33,6 @@ import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.jotamarti.golocal.App;
@@ -46,8 +44,6 @@ import com.jotamarti.golocal.Utils.CustomToast;
 import com.jotamarti.golocal.Utils.Errors.AuthErrors;
 import com.jotamarti.golocal.Utils.Errors.BackendErrors;
 import com.jotamarti.golocal.ViewModels.AuthActivityViewModel;
-
-import org.w3c.dom.Text;
 
 import java.util.List;
 
@@ -262,10 +258,8 @@ public class AuthActivity extends AppCompatActivity {
     // Location
     private Boolean checkHaveLocationPermission() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            Log.d(TAG, "Estoy devolviendo false");
             return false;
         } else {
-            Log.d(TAG, "Estoy devolviendo true");
             return true;
         }
     }
@@ -284,7 +278,6 @@ public class AuthActivity extends AppCompatActivity {
 
     private void handlePermissionGranted() {
         if (!isLocationEnabled()) {
-            // TODO: Menajera la ubicación apagada.
             CustomToast.showToast(this, "Please, enable the location in you'r device", CustomToast.mode.LONGER);
             txtViewLocationStatus.setVisibility(View.VISIBLE);
         }
@@ -292,7 +285,7 @@ public class AuthActivity extends AppCompatActivity {
         getUserCoordinates();
     }
 
-    private void handleLocatioFinded() {
+    private void handleLocationFinded() {
         btnGivePermission.setEnabled(false);
         btnAuthActivity.setEnabled(true);
         btnGivePermission.setVisibility(View.INVISIBLE);
@@ -321,13 +314,6 @@ public class AuthActivity extends AppCompatActivity {
         if (!checkHaveLocationPermission()) {
             return;
         }
-        //requestNewLocationData();
-        /*if(!isLocationEnabled()){
-            // TODO: Menajera la ubicación apagada.
-            CustomToast.showToast(this, "Please enable the ubcation in your phone", CustomToast.mode.LONGER);
-            return;
-        }*/
-        requestNewLocationData();
         LocationRequest locationRequest = LocationRequest.create();
         locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
         fusedLocationClient.requestLocationUpdates(locationRequest, null);
@@ -336,28 +322,21 @@ public class AuthActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<Location> task) {
                 Location location = task.getResult();
                 if (location == null) {
-                    Log.d(TAG, "Me ha llegado la location como null");
                     requestNewLocationData();
                 } else {
                     authActivityViewModel.userCoordinates = new LatLng(location.getLatitude(), location.getLongitude());
-                    Log.d(TAG, "onSuccess del getUserCoordinates " + authActivityViewModel.userCoordinates.toString());
-                    handleLocatioFinded();
+                    handleLocationFinded();
                 }
             }
         });
     }
 
     private void requestNewLocationData() {
-
-        // Initializing LocationRequest
-        // object with appropriate methods
         LocationRequest mLocationRequest = LocationRequest.create();
         mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
         mLocationRequest.setInterval(5);
         mLocationRequest.setFastestInterval(0);
 
-        // setting LocationRequest
-        // on FusedLocationClient
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         if (checkHaveLocationPermission()) {
             fusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
@@ -370,13 +349,10 @@ public class AuthActivity extends AppCompatActivity {
         @Override
         public void onLocationAvailability(@NonNull LocationAvailability locationAvailability) {
             if (locationAvailability.isLocationAvailable()) {
-                Log.d(TAG, "AVALIABLEEEEE");
                 spinnerLoading.setVisibility(View.VISIBLE);
                 txtViewGettingLocation.setVisibility(View.VISIBLE);
                 txtViewLocationStatus.setVisibility(View.INVISIBLE);
                 txtViewMessagePermission.setVisibility(View.INVISIBLE);
-            } else {
-                Log.d(TAG, "NO AVALIABLEEEE!!!");
             }
         }
 
@@ -386,9 +362,7 @@ public class AuthActivity extends AppCompatActivity {
             authActivityViewModel.userCoordinates = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
             spinnerLoading.setVisibility(View.INVISIBLE);
             txtViewGettingLocation.setVisibility(View.INVISIBLE);
-            Log.d(TAG, mLastLocation.getLatitude() + "");
-            Log.d(TAG, mLastLocation.getLongitude() + "");
-            handleLocatioFinded();
+            handleLocationFinded();
         }
     };
 

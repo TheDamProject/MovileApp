@@ -10,13 +10,10 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -37,15 +34,12 @@ import com.jotamarti.golocal.Models.Shop;
 import com.jotamarti.golocal.R;
 import com.jotamarti.golocal.Utils.CustomToast;
 import com.jotamarti.golocal.Utils.ImageUtil;
-import com.jotamarti.golocal.ViewModels.ClientConfigurationViewModel;
 import com.jotamarti.golocal.ViewModels.ShopConfigurationViewModel;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
 import java.util.Arrays;
 
 public class ShopConfigurationActivity extends AppCompatActivity {
@@ -56,6 +50,7 @@ public class ShopConfigurationActivity extends AppCompatActivity {
 
     // Views
     private EditText editTextPhone;
+    private EditText editTextName;
     private TextInputEditText textInputShopDescription;
     private TextView txtViewNumber;
     private CheckBox checkBoxNoNumber;
@@ -91,7 +86,8 @@ public class ShopConfigurationActivity extends AppCompatActivity {
             public void onPlaceSelected(@NotNull Place place) {
                 // TODO: Get info about the selected place.
                 shopConfigurationViewModel.shop.setCoordinates(place.getLatLng());
-                Log.d(TAG, directionName);
+                Log.d(TAG, directionName = place.getName());
+                directionName = place.getName();
                 if (!directionHasNumber(directionName)) {
                     showInputNumber();
                 } else {
@@ -213,14 +209,15 @@ public class ShopConfigurationActivity extends AppCompatActivity {
 
     private void initializeUi() {
         // Iniciamos vistas
-        txtViewNumber = findViewById(R.id.shopConfigTxtViewNumber);
-        checkBoxNoNumber = findViewById(R.id.ShopConfiguration_checkbox_noNumber);
-        btnUploadImage = findViewById(R.id.fragmentShopProfile_btn_changeShopProfileImage);
-        imageViewShopHeader = findViewById(R.id.fragmentShopProfile_imageView_shopProfileImage);
-        btnSave = findViewById(R.id.activityShopConfiguration_btn_save);
-        editTextPhone = findViewById(R.id.ShopConfiguration_editText_phone);
-        textInputShopDescription = findViewById(R.id.ShopConfiguration_textField_shopDescription);
-        isWhatsapp = findViewById(R.id.ShopConfiguration_checkBox_isWhatsapp);
+        txtViewNumber = findViewById(R.id.textView12);
+        checkBoxNoNumber = findViewById(R.id.ShopConfigurationActivity_checkbox_noNumber);
+        btnUploadImage = findViewById(R.id.ShopConfigurationActivity_btn_changeShopProfileImage);
+        imageViewShopHeader = findViewById(R.id.ShopConfigurationActivity_imageView_shopProfileImage);
+        btnSave = findViewById(R.id.ShopConfigurationActivity_btn_save);
+        editTextPhone = findViewById(R.id.ShopConfigurationActivity_editText_phone);
+        textInputShopDescription = findViewById(R.id.ShopConfigurationActivity_textField_shopDescription);
+        isWhatsapp = findViewById(R.id.ShopConfigurationActivity_checkBox_isWhatsapp);
+        editTextName = findViewById(R.id.ShopConfigurationActivity_editText_shopName);
 
 
         txtViewNumber.setVisibility(View.INVISIBLE);

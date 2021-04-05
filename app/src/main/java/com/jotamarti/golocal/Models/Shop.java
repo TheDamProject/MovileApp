@@ -13,6 +13,8 @@ public class Shop extends User implements Parcelable {
     private transient LatLng coordinates;
     private String description;
     private String telNumber;
+    private String shopName;
+    private String address;
     private boolean isWhatsapp;
     private List<Post> shopPosts;
 
@@ -77,6 +79,22 @@ public class Shop extends User implements Parcelable {
 
     public void setShopPosts(List<Post> shopPosts) {
         this.shopPosts = shopPosts;
+    }
+
+    public String getShopName() {
+        return shopName;
+    }
+
+    public void setShopName(String shopName) {
+        this.shopName = shopName;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     @Override
