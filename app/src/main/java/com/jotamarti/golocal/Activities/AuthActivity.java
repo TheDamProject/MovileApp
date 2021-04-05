@@ -83,6 +83,7 @@ public class AuthActivity extends AppCompatActivity {
         // Disable night mode
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
 
+        // Object to get location data
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
         initializeUI();
@@ -126,7 +127,6 @@ public class AuthActivity extends AppCompatActivity {
             }
         });
 
-
     }
 
 
@@ -141,14 +141,8 @@ public class AuthActivity extends AppCompatActivity {
 
     private void observeFirebaseUid() {
         authActivityViewModel.getFirebaseUserUid().observe(this, (String userUid) -> {
-            if (!userUid.isEmpty()) {
-                if (!checkBoxRegister.isChecked()) {
-                    // If the user is not trying to register we ask the backend for that user
-                    getUserFromBackend(userUid);
-                } else {
-                    CustomToast.showToast(AuthActivity.this, getString(R.string.error_email_already_use), CustomToast.mode.LONGER);
-                }
-            }
+            // We only get here if the user is trying to log in in the application
+            getUserFromBackend(userUid);
             authActivityViewModel.getFirebaseUserUid().removeObservers(this);
         });
     }
@@ -167,9 +161,9 @@ public class AuthActivity extends AppCompatActivity {
         });
     }
 
-    private void observeListShopsFromBackend(){
+    private void observeListShopsFromBackend() {
         authActivityViewModel.getNearbyShopsList().observe(this, (List<Shop> shopsNearby) -> {
-            if(checkBoxRegister.isChecked()){
+            if (checkBoxRegister.isChecked()) {
                 showConfigActivity();
             } else {
                 showMainActivity();
@@ -289,7 +283,7 @@ public class AuthActivity extends AppCompatActivity {
     }
 
     private void handlePermissionGranted() {
-        if(!isLocationEnabled()){
+        if (!isLocationEnabled()) {
             // TODO: Menajera la ubicación apagada.
             CustomToast.showToast(this, "Please, enable the location in you'r device", CustomToast.mode.LONGER);
             txtViewLocationStatus.setVisibility(View.VISIBLE);
@@ -298,7 +292,7 @@ public class AuthActivity extends AppCompatActivity {
         getUserCoordinates();
     }
 
-    private void handleLocatioFinded(){
+    private void handleLocatioFinded() {
         btnGivePermission.setEnabled(false);
         btnAuthActivity.setEnabled(true);
         btnGivePermission.setVisibility(View.INVISIBLE);
@@ -365,7 +359,7 @@ public class AuthActivity extends AppCompatActivity {
         // setting LocationRequest
         // on FusedLocationClient
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        if(checkHaveLocationPermission()){
+        if (checkHaveLocationPermission()) {
             fusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
         }
 
@@ -375,15 +369,15 @@ public class AuthActivity extends AppCompatActivity {
 
         @Override
         public void onLocationAvailability(@NonNull LocationAvailability locationAvailability) {
-           if(locationAvailability.isLocationAvailable()){
-               Log.d(TAG, "AVALIABLEEEEE");
-               spinnerLoading.setVisibility(View.VISIBLE);
-               txtViewGettingLocation.setVisibility(View.VISIBLE);
-               txtViewLocationStatus.setVisibility(View.INVISIBLE);
-               txtViewMessagePermission.setVisibility(View.INVISIBLE);
-           } else {
-               Log.d(TAG, "NO AVALIABLEEEE!!!");
-           }
+            if (locationAvailability.isLocationAvailable()) {
+                Log.d(TAG, "AVALIABLEEEEE");
+                spinnerLoading.setVisibility(View.VISIBLE);
+                txtViewGettingLocation.setVisibility(View.VISIBLE);
+                txtViewLocationStatus.setVisibility(View.INVISIBLE);
+                txtViewMessagePermission.setVisibility(View.INVISIBLE);
+            } else {
+                Log.d(TAG, "NO AVALIABLEEEE!!!");
+            }
         }
 
         @Override
@@ -397,7 +391,6 @@ public class AuthActivity extends AppCompatActivity {
             handleLocatioFinded();
         }
     };
-
 
 
     private boolean isLocationEnabled() {
@@ -448,7 +441,7 @@ public class AuthActivity extends AppCompatActivity {
         txtViewGettingLocation.setVisibility(View.INVISIBLE);
     }
 
-    public void manageUserInput(Boolean state){
+    public void manageUserInput(Boolean state) {
         btnAuthActivity.setEnabled(state);
         btnGivePermission.setEnabled(state);
         switchRemember.setEnabled(state);
@@ -456,7 +449,7 @@ public class AuthActivity extends AppCompatActivity {
         editTxtEmail.setEnabled(state);
         checkBoxRegister.setEnabled(state);
         checkBoxShop.setEnabled(state);
-        if(state){
+        if (state) {
             spinnerLoading.setVisibility(View.INVISIBLE);
         } else {
             spinnerLoading.setVisibility(View.VISIBLE);
