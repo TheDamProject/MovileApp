@@ -12,13 +12,15 @@ import com.jotamarti.golocal.UseCases.Users.UserRepositoryFactory;
 import com.jotamarti.golocal.Utils.Errors.AuthErrors;
 import com.jotamarti.golocal.Utils.Errors.BackendErrors;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ShopConfigurationViewModel extends ViewModel {
 
     public String email;
     public String password;
-    public List<Shop> nearbyShops;
+    public ArrayList<Shop> nearbyShops;
+    public FirebaseUser firebaseUser;
 
     public String caller;
     public Shop shop;

@@ -3,11 +3,15 @@ package com.jotamarti.golocal.Fragments;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
@@ -23,12 +27,20 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.jotamarti.golocal.App;
+import com.jotamarti.golocal.Models.Shop;
 import com.jotamarti.golocal.R;
 import com.jotamarti.golocal.Utils.CustomToast;
 import com.jotamarti.golocal.ViewModels.MainActivityViewModel;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MapsFragment extends Fragment {
 
@@ -53,6 +65,40 @@ public class MapsFragment extends Fragment {
             //googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
             //CameraUpdate yourLocation = CameraUpdateFactory.newLatLngZoom(valencia, 16);
             //googleMap.animateCamera(yourLocation);
+
+            List<Shop> shopList = model.getShopsList().getValue();
+
+            int height = 50;
+            int width = 50;
+            BitmapDrawable bitmapdraw = (BitmapDrawable) ResourcesCompat.getDrawable(requireActivity().getResources(), R.drawable.go_local_house, null);
+            Bitmap b = bitmapdraw.getBitmap();
+            Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
+
+            List<Marker> markers = new ArrayList<>();
+
+            for(int i = 0; i < shopList.size(); i++){
+                Shop currentShop = shopList.get(i);
+                Marker marker = googleMap.addMarker(new MarkerOptions().position(shopList.get(i).getCoordinates()).title(currentShop.getShopName()).snippet(currentShop.getAddress()).icon(BitmapDescriptorFactory.fromBitmap(smallMarker)));
+                marker.setTag(currentShop.getUserUid());
+                marker.showInfoWindow();
+                markers.add(marker);
+                Log.d(TAG, "Cordenadas de la tienda: " + "Latitud: " + shopList.get(i).getCoordinates().latitude + " Longitud: " + shopList.get(i).getCoordinates().longitude);
+            }
+            mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                @Override
+                public boolean onMarkerClick(Marker marker) {
+                    Log.d(TAG, "He pulsado en el marcador con el TAG: " + marker.getTag());
+                    return false;
+                }
+            });
+
+            mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+                @Override
+                public void onInfoWindowClick(Marker marker) {
+                    Log.d(TAG, "He pulsado en el infoWindow de el marker con el TAG: " + marker.getTag());
+                }
+            });
+
             if (!checkHaveLocationPermission()) {
                 requestPermission();
             } else {
@@ -61,6 +107,8 @@ public class MapsFragment extends Fragment {
             }
         }
     };
+
+
 
     @Nullable
     @Override

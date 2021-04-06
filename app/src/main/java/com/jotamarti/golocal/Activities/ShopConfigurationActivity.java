@@ -30,9 +30,13 @@ import com.google.android.libraries.places.api.model.TypeFilter;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.auth.FirebaseUser;
 import com.jotamarti.golocal.Models.Shop;
+import com.jotamarti.golocal.Models.User;
 import com.jotamarti.golocal.R;
 import com.jotamarti.golocal.Utils.CustomToast;
+import com.jotamarti.golocal.Utils.Errors.AuthErrors;
+import com.jotamarti.golocal.Utils.Errors.BackendErrors;
 import com.jotamarti.golocal.Utils.ImageUtil;
 import com.jotamarti.golocal.ViewModels.ShopConfigurationViewModel;
 import com.theartofdev.edmodo.cropper.CropImage;
@@ -68,7 +72,6 @@ public class ShopConfigurationActivity extends AppCompatActivity {
     private AutocompleteSupportFragment autocompleteFragment;
 
     private TextWatcher textWatcher;
-    private String directionName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,13 +89,12 @@ public class ShopConfigurationActivity extends AppCompatActivity {
             public void onPlaceSelected(@NotNull Place place) {
                 // TODO: Get info about the selected place.
                 shopConfigurationViewModel.shop.setCoordinates(place.getLatLng());
-                Log.d(TAG, directionName = place.getName());
-                directionName = place.getName();
-                if (!directionHasNumber(directionName)) {
+                shopConfigurationViewModel.shop.setAddress(place.getName());
+
+                if (!directionHasNumber(shopConfigurationViewModel.shop.getShopName())) {
                     showInputNumber();
                 } else {
                     hideInputNumber();
-
                 }
                 checkAllDataInserted();
             }
@@ -107,7 +109,7 @@ public class ShopConfigurationActivity extends AppCompatActivity {
         checkBoxNoNumber.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                CustomToast.showToast(ShopConfigurationActivity.this, "Please, if your address have number consider inserting it", CustomToast.mode.LONGER);
+                CustomToast.showToast(ShopConfigurationActivity.this, "Please, if your address have a number consider inserting it", CustomToast.mode.LONGER);
             }
         });
 
@@ -130,27 +132,73 @@ public class ShopConfigurationActivity extends AppCompatActivity {
                 shopConfigurationViewModel.shop.setDescription(textInputShopDescription.getText().toString());
                 shopConfigurationViewModel.shop.setTelNumber(editTextPhone.getText().toString());
                 shopConfigurationViewModel.shop.setWhatsapp(isWhatsapp.isChecked());
+                shopConfigurationViewModel.shop.setShopName(editTextName.getText().toString());
 
                 //TODO: Llamar al backend y actualizar la tienda
-
-                if (shopConfigurationViewModel.caller.equals("ShopProfileFragment")) {
-                    // TODO: Cuando le de a guardar desde ShopProfileFragment tendre que actualizar en el bancked, despues actualizar el objeto y volver al perfil
-                    Intent intent = new Intent(ShopConfigurationActivity.this, MainActivity.class);
-                    intent.putExtra("user", shopConfigurationViewModel.shop);
-                    intent.putExtra("caller", "ShopProfileFragment");
-                    startActivity(intent);
-                } else {
-                    Intent intent = new Intent(ShopConfigurationActivity.this, MainActivity.class);
-                    intent.putExtra("user", shopConfigurationViewModel.shop);
-                    intent.putExtra("caller", "ShopConfiguration");
-                    startActivity(intent);
-                }
+                shopConfigurationViewModel.registerShopInAuthService(shopConfigurationViewModel.email, shopConfigurationViewModel.password);
+                observeRegisteredUserInAuthService();
             }
         });
     }
 
+    private void observeRegisteredUserInAuthService(){
+        shopConfigurationViewModel.getAuthUser().observe(this, (FirebaseUser firebaseUser) -> {
+            shopConfigurationViewModel.firebaseUser = firebaseUser;
+            // Si llegamos aqui hemos creado correctamente el usuario en firebase. Ahora tenemos que crearlo en nuestro backend.
+            shopConfigurationViewModel.registerShopInBackend();
+            observeRegisteredUserInBackend();
+            shopConfigurationViewModel.getAuthUser().removeObservers(this);
+        });
+    }
+
+    private void observeRegisteredUserInBackend(){
+        shopConfigurationViewModel.getShop().observe(this, (Shop shop) -> {
+            showMainActivity();
+            shopConfigurationViewModel.getShop().removeObservers(this);
+        });
+    }
+
+    private void showMainActivity(){
+        if (shopConfigurationViewModel.caller.equals("ShopProfileFragment")) {
+            // TODO: Cuando le de a guardar desde ShopProfileFragment tendre que actualizar en el bancked, despues actualizar el objeto y volver al perfil
+            Intent intent = new Intent(ShopConfigurationActivity.this, MainActivity.class);
+            intent.putExtra("user", shopConfigurationViewModel.shop);
+            intent.putExtra("caller", "ShopProfileFragment");
+            startActivity(intent);
+        } else {
+            Intent intent = new Intent(ShopConfigurationActivity.this, MainActivity.class);
+            intent.putExtra("user", shopConfigurationViewModel.shop);
+            intent.putParcelableArrayListExtra("nearbyShops", shopConfigurationViewModel.nearbyShops);
+            intent.putExtra("caller", "ShopConfiguration");
+            startActivity(intent);
+        }
+    }
+
+    // Errors handling
+    private void manageBackendErrors(){
+        shopConfigurationViewModel.getBackendError().observe(this, (BackendErrors error) -> {
+            switch (error){
+                case REDIRECTION:
+                    CustomToast.showToast(ShopConfigurationActivity.this, getString(R.string.error_register_generic), CustomToast.mode.SHORTER);
+                case CLIENT_ERROR:
+                    CustomToast.showToast(ShopConfigurationActivity.this, getString(R.string.error_register_generic), CustomToast.mode.SHORTER);
+                case SERVER_ERROR:
+                    CustomToast.showToast(ShopConfigurationActivity.this, getString(R.string.error_register_generic), CustomToast.mode.SHORTER);
+                default:
+                    CustomToast.showToast(ShopConfigurationActivity.this, getString(R.string.error_register_generic), CustomToast.mode.SHORTER);
+            }
+            shopConfigurationViewModel.firebaseUser.delete();
+        });
+    }
+
+    private void manageAuthServiceErrors(){
+        shopConfigurationViewModel.getAuthError().observe(this, (AuthErrors error) -> {
+            CustomToast.showToast(ShopConfigurationActivity.this, getString(R.string.error_register_generic), CustomToast.mode.SHORTER);
+        });
+    }
+
     private void checkAllDataInserted() {
-        if (editTextPhone.getText().toString().length() > 0 && textInputShopDescription.getText().toString().length() > 0 && directionName.length() > 0) {
+        if (editTextPhone.getText().toString().length() > 0 && textInputShopDescription.getText().toString().length() > 0 && shopConfigurationViewModel.shop.getShopName().length() > 0 && editTextName.getText().toString().length() > 0) {
             btnSave.setEnabled(true);
         } else {
             btnSave.setEnabled(false);
@@ -228,6 +276,7 @@ public class ShopConfigurationActivity extends AppCompatActivity {
 
         // Listeners para activar el botón de guardado
         textInputShopDescription.addTextChangedListener(textWatcher);
+        editTextName.addTextChangedListener(textWatcher);
         editTextPhone.addTextChangedListener(textWatcher);
     }
 
@@ -250,7 +299,7 @@ public class ShopConfigurationActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 autoCompleteFragmentEditText.setText("");
-                directionName = "";
+                shopConfigurationViewModel.shop.setAddress("");
                 btnSave.setEnabled(false);
             }
         });
@@ -289,12 +338,6 @@ public class ShopConfigurationActivity extends AppCompatActivity {
         shopConfigurationViewModel = new ViewModelProvider(this).get(ShopConfigurationViewModel.class);
         manageBackendErrors();
         manageAuthServiceErrors();
-    }
-
-    private void manageAuthServiceErrors() {
-    }
-
-    private void manageBackendErrors() {
     }
 
     private void getDataFromAuthActivity() {

@@ -59,22 +59,25 @@ public class ShopsDummy {
 
         shop.setAvatar(url);
         shop.setShopPosts(posts);
-        int minLatNumber = 39000;
-        int maxLatNumber = 52000;
-        int minLangNumber = 35000;
-        int maxLangNumber = 42000;
+        int minLatNumber = 39450;
+        int maxLatNumber = 39480;
+        int minLangNumber = 36000;
+        int maxLangNumber = 39000;
 
 
-        int lat = (int) (Math.random() * (maxLatNumber - minLatNumber + 1) + minLatNumber);
-        int lang = (int) (Math.random() * (maxLangNumber - minLangNumber + 1) + maxLangNumber);
-        lat = lat / 100000;
-        lang = lang / 10000;
+        double lat = (Math.random() * (maxLatNumber - minLatNumber + 1) + minLatNumber);
+        double lang = (Math.random() * (maxLangNumber - minLangNumber + 1) + minLangNumber);
+        lat = lat / 1000;
+        lang = lang / 100000;
+        lang *= -1;
         shop.setCoordinates(new LatLng(lat, lang));
 
 
         int numberTel = rand.nextInt(9999999);
         shop.setTelNumber(String.valueOf(numberTel));
         shop.setWhatsapp(true);
+        shop.setShopName("Tienda");
+        shop.setAddress("C/Falsa 123");
         return shop;
     }
 
