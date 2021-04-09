@@ -248,10 +248,14 @@ public class AuthActivity extends AppCompatActivity {
             authActivityViewModel.setPreferences();
         }
         Intent intent = new Intent(AuthActivity.this, MainActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putParcelableArrayList("test", authActivityViewModel.getNearbyShopsList().getValue());
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         intent.putExtra("user", authActivityViewModel.user);
         intent.putParcelableArrayListExtra("nearbyShops", authActivityViewModel.getNearbyShopsList().getValue());
         intent.putExtra("caller", "AuthActivity");
+        intent.putExtra("userCoordinates", authActivityViewModel.userCoordinates);
+        intent.putExtra("test", bundle);
         startActivity(intent);
     }
 

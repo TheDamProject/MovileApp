@@ -45,7 +45,7 @@ public class PostsFragment extends Fragment {
 
         if(previousBundle != null){
             caller = previousBundle.getString("caller");
-            shop = (Shop) previousBundle.getSerializable("shop");
+            shop = (Shop) previousBundle.getParcelable("shop");
         } else {
             caller = "other";
         }

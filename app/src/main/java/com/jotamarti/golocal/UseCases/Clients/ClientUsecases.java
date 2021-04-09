@@ -26,6 +26,7 @@ import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.gson.JsonObject;
 import com.jotamarti.golocal.App;
+import com.jotamarti.golocal.BuildConfig;
 import com.jotamarti.golocal.R;
 import com.jotamarti.golocal.Utils.Errors.AuthErrors;
 import com.jotamarti.golocal.Utils.Errors.BackendErrors;
@@ -68,7 +69,7 @@ public class ClientUsecases implements ClientApi {
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put("Content-Type", "application/json; charset=UTF-8");
-                params.put("X-AUTH-TOKEN", "TC9[L7<D4gd)5{6<!=H!jUYE7mum<H~NS4yJo/a+7(3v>f5n+_49u|_a4|7W");
+                params.put("X-AUTH-TOKEN", BuildConfig.BACKEND_API_KEY);
                 return params;
             }
         };
@@ -110,7 +111,7 @@ public class ClientUsecases implements ClientApi {
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put("Content-Type", "application/json; charset=UTF-8");
-                params.put("X-AUTH-TOKEN", "TC9[L7<D4gd)5{6<!=H!jUYE7mum<H~NS4yJo/a+7(3v>f5n+_49u|_a4|7W");
+                params.put("X-AUTH-TOKEN", BuildConfig.BACKEND_API_KEY);
                 return params;
             }
 

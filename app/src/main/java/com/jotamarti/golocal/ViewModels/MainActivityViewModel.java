@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.jotamarti.golocal.Models.Post;
 import com.jotamarti.golocal.Models.Shop;
 import com.jotamarti.golocal.Models.User;
@@ -15,6 +16,7 @@ import java.util.List;
 public class MainActivityViewModel extends ViewModel {
 
     private User user;
+    public LatLng userCoordinates;
     private MutableLiveData<String> title = new MutableLiveData<>();
     private MutableLiveData<List<Post>> posts = new MutableLiveData<>();
     private MutableLiveData<List<Shop>> shopsList = new MutableLiveData<>();

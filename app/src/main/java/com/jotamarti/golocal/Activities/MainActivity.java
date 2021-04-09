@@ -103,9 +103,15 @@ public class MainActivity extends AppCompatActivity {
         User user = intent.getParcelableExtra("user");
         List<Shop> nearbyShops = intent.getParcelableArrayListExtra("nearbyShops");
 
+        Bundle bundle = intent.getBundleExtra("test");
+
+        List<Shop> test = bundle.getParcelableArrayList("test");
+
         mainActivityViewModel.setUser(user);
         mainActivityViewModel.setPosts();
         mainActivityViewModel.setShops();
+
+        mainActivityViewModel.userCoordinates = intent.getParcelableExtra("userCoordinates");
 
         /*final Observer<List<Post>> observador = new Observer<List<Post>>() {
             @Override

@@ -9,15 +9,21 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -33,6 +39,7 @@ import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.jotamarti.golocal.Activities.ShopDetailActivity;
 import com.jotamarti.golocal.App;
 import com.jotamarti.golocal.Models.Shop;
 import com.jotamarti.golocal.R;
@@ -49,6 +56,8 @@ public class MapsFragment extends Fragment {
     private GoogleMap mMap;
     private FusedLocationProviderClient fusedLocationClient;
     private MainActivityViewModel model;
+    private List<Shop> shopList;
+    List<Marker> markers;
 
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
 
@@ -56,34 +65,23 @@ public class MapsFragment extends Fragment {
         public void onMapReady(GoogleMap googleMap) {
             fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
             mMap = googleMap;
+            mMap.setInfoWindowAdapter(new CustomInfoWindowAdapter());
             //googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
             googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(getContext(), R.raw.map_style));
-            LatLng valencia = new LatLng(39.47427, -0.37548);
-            LatLng sydney = new LatLng(-34, 151);
 
-            //googleMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-            //googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-            //CameraUpdate yourLocation = CameraUpdateFactory.newLatLngZoom(valencia, 16);
-            //googleMap.animateCamera(yourLocation);
+            shopList = model.getShopsList().getValue();
+            populateMap();
 
-            List<Shop> shopList = model.getShopsList().getValue();
-
-            int height = 50;
-            int width = 50;
-            BitmapDrawable bitmapdraw = (BitmapDrawable) ResourcesCompat.getDrawable(requireActivity().getResources(), R.drawable.go_local_house, null);
-            Bitmap b = bitmapdraw.getBitmap();
-            Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
-
-            List<Marker> markers = new ArrayList<>();
-
-            for(int i = 0; i < shopList.size(); i++){
-                Shop currentShop = shopList.get(i);
-                Marker marker = googleMap.addMarker(new MarkerOptions().position(shopList.get(i).getCoordinates()).title(currentShop.getShopName()).snippet(currentShop.getAddress()).icon(BitmapDescriptorFactory.fromBitmap(smallMarker)));
-                marker.setTag(currentShop.getUserUid());
-                marker.showInfoWindow();
-                markers.add(marker);
-                Log.d(TAG, "Cordenadas de la tienda: " + "Latitud: " + shopList.get(i).getCoordinates().latitude + " Longitud: " + shopList.get(i).getCoordinates().longitude);
+            if (!checkHaveLocationPermission()) {
+                requestPermission();
+            } else {
+                googleMap.setMyLocationEnabled(true);
+                navigateToUserLocation();
             }
+
+            CameraUpdate yourLocation = CameraUpdateFactory.newLatLngZoom(model.userCoordinates, 16);
+            mMap.animateCamera(yourLocation);
+
             mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                 @Override
                 public boolean onMarkerClick(Marker marker) {
@@ -95,18 +93,87 @@ public class MapsFragment extends Fragment {
             mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
                 @Override
                 public void onInfoWindowClick(Marker marker) {
+                    //TODO: Intenta para irme al perfil de la tienda, primero tengo que sacar la tienda de la shoplist y luego pasarla
+                    Shop shop = null;
+                    for(int i = 0; i < shopList.size(); i++){
+                        if(shopList.get(i).getUserUid().equals(marker.getTag())){
+                            shop = shopList.get(i);
+                            break;
+                        }
+                    }
+                    Intent intent = new Intent(getContext(), ShopDetailActivity.class);
+                    intent.putExtra("shop", shop);
+                    intent.putExtra("caller", "MapsFragment");
+                    startActivity(intent);
                     Log.d(TAG, "He pulsado en el infoWindow de el marker con el TAG: " + marker.getTag());
                 }
             });
-
-            if (!checkHaveLocationPermission()) {
-                requestPermission();
-            } else {
-                googleMap.setMyLocationEnabled(true);
-                navigateToUserLocation();
-            }
         }
     };
+
+    private void populateMap() {
+        int height = 50;
+        int width = 50;
+        BitmapDrawable bitmapDrawable = (BitmapDrawable) ResourcesCompat.getDrawable(requireActivity().getResources(), R.drawable.go_local_house, null);
+        Bitmap bitmap = bitmapDrawable.getBitmap();
+        Bitmap smallMarker = Bitmap.createScaledBitmap(bitmap, width, height, false);
+
+        markers = new ArrayList<>();
+
+        for(int i = 0; i < shopList.size(); i++){
+            Shop currentShop = shopList.get(i);
+            Marker marker = mMap.addMarker(new MarkerOptions().position(shopList.get(i).getCoordinates()).title(currentShop.getShopName()).snippet(currentShop.getAddress()).icon(BitmapDescriptorFactory.fromBitmap(smallMarker)));
+            marker.setTag(currentShop.getUserUid());
+            markers.add(marker);
+        }
+    }
+
+    class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
+
+        private final View mContents;
+
+        CustomInfoWindowAdapter() {
+            mContents = getLayoutInflater().inflate(R.layout.custom_info_contents, null);
+        }
+
+        @Override
+        public View getInfoWindow(Marker marker) {
+            return null;
+        }
+
+        @Override
+        public View getInfoContents(Marker marker) {
+            render(marker, mContents);
+            return mContents;
+        }
+
+        private void render(Marker marker, View view) {
+            int badge;
+
+            badge = R.drawable.shop_header_mock;
+            ((ImageView) view.findViewById(R.id.customInfoContent_imageView)).setImageResource(badge);
+
+            String title = marker.getTitle();
+            TextView titleUi = ((TextView) view.findViewById(R.id.customInfoContent_textView_title));
+            if (title != null) {
+                SpannableString titleText = new SpannableString(title);
+                titleText.setSpan(new ForegroundColorSpan(Color.RED), 0, titleText.length(), 0);
+                titleUi.setText(titleText);
+            } else {
+                titleUi.setText("");
+            }
+
+            String snippet = marker.getSnippet();
+            TextView snippetUi = ((TextView) view.findViewById(R.id.customInfoContent_textView_text));
+            if (snippet != null) {
+                SpannableString snippetText = new SpannableString(snippet);
+                snippetText.setSpan(new ForegroundColorSpan(Color.BLUE), 0, snippet.length(), 0);
+                snippetUi.setText(snippetText);
+            } else {
+                snippetUi.setText("");
+            }
+        }
+    }
 
 
 
@@ -123,8 +190,7 @@ public class MapsFragment extends Fragment {
 
         super.onViewCreated(view, savedInstanceState);
 
-        SupportMapFragment mapFragment =
-                (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         if (mapFragment != null) {
             mapFragment.getMapAsync(callback);
         }

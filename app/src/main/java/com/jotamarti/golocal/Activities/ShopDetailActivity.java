@@ -31,7 +31,7 @@ public class ShopDetailActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
 
-        visitShopViewModel.setShop((Shop) intent.getSerializableExtra("shop"));
+        visitShopViewModel.setShop((Shop) intent.getParcelableExtra("shop"));
 
         FragmentManager manager = getSupportFragmentManager();
         FragmentTransaction transaction = manager.beginTransaction();

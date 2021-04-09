@@ -31,6 +31,7 @@ import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseUser;
+import com.jotamarti.golocal.BuildConfig;
 import com.jotamarti.golocal.Models.Shop;
 import com.jotamarti.golocal.Models.User;
 import com.jotamarti.golocal.R;
@@ -272,7 +273,7 @@ public class ShopConfigurationActivity extends AppCompatActivity {
         checkBoxNoNumber.setVisibility(View.INVISIBLE);
 
         btnSave.setEnabled(false);
-        Places.initialize(getApplicationContext(), getString(R.string.api_key));
+        Places.initialize(getApplicationContext(), BuildConfig.MAPS_API_KEY);
 
         // Listeners para activar el botón de guardado
         textInputShopDescription.addTextChangedListener(textWatcher);

@@ -78,6 +78,7 @@ public class ShopsDummy {
         shop.setWhatsapp(true);
         shop.setShopName("Tienda");
         shop.setAddress("C/Falsa 123");
+        shop.setDescription("Esta es una tienda muy chula");
         return shop;
     }
 
