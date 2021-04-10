@@ -1,9 +1,12 @@
 package com.jotamarti.golocal.UseCases.Users;
 
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.gson.JsonArray;
 import com.jotamarti.golocal.Utils.Errors.AuthErrors;
 import com.jotamarti.golocal.Utils.Errors.BackendErrors;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class UserCallbacks {
@@ -15,7 +18,7 @@ public class UserCallbacks {
     };
 
     public interface onResponseCallBackGetShopsNearby {
-        void onResponse(JSONObject jsonObject);
+        void onResponse(JSONArray jsonArray);
         void onErrorResponse(BackendErrors backendError);
     };
 

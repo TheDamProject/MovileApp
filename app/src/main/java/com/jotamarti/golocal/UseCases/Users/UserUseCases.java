@@ -9,7 +9,9 @@ import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.TaskExecutors;
@@ -19,14 +21,17 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthInvalidUserException;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.jotamarti.golocal.App;
 import com.jotamarti.golocal.R;
+import com.jotamarti.golocal.Utils.CustomJsonArrayRequest;
 import com.jotamarti.golocal.Utils.Errors.AuthErrors;
 import com.jotamarti.golocal.Utils.Errors.BackendErrors;
 import com.jotamarti.golocal.Utils.RequestQueueSingleton;
 import com.jotamarti.golocal.dummy.ShopsDummy;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -59,7 +64,7 @@ public class UserUseCases implements UserApi {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                if(error == null) {
+                if(error == null || error.networkResponse == null) {
                     onResponseCallBackGetUserFromBackend.onErrorResponse(BackendErrors.SERVER_ERROR);
                 }
                 Log.d(TAG, error.toString());
@@ -94,22 +99,21 @@ public class UserUseCases implements UserApi {
             e.printStackTrace();
         }
 
-
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, uri, mParams, new Response.Listener<JSONObject>() {
+        //TODO: Cambiar al post
+        CustomJsonArrayRequest getNearbyShopsRequest = new CustomJsonArrayRequest(Request.Method.GET, uri, mParams, new Response.Listener<JSONArray>() {
             @Override
-            public void onResponse(JSONObject response) {
+            public void onResponse(JSONArray response) {
                 onResponseCallBackGetShopsNearby.onResponse(response);
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                onResponseCallBackGetShopsNearby.onResponse(new JSONObject());
-                /*if(error == null) {
+                if(error == null) {
                     onResponseCallBackGetShopsNearby.onErrorResponse(BackendErrors.SERVER_ERROR);
                 }
                 Log.d(TAG, error.toString());
                 BackendErrors httpNetworkError = BackendErrors.getBackendError(error.networkResponse.statusCode);
-                onResponseCallBackGetShopsNearby.onErrorResponse(httpNetworkError);*/
+                onResponseCallBackGetShopsNearby.onErrorResponse(httpNetworkError);
             }
         }) {
             @Override
@@ -120,8 +124,8 @@ public class UserUseCases implements UserApi {
                 return params;
             }
         };
-        jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(0, 1, 5.0f));
-        RequestQueueSingleton.getInstance().addToRequestQueue(jsonObjectRequest);
+        getNearbyShopsRequest.setRetryPolicy(new DefaultRetryPolicy(0, 1, 5.0f));
+        RequestQueueSingleton.getInstance().addToRequestQueue(getNearbyShopsRequest);
     }
 
     @Override

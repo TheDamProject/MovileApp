@@ -45,7 +45,7 @@ public class ClientProfileFragment extends Fragment {
         txtViewEmail = view.findViewById(R.id.txtViewEmail);
         model = new ViewModelProvider(requireActivity()).get(MainActivityViewModel.class);
         model.setTitle("Client Profile");
-        User user = model.getUser();
+        User user = model.user;
         Picasso.get().load(user.getAvatar().toString()).into(imageView);
 
         //TODO: Eliminar tema email

@@ -3,6 +3,7 @@ package com.jotamarti.golocal.Repositories;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseUser;
 import com.jotamarti.golocal.Models.Client;
 import com.jotamarti.golocal.Models.Shop;
@@ -14,6 +15,7 @@ import com.jotamarti.golocal.Utils.Errors.AuthErrors;
 import com.jotamarti.golocal.Utils.Errors.BackendErrors;
 import com.jotamarti.golocal.dummy.ShopsDummy;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -81,10 +83,37 @@ public class UserRepository implements UserRepositoryFactory {
         nearbyShops = new MutableLiveData<>();
         userUsecases.getShopsNearby(Double.parseDouble(lat), Double.parseDouble(lang), new UserCallbacks.onResponseCallBackGetShopsNearby() {
             @Override
-            public void onResponse(JSONObject jsonObject) {
-                // TODO: Parsear la lista de tiendas.
-                ArrayList<Shop> shops = ShopsDummy.getITems();
-                nearbyShops.setValue(shops);
+            public void onResponse(JSONArray jsonArray) {
+                ArrayList<Shop> shopList = new ArrayList<>();
+                try {
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        Shop shop = new Shop();
+                        JSONObject jsonShopObject = jsonArray.getJSONObject(i);
+                        String uid = jsonShopObject.getString("uid");
+                        String name = jsonShopObject.getString("name");
+                        JSONObject jsonLocationObject = jsonShopObject.getJSONObject("location");
+                        double latitude = jsonLocationObject.getDouble("latitude");
+                        double longitude = jsonLocationObject.getDouble("longitude");
+                        String address = jsonLocationObject.getString("address");
+                        JSONObject jsonShopDataObject = jsonShopObject.getJSONObject("shopData");
+                        String description = jsonShopDataObject.getString("description");
+                        String phone = jsonShopDataObject.getString("phone");
+                        Boolean isWhatsapp = jsonShopDataObject.getBoolean("isWhatsapp");
+                        String logo = jsonShopDataObject.getString("logo");
+                        shop.setUserUid(uid);
+                        shop.setShopName(name);
+                        shop.setAddress(address);
+                        shop.setCoordinates(new LatLng(latitude, longitude));
+                        shop.setDescription(description);
+                        shop.setTelNumber(phone);
+                        shop.setWhatsapp(isWhatsapp);
+                        shop.setAvatar(logo);
+                        shopList.add(shop);
+                    }
+                } catch (JSONException jsonException) {
+                    backendErrorData.setValue(BackendErrors.CLIENT_ERROR);
+                }
+                nearbyShops.setValue(shopList);
             }
 
             @Override

@@ -30,48 +30,79 @@ public class PostDetailActivity extends AppCompatActivity {
 
     private PostDetailActivityViewModel postDetailActivityViewModel;
 
+    private String caller;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_detail);
+        setTitle(R.string.PostDetailActivity_title);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         initializeUi();
         Intent intent = getIntent();
-        String caller = intent.getStringExtra("caller");
+        caller = intent.getStringExtra("caller");
         postDetailActivityViewModel = new ViewModelProvider(this).get(PostDetailActivityViewModel.class);
         if(caller.equals("MainActivity")){
-            Post post = (Post) intent.getSerializableExtra("post");
-            Shop shop = (Shop) intent.getSerializableExtra("shop");
+            Post post = intent.getParcelableExtra("post");
+            Shop shop = intent.getParcelableExtra("shop");
             postDetailActivityViewModel.setPost(post);
             postDetailActivityViewModel.setShop(shop);
 
+            btnVisitShop.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(PostDetailActivity.this, ShopDetailActivity.class);
+                    intent.putExtra("shop", postDetailActivityViewModel.getShop());
+                    intent.putExtra("caller", "PostDetailActivityFromMainActivity");
+                    intent.putExtra("post", postDetailActivityViewModel.getPost());
+                    startActivity(intent);
+                }
+            });
+
+        } else if(caller.equals("MapsFragment")) {
+            Post post = intent.getParcelableExtra("post");
+            Shop shop = intent.getParcelableExtra("shop");
+            postDetailActivityViewModel.setPost(post);
+            postDetailActivityViewModel.setShop(shop);
+            btnVisitShop.setVisibility(View.INVISIBLE);
+        } else {
+            Post post = intent.getParcelableExtra("post");
+            postDetailActivityViewModel.setPost(post);
+            btnVisitShop.setVisibility(View.INVISIBLE);
         }
-        postDetailActivityViewModel = new ViewModelProvider(this).get(PostDetailActivityViewModel.class);
-        Log.d(TAG, "Imprimiendo post: " + postDetailActivityViewModel.getPost().getMessage());
         txtViewPostDetail.setText(postDetailActivityViewModel.getPost().getMessage());
         txtViewPostHeader.setText(postDetailActivityViewModel.getPost().getHeader());
-        Picasso.get().load(postDetailActivityViewModel.getPost().getImageUrl().toString()).into(imageViewPostImage);
+        Picasso.get().load(postDetailActivityViewModel.getPost().getImageUrl()).into(imageViewPostImage);
 
-        btnVisitShop.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(PostDetailActivity.this, ShopDetailActivity.class);
-                intent.putExtra("shop", postDetailActivityViewModel.getShop());
-                intent.putExtra("caller", "PostDetailsActivity");
-                startActivity(intent);
-            }
-        });
+
     }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-        intent.putExtra("caller", "postDetailActivity");
-        startActivity(intent);
+        showNextActivity();
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        showNextActivity();
+    }
+
+    public void showNextActivity(){
+        if (caller.equals("MainActivity")) {
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.putExtra("caller", "postDetailActivity");
+            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            startActivity(intent);
+        } else {
+            Intent intent = new Intent(this, ShopDetailActivity.class);
+            intent.putExtra("caller", "MapsFragment");
+            intent.putExtra("shop", postDetailActivityViewModel.getShop());
+            startActivity(intent);
+        }
     }
 
     private void initializeUi(){
@@ -80,29 +111,5 @@ public class PostDetailActivity extends AppCompatActivity {
         imageViewPostImage = findViewById(R.id.PostDetailsActivity_imageView_postImage);
         btnVisitShop = findViewById(R.id.PostDetailActivity_btn_visitShop);
         postDetailActivityViewModel = new ViewModelProvider(PostDetailActivity.this).get(PostDetailActivityViewModel.class);
-    }
-
-    @Override
-    protected void onDestroy() {
-        Log.d(TAG, "onDestroy");
-        super.onDestroy();
-    }
-
-    @Override
-    protected void onStop() {
-        Log.d(TAG, "onStop");
-        super.onStop();
-    }
-
-    @Override
-    protected void onStart() {
-        Log.d(TAG, "onStart");
-        super.onStart();
-    }
-
-    @Override
-    protected void onRestart() {
-        Log.d(TAG, "onRestart");
-        super.onRestart();
     }
 }

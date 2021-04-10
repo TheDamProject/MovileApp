@@ -170,7 +170,7 @@ public class ShopConfigurationActivity extends AppCompatActivity {
             Intent intent = new Intent(ShopConfigurationActivity.this, MainActivity.class);
             intent.putExtra("user", shopConfigurationViewModel.shop);
             intent.putParcelableArrayListExtra("nearbyShops", shopConfigurationViewModel.nearbyShops);
-            intent.putExtra("caller", "ShopConfiguration");
+            intent.putExtra("caller", "ShopConfigurationActivity");
             startActivity(intent);
         }
     }

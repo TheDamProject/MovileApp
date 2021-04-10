@@ -17,7 +17,6 @@ import com.jotamarti.golocal.Models.Post;
 import com.jotamarti.golocal.Models.Shop;
 import com.jotamarti.golocal.R;
 import com.jotamarti.golocal.ViewModels.MainActivityViewModel;
-import com.jotamarti.golocal.dummy.DummyContent.DummyItem;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -30,13 +29,16 @@ public class PostsRecyclerViewAdapter extends RecyclerView.Adapter<PostsRecycler
 
     private final List<Post> postsList;
     private List<Shop> shopList;
+    private Shop shop;
     private final String TAG = "PostsRecyclerVAdapter";
     private Context context;
     private MainActivityViewModel model;
+    private String caller;
 
-    public PostsRecyclerViewAdapter(List<Post> items, Context context) {
+    public PostsRecyclerViewAdapter(List<Post> items, Context context, String caller) {
         postsList = items;
         this.context = context;
+        this.caller = caller;
     }
 
     @Override
@@ -55,24 +57,40 @@ public class PostsRecyclerViewAdapter extends RecyclerView.Adapter<PostsRecycler
         holder.parent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG, "Hello from POST REC VIEW ADAPTER");
                 Intent intent = new Intent(context, PostDetailActivity.class);
                 intent.putExtra("post", postsList.get(position));
-                intent.putExtra("caller", "MainActivity");
+                if (caller.equals("MainActivity")){
+                    intent.putExtra("caller", "MainActivity");
 
-                String shopId = postsList.get(position).getCompanyUid();
-                Shop theShop = null;
-                Log.d(TAG, String.valueOf(shopList.size()));
-                for (int i = 0; i < shopList.size(); i++){
-                    Log.d(TAG, "El shop actual ID " + shopList.get(i).getUserUid());
-                    Log.d(TAG, "El shopId" + shopId);
-                    if(shopList.get(i).getUserUid().equals(shopId)){
-                        theShop = shopList.get(i);
-                        break;
+                    String shopId = postsList.get(position).getCompanyUid();
+                    Shop theShop = null;
+                    Log.d(TAG, String.valueOf(shopList.size()));
+                    for (int i = 0; i < shopList.size(); i++){
+                        Log.d(TAG, "El shop actual ID " + shopList.get(i).getUserUid());
+                        Log.d(TAG, "El shopId" + shopId);
+                        if(shopList.get(i).getUserUid().equals(shopId)){
+                            theShop = shopList.get(i);
+                            break;
+                        }
                     }
+                    intent.putExtra("shop", theShop);
+                    context.startActivity(intent);
+                } else if(caller.equals("PostDetailActivityFromMainActivity")){
+                    intent.putExtra("caller", "MainActivity");
+                    intent.putExtra("post", postsList.get(position));
+                    intent.putExtra("shop", shop);
+                    context.startActivity(intent);
+                } else if (caller.equals("MapsFragment")) {
+                    intent.putExtra("caller", caller);
+                    intent.putExtra("post", postsList.get(position));
+                    intent.putExtra("shop", shop);
+                    context.startActivity(intent);
+                } else {
+                    intent.putExtra("caller", "visit");
+                    intent.putExtra("post", postsList.get(position));
+                    context.startActivity(intent);
                 }
-                intent.putExtra("shop", theShop);
-                context.startActivity(intent);
+
             }
         });
     }
@@ -86,6 +104,10 @@ public class PostsRecyclerViewAdapter extends RecyclerView.Adapter<PostsRecycler
         this.shopList = shopList;
     }
 
+    public void setShop(Shop shop){
+        this.shop = shop;
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final View mView;
         public final TextView cardHeader;
@@ -97,9 +119,9 @@ public class PostsRecyclerViewAdapter extends RecyclerView.Adapter<PostsRecycler
         public ViewHolder(View view) {
             super(view);
             mView = view;
-            cardHeader = (TextView) view.findViewById(R.id.txtViewHeaderCardView);
-            cardMessage = (TextView) view.findViewById(R.id.txtViewMessageCardView);
-            postImage = (ImageView) view.findViewById(R.id.PostDetailsActivity_imageView_postImage);
+            cardHeader = view.findViewById(R.id.txtViewHeaderCardView);
+            cardMessage = view.findViewById(R.id.txtViewMessageCardView);
+            postImage = view.findViewById(R.id.PostDetailsActivity_imageView_postImage);
             parent = view.findViewById(R.id.parent);
         }
 

@@ -33,6 +33,11 @@
     <!-- Backend TAGS -->
     <string name="get_user_usecase">GET_USER_USECASE</string>
     <string name="register_user_usecase">REGISTER_USER_USECASE</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <!-- ShopDetailActivity -->
+    <string name="ShopDetailActivity_title">Shop Detail</string>
+    <!-- PostDetailActivity -->
+    <string name="PostDetailActivity_title">Post Detail</string>
+    <!-- MainActivity -->
+    <string name="MainActivity_exitMessage">Are you sure you want to exit?</string>
+    <string name="MainActivity_exitMessage_yes">Yes</string>
 </resources>

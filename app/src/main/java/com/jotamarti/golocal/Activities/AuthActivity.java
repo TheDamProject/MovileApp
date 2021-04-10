@@ -164,7 +164,6 @@ public class AuthActivity extends AppCompatActivity {
             } else {
                 showMainActivity();
             }
-            //TODO: Meter la lista de tiendas en el view model.
             authActivityViewModel.getNearbyShopsList().removeObservers(this);
         });
     }

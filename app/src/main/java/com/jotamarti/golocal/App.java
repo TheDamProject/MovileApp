@@ -3,10 +3,15 @@ package com.jotamarti.golocal;
 import android.app.Application;
 import android.content.Context;
 
+import com.jotamarti.golocal.Models.Shop;
+import com.jotamarti.golocal.Models.User;
+
+import java.util.List;
+
 public class App extends Application {
 
     private static Context mContext;
-    private static Boolean appInDevelopment = true;
+    private static final Boolean appInDevelopment = true;
 
     @Override
     public void onCreate() {

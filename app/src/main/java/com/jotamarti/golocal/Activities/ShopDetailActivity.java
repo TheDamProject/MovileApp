@@ -10,50 +10,81 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 
-import com.google.android.gms.dynamic.SupportFragmentWrapper;
 import com.jotamarti.golocal.Fragments.ShopProfileFragment;
-import com.jotamarti.golocal.Models.Shop;
 import com.jotamarti.golocal.R;
-import com.jotamarti.golocal.ViewModels.MainActivityViewModel;
-import com.jotamarti.golocal.ViewModels.VisitShopViewModel;
+import com.jotamarti.golocal.ViewModels.ShopDetailActivityViewModel;
 
 public class ShopDetailActivity extends AppCompatActivity {
 
-    private VisitShopViewModel visitShopViewModel;
+    private ShopDetailActivityViewModel shopDetailActivityViewModel;
+
+    private String caller;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_shop_detail);
-        initializeUI();
-
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        setTitle(getString(R.string.ShopDetailActivity_title));
+        initializeViewModel();
+        getDataFromIntent();
+        initializeFragment();
+    }
 
+
+
+    private void getDataFromIntent() {
+        // Puede estar abierto por MapsFragment y PostDetailActiviy
         Intent intent = getIntent();
+        shopDetailActivityViewModel.shop = intent.getParcelableExtra("shop");
+        caller = intent.getStringExtra("caller");
+        if(caller.equals("PostDetailActivityFromMainActivity")){
+            shopDetailActivityViewModel.post = intent.getParcelableExtra("post");
+        }
+    }
 
-        visitShopViewModel.setShop((Shop) intent.getParcelableExtra("shop"));
-
+    private void initializeFragment() {
         FragmentManager manager = getSupportFragmentManager();
         FragmentTransaction transaction = manager.beginTransaction();
         Bundle bundle = new Bundle();
-        bundle.putString("caller", "visit");
-        bundle.putParcelable("shop", visitShopViewModel.getShop());
+        bundle.putString("caller", caller);
         transaction.add(R.id.activityShop_fragment_parent, ShopProfileFragment.class, bundle);
         transaction.addToBackStack(null);
         transaction.commit();
-
     }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        Intent intent = new Intent(this, PostDetailActivity.class);
-        intent.putExtra("caller", "ShopDetailsActivity");
-        intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-        startActivity(intent);
+        showNextActivity();
         return super.onOptionsItemSelected(item);
     }
 
-    private void initializeUI(){
-        visitShopViewModel = new ViewModelProvider(this).get(VisitShopViewModel.class);
+    @Override
+    public void onBackPressed() {
+        showNextActivity();
+    }
+
+    public void showNextActivity() {
+        Intent intent;
+        if (caller.equals("MapsFragment")) {
+            intent = new Intent(this, MainActivity.class);
+            intent.putExtra("caller", "ShopDetailsActivityFromMap");
+            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+        } else if(caller.equals("PostDetailActivityFromMainActivity")) { // caller equals PostDetailActivity
+            intent = new Intent(this, PostDetailActivity.class);
+            intent.putExtra("caller", "MainActivity");
+            intent.putExtra("shop", shopDetailActivityViewModel.shop);
+            intent.putExtra("post", shopDetailActivityViewModel.post);
+        } else {
+            intent = new Intent(this, PostDetailActivity.class);
+            intent.putExtra("caller", "ShopDetailsActivityFromPost");
+            intent.putExtra("shop", shopDetailActivityViewModel.shop);
+            intent.putExtra("post", shopDetailActivityViewModel.post);
+        }
+        startActivity(intent);
+    }
+
+    private void initializeViewModel() {
+        shopDetailActivityViewModel = new ViewModelProvider(this).get(ShopDetailActivityViewModel.class);
     }
 }

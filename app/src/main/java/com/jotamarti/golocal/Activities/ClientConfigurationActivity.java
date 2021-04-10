@@ -229,7 +229,7 @@ public class ClientConfigurationActivity extends AppCompatActivity {
         Intent AuthActivityIntent = getIntent();
         clientConfigurationViewModel.email = AuthActivityIntent.getStringExtra("email");
         clientConfigurationViewModel.password = AuthActivityIntent.getStringExtra("password");
-        clientConfigurationViewModel.nearbyShops = AuthActivityIntent.getParcelableExtra("nearbyShops");
+        clientConfigurationViewModel.nearbyShops = AuthActivityIntent.getParcelableArrayListExtra("nearbyShops");
     }
 
     private void initializeTextWatcher() {
