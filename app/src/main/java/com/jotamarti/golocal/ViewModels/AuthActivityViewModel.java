@@ -34,7 +34,7 @@ public class AuthActivityViewModel extends ViewModel {
     private LiveData<BackendErrors> userBackendError;
     private LiveData<ArrayList<Shop>> nearbyShops;
 
-    // Activity Views data
+    // Activity data
     public String currentInsertedEmail;
     public String currentInsertedPassword;
     public LatLng userCoordinates;

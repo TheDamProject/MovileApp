@@ -29,6 +29,7 @@ import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.model.TypeFilter;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
+import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseUser;
 import com.jotamarti.golocal.BuildConfig;
@@ -63,6 +64,7 @@ public class ShopConfigurationActivity extends AppCompatActivity {
     private Button btnUploadImage;
     private Button btnSave;
     private ImageView imageViewShopHeader;
+    private CircularProgressIndicator spinnerLoading;
 
     // Views from the autoCompleteFragment
     View autoCompleteFragmentView;
@@ -84,6 +86,7 @@ public class ShopConfigurationActivity extends AppCompatActivity {
         initializeTextWatcher();
         initializeUi();
         initializeAutoCompleteFragment();
+        manageUserInput(true);
 
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
@@ -92,7 +95,7 @@ public class ShopConfigurationActivity extends AppCompatActivity {
                 shopConfigurationViewModel.shop.setCoordinates(place.getLatLng());
                 shopConfigurationViewModel.shop.setAddress(place.getName());
 
-                if (!directionHasNumber(shopConfigurationViewModel.shop.getShopName())) {
+                if (!directionHasNumber(shopConfigurationViewModel.shop.getAddress())) {
                     showInputNumber();
                 } else {
                     hideInputNumber();
@@ -129,7 +132,8 @@ public class ShopConfigurationActivity extends AppCompatActivity {
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                manageUserInput(false);
+                btnSave.setEnabled(false);
                 shopConfigurationViewModel.shop.setDescription(textInputShopDescription.getText().toString());
                 shopConfigurationViewModel.shop.setTelNumber(editTextPhone.getText().toString());
                 shopConfigurationViewModel.shop.setWhatsapp(isWhatsapp.isChecked());
@@ -145,6 +149,7 @@ public class ShopConfigurationActivity extends AppCompatActivity {
     private void observeRegisteredUserInAuthService(){
         shopConfigurationViewModel.getAuthUser().observe(this, (FirebaseUser firebaseUser) -> {
             shopConfigurationViewModel.firebaseUser = firebaseUser;
+            shopConfigurationViewModel.shop.setUserUid(firebaseUser.getUid());
             // Si llegamos aqui hemos creado correctamente el usuario en firebase. Ahora tenemos que crearlo en nuestro backend.
             shopConfigurationViewModel.registerShopInBackend();
             observeRegisteredUserInBackend();
@@ -189,17 +194,21 @@ public class ShopConfigurationActivity extends AppCompatActivity {
                     CustomToast.showToast(ShopConfigurationActivity.this, getString(R.string.error_register_generic), CustomToast.mode.SHORTER);
             }
             shopConfigurationViewModel.firebaseUser.delete();
+            manageUserInput(true);
+            btnSave.setEnabled(true);
         });
     }
 
     private void manageAuthServiceErrors(){
         shopConfigurationViewModel.getAuthError().observe(this, (AuthErrors error) -> {
             CustomToast.showToast(ShopConfigurationActivity.this, getString(R.string.error_register_generic), CustomToast.mode.SHORTER);
+            manageUserInput(true);
+            btnSave.setEnabled(true);
         });
     }
 
     private void checkAllDataInserted() {
-        if (editTextPhone.getText().toString().length() > 0 && textInputShopDescription.getText().toString().length() > 0 && shopConfigurationViewModel.shop.getShopName().length() > 0 && editTextName.getText().toString().length() > 0) {
+        if (editTextPhone.getText().toString().length() > 0 && textInputShopDescription.getText().toString().length() > 0 && shopConfigurationViewModel.shop.getAddress().length() > 0 && editTextName.getText().toString().length() > 0 && shopConfigurationViewModel.imageInserted) {
             btnSave.setEnabled(true);
         } else {
             btnSave.setEnabled(false);
@@ -231,7 +240,10 @@ public class ShopConfigurationActivity extends AppCompatActivity {
             if (resultCode == RESULT_OK) {
                 Uri uri = result.getUri();
                 shopConfigurationViewModel.imageBase64 = ImageUtil.UriToBase64(uri);
+                shopConfigurationViewModel.shop.setAvatar(shopConfigurationViewModel.imageBase64);
                 imageViewShopHeader.setImageURI(uri);
+                shopConfigurationViewModel.imageInserted = true;
+                checkAllDataInserted();
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
@@ -267,7 +279,7 @@ public class ShopConfigurationActivity extends AppCompatActivity {
         textInputShopDescription = findViewById(R.id.ShopConfigurationActivity_textField_shopDescription);
         isWhatsapp = findViewById(R.id.ShopConfigurationActivity_checkBox_isWhatsapp);
         editTextName = findViewById(R.id.ShopConfigurationActivity_editText_shopName);
-
+        spinnerLoading = findViewById(R.id.ShopConfigurationActivity_spinner_loading);
 
         txtViewNumber.setVisibility(View.INVISIBLE);
         checkBoxNoNumber.setVisibility(View.INVISIBLE);
@@ -281,9 +293,21 @@ public class ShopConfigurationActivity extends AppCompatActivity {
         editTextPhone.addTextChangedListener(textWatcher);
     }
 
+    private void manageUserInput(Boolean state){
+        editTextPhone.setEnabled(state);
+        editTextName.setEnabled(state);
+        textInputShopDescription.setEnabled(state);
+        btnUploadImage.setEnabled(state);
+        autoCompleteFragmentEditText.setEnabled(state);
+        if (state) {
+            spinnerLoading.setVisibility(View.INVISIBLE);
+        } else {
+            spinnerLoading.setVisibility(View.VISIBLE);
+        }
+    }
+
     private void initializeAutoCompleteFragment() {
-        autocompleteFragment = (AutocompleteSupportFragment)
-                getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
+        autocompleteFragment = (AutocompleteSupportFragment) getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
 
 
         autocompleteFragment.setTypeFilter(TypeFilter.ADDRESS);
@@ -348,7 +372,9 @@ public class ShopConfigurationActivity extends AppCompatActivity {
             shopConfigurationViewModel.email = AuthActivityIntent.getStringExtra("email");
             shopConfigurationViewModel.password = AuthActivityIntent.getStringExtra("password");
             shopConfigurationViewModel.nearbyShops = AuthActivityIntent.getParcelableArrayListExtra("nearbyShops");
+            shopConfigurationViewModel.userCoordinates = AuthActivityIntent.getParcelableExtra("userCoordinates");
             shopConfigurationViewModel.shop = new Shop();
+            shopConfigurationViewModel.shop.setAddress("");
         } else {
             shopConfigurationViewModel.shop = AuthActivityIntent.getParcelableExtra("user");
         }

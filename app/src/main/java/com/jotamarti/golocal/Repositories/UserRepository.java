@@ -8,6 +8,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.jotamarti.golocal.Models.Client;
 import com.jotamarti.golocal.Models.Shop;
 import com.jotamarti.golocal.Models.User;
+import com.jotamarti.golocal.UseCases.Shops.ShopParser;
 import com.jotamarti.golocal.UseCases.Users.UserCallbacks;
 import com.jotamarti.golocal.UseCases.Users.UserRepositoryFactory;
 import com.jotamarti.golocal.UseCases.Users.UserUseCases;
@@ -87,27 +88,8 @@ public class UserRepository implements UserRepositoryFactory {
                 ArrayList<Shop> shopList = new ArrayList<>();
                 try {
                     for (int i = 0; i < jsonArray.length(); i++) {
-                        Shop shop = new Shop();
                         JSONObject jsonShopObject = jsonArray.getJSONObject(i);
-                        String uid = jsonShopObject.getString("uid");
-                        String name = jsonShopObject.getString("name");
-                        JSONObject jsonLocationObject = jsonShopObject.getJSONObject("location");
-                        double latitude = jsonLocationObject.getDouble("latitude");
-                        double longitude = jsonLocationObject.getDouble("longitude");
-                        String address = jsonLocationObject.getString("address");
-                        JSONObject jsonShopDataObject = jsonShopObject.getJSONObject("shopData");
-                        String description = jsonShopDataObject.getString("description");
-                        String phone = jsonShopDataObject.getString("phone");
-                        Boolean isWhatsapp = jsonShopDataObject.getBoolean("isWhatsapp");
-                        String logo = jsonShopDataObject.getString("logo");
-                        shop.setUserUid(uid);
-                        shop.setShopName(name);
-                        shop.setAddress(address);
-                        shop.setCoordinates(new LatLng(latitude, longitude));
-                        shop.setDescription(description);
-                        shop.setTelNumber(phone);
-                        shop.setWhatsapp(isWhatsapp);
-                        shop.setAvatar(logo);
+                        Shop shop = ShopParser.parseShopFromJsonObject(jsonShopObject);
                         shopList.add(shop);
                     }
                 } catch (JSONException jsonException) {

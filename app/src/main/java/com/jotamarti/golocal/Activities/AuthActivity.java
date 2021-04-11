@@ -125,6 +125,11 @@ public class AuthActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onRestart() {
+        manageUserInput(true);
+        super.onRestart();
+    }
 
     private void tryToLoginUser() {
         if (checkBoxRegister.isChecked()) {
@@ -178,6 +183,7 @@ public class AuthActivity extends AppCompatActivity {
                     } else {
                         CustomToast.showToast(AuthActivity.this, getString(R.string.error_wrong_password), CustomToast.mode.SHORTER);
                     }
+                    manageUserInput(true);
                     break;
                 case EMAIL_NOT_FOUND:
                     if (checkBoxRegister.isChecked()) {
@@ -186,13 +192,14 @@ public class AuthActivity extends AppCompatActivity {
                         observeListShopsFromBackend();
                     } else {
                         CustomToast.showToast(AuthActivity.this, getString(R.string.error_email_not_found), CustomToast.mode.SHORTER);
+                        manageUserInput(true);
                     }
                     break;
                 default:
                     CustomToast.showToast(AuthActivity.this, getString(R.string.error_login_generic), CustomToast.mode.SHORTER);
+                    manageUserInput(true);
                     break;
             }
-            manageUserInput(true);
         });
     }
 
@@ -211,6 +218,7 @@ public class AuthActivity extends AppCompatActivity {
             manageUserInput(true);
         });
         authActivityViewModel.getUserBackendError().observe(this, (BackendErrors error) -> {
+            Log.d(TAG, "Ejecutando el userBackendError");
             switch (error) {
                 case REDIRECTION:
                     CustomToast.showToast(AuthActivity.this, getString(R.string.error_login_generic), CustomToast.mode.SHORTER);
@@ -232,6 +240,7 @@ public class AuthActivity extends AppCompatActivity {
         Intent intent;
         if (checkBoxShop.isChecked()) {
             intent = new Intent(AuthActivity.this, ShopConfigurationActivity.class);
+            intent.putExtra("cordinates", authActivityViewModel.userCoordinates);
         } else {
             intent = new Intent(AuthActivity.this, ClientConfigurationActivity.class);
         }

@@ -53,7 +53,7 @@
         android:layout_marginStart="24dp"
         android:paddingLeft="4dp"
         android:layout_marginTop="40dp"
-        android:text="Nickname:"
+        android:text="@string/ClientConfigurationActivity_editText_nickName"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/background" />
 
@@ -64,16 +64,25 @@
         android:layout_marginStart="24dp"
         android:layout_marginTop="4dp"
         android:inputType="textPersonName"
-        android:hint="Nickname"
+        android:hint="@string/ClientConfigurationActivity_editText_nickName"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView4" />
+
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/ClientConfigurationActivity_spinner_loading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/ClientConfigurationActivity_btn_save" />
 
     <Button
         android:id="@+id/ClientConfigurationActivity_btn_save"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="4dp"
-        android:text="SAVE"
+        android:text="@string/ClientConfigurationActivity_btn_save"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

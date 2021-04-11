@@ -31,6 +31,10 @@ public class Post implements Parcelable {
         this.imageUrl = parcel.readString();
     }
 
+    public Post(){
+
+    }
+
     public String getImageUrl() {
         return imageUrl;
     }

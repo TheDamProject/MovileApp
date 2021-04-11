@@ -155,6 +155,15 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/ShopConfigurationActivity_spinner_loading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/ShopConfigurationActivity_btn_save" />
+
     <EditText
         android:id="@+id/ShopConfigurationActivity_editText_shopName"
         android:layout_width="match_parent"

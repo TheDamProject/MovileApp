@@ -8,6 +8,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.gson.JsonObject;
 import com.jotamarti.golocal.App;
+import com.jotamarti.golocal.BuildConfig;
 import com.jotamarti.golocal.Models.Shop;
 import com.jotamarti.golocal.R;
 import com.jotamarti.golocal.Utils.Errors.BackendErrors;
@@ -37,17 +38,16 @@ public class ShopUsescases implements ShopApi{
         try {
             params.put("uid", shop.getUserUid());
             params.put("name", shop.getShopName());
-            params.put("location_id",  null);
-            params.put("latitude", String.valueOf(shop.getCoordinates().latitude));
-            params.put("longitude", String.valueOf(shop.getCoordinates().longitude));
+            //params.put("location_id",  null);
+            params.put("latitude", shop.getCoordinates().latitude);
+            params.put("longitude", shop.getCoordinates().longitude);
             params.put("address", shop.getAddress());
-            params.put("id_google", "test");
-            params.put("shopData_id", null);
-            params.put("phone", Integer.valueOf(shop.getTelNumber()));
+            //params.put("id_google", "test");
+            //params.put("shopData_id", null);
+            params.put("phone", 55555);
             params.put("isWhatsapp", shop.isWhatsapp());
             params.put("description", shop.getDescription());
-            params.put("category_id", null);
-            params.put("category", "test");
+            params.put("category", "testing category");
             params.put("logo", shop.getAvatar());
         } catch (JSONException e) {
             e.printStackTrace();
@@ -73,7 +73,7 @@ public class ShopUsescases implements ShopApi{
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put("Content-Type", "application/json; charset=UTF-8");
-                params.put("X-AUTH-TOKEN", "TC9[L7<D4gd)5{6<!=H!jUYE7mum<H~NS4yJo/a+7(3v>f5n+_49u|_a4|7W");
+                params.put("X-AUTH-TOKEN", BuildConfig.BACKEND_API_KEY);
                 return params;
             }
 

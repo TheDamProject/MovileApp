@@ -121,10 +121,6 @@ public class MainActivity extends AppCompatActivity {
         User user = mainActivityViewModel.intent.getParcelableExtra("user");
         List<Shop> nearbyShops = mainActivityViewModel.intent.getParcelableArrayListExtra("nearbyShops");
 
-        Bundle bundle = mainActivityViewModel.intent.getBundleExtra("test");
-
-        List<Shop> test = bundle.getParcelableArrayList("test");
-
         mainActivityViewModel.user = user;
         mainActivityViewModel.setPosts();
         mainActivityViewModel.setShops();

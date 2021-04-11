@@ -3,6 +3,7 @@ package com.jotamarti.golocal.ViewModels;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseUser;
 import com.jotamarti.golocal.Models.Shop;
 import com.jotamarti.golocal.Repositories.ShopRepository;
@@ -25,6 +26,8 @@ public class ShopConfigurationViewModel extends ViewModel {
     public String caller;
     public Shop shop;
     public String imageBase64;
+    public Boolean imageInserted = false;
+    public LatLng userCoordinates;
 
     private ShopRepositoryFactory shopRepository;
 

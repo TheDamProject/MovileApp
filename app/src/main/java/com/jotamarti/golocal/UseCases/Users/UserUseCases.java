@@ -92,15 +92,15 @@ public class UserUseCases implements UserApi {
         JSONObject mParams = new JSONObject();
 
         try {
-            mParams.put("lat", lat);
-            mParams.put("lat", lang);
+            mParams.put("latitude", lat);
+            mParams.put("longitude", lang);
             mParams.put("range", 5000);
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
         //TODO: Cambiar al post
-        CustomJsonArrayRequest getNearbyShopsRequest = new CustomJsonArrayRequest(Request.Method.GET, uri, mParams, new Response.Listener<JSONArray>() {
+        CustomJsonArrayRequest getNearbyShopsRequest = new CustomJsonArrayRequest(Request.Method.POST, uri, mParams, new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
                 onResponseCallBackGetShopsNearby.onResponse(response);
@@ -108,7 +108,7 @@ public class UserUseCases implements UserApi {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                if(error == null) {
+                if(error == null || error.networkResponse == null) {
                     onResponseCallBackGetShopsNearby.onErrorResponse(BackendErrors.SERVER_ERROR);
                 }
                 Log.d(TAG, error.toString());

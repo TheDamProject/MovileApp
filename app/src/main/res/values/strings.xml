@@ -19,6 +19,9 @@
     <string name="ShopConfigurationActivity_check_noNumber">No number</string>
     <!-- ClientConfigurationActivity Text -->
     <string name="ClientConfigurationActivity_title">Client Configuration</string>
+    <string name="ClientConfigurationActivity_textView_nickName">Nickname:</string>
+    <string name="ClientConfigurationActivity_editText_nickName">Nickname</string>
+    <string name="ClientConfigurationActivity_btn_save">SAVE</string>
     <!-- Errors -->
     <string name="error_invalid_email">Please check your email.</string>
     <string name="error_email_not_found">This account doesn\'t exists.</string>

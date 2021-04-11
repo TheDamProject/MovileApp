@@ -10,29 +10,19 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.maps.CameraUpdate;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.firebase.auth.FirebaseUser;
-import com.jotamarti.golocal.App;
-import com.jotamarti.golocal.Models.Shop;
 import com.jotamarti.golocal.Models.User;
 import com.jotamarti.golocal.R;
 import com.jotamarti.golocal.Utils.CustomToast;
@@ -43,10 +33,6 @@ import com.jotamarti.golocal.ViewModels.ClientConfigurationViewModel;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
-import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
-import java.util.ArrayList;
-
 public class ClientConfigurationActivity extends AppCompatActivity {
 
     private final String TAG = "ClientConfigurationAct";
@@ -56,7 +42,8 @@ public class ClientConfigurationActivity extends AppCompatActivity {
     private ImageView clientAvatar;
     private FloatingActionButton btnChoosePicture;
     private Button btnSave;
-    private EditText clientNickName;
+    private EditText editTextClientNickName;
+    private CircularProgressIndicator spinnerLoading;
 
     private TextWatcher textWatcher;
 
@@ -90,7 +77,8 @@ public class ClientConfigurationActivity extends AppCompatActivity {
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                clientConfigurationViewModel.nickName = clientNickName.getText().toString();
+                manageUserInput(false);
+                clientConfigurationViewModel.nickName = editTextClientNickName.getText().toString();
                 clientConfigurationViewModel.registerClientInAuthService(clientConfigurationViewModel.email, clientConfigurationViewModel.password);
                 observeRegisteredUserInAuthService();
             }
@@ -100,8 +88,6 @@ public class ClientConfigurationActivity extends AppCompatActivity {
     private void observeRegisteredUserInAuthService(){
         clientConfigurationViewModel.getAuthUser().observe(this, (FirebaseUser firebaseUser) -> {
             clientConfigurationViewModel.firebaseUser = firebaseUser;
-            Log.d(TAG, "UID recibido por el observador " + firebaseUser.getUid());
-            Log.d(TAG, "UID recibido en el ViewModel " + clientConfigurationViewModel.firebaseUser.getUid());
             // Si llegamos aqui hemos creado correctamente el usuario en firebase. Ahora tenemos que crearlo en nuestro backend.
             clientConfigurationViewModel.registerClientInBackend(firebaseUser.getUid(), clientConfigurationViewModel.imageBase64, clientConfigurationViewModel.nickName);
             observeRegisteredUserInBackend();
@@ -139,14 +125,15 @@ public class ClientConfigurationActivity extends AppCompatActivity {
                     CustomToast.showToast(ClientConfigurationActivity.this, getString(R.string.error_register_generic), CustomToast.mode.SHORTER);
             }
             // If we reach this point we delete the user in firebase because we are not able to register it in our backend
-            Log.d(TAG, "El uid del cliente a borrar " + clientConfigurationViewModel.firebaseUser.getUid());
             clientConfigurationViewModel.firebaseUser.delete();
+            manageUserInput(true);
         });
     }
 
     private void manageAuthServiceErrors(){
         clientConfigurationViewModel.getAuthError().observe(this, (AuthErrors error) -> {
             CustomToast.showToast(ClientConfigurationActivity.this, getString(R.string.error_register_generic), CustomToast.mode.SHORTER);
+            manageUserInput(true);
         });
     }
 
@@ -187,9 +174,9 @@ public class ClientConfigurationActivity extends AppCompatActivity {
             if (resultCode == RESULT_OK) {
                 Uri uri = result.getUri();
                 clientConfigurationViewModel.imageBase64 = ImageUtil.UriToBase64(uri);
-                checkAllDataInserted();
-                clientAvatar.setImageURI(result.getUri());
                 clientConfigurationViewModel.avatarInserted = true;
+                clientAvatar.setImageURI(result.getUri());
+                checkAllDataInserted();
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
@@ -200,11 +187,23 @@ public class ClientConfigurationActivity extends AppCompatActivity {
     }
 
     private void checkAllDataInserted() {
-        if (clientNickName.getText().toString().length() > 0 && clientConfigurationViewModel.avatarInserted) {
+        if (editTextClientNickName.getText().toString().length() > 0 && clientConfigurationViewModel.avatarInserted) {
             btnSave.setEnabled(true);
         } else {
             btnSave.setEnabled(false);
         }
+    }
+
+    private void manageUserInput(Boolean state){
+        btnSave.setEnabled(state);
+        btnChoosePicture.setEnabled(state);
+        editTextClientNickName.setEnabled(state);
+        if (state) {
+            spinnerLoading.setVisibility(View.INVISIBLE);
+        } else {
+            spinnerLoading.setVisibility(View.VISIBLE);
+        }
+
     }
 
     // Initialization
@@ -213,11 +212,12 @@ public class ClientConfigurationActivity extends AppCompatActivity {
         clientAvatar = findViewById(R.id.ClientConfigurationActivity_imageView_userAvatar);
         btnChoosePicture = findViewById(R.id.ClientConfigurationActivity_btn_choosePicture);
         btnSave = findViewById(R.id.ClientConfigurationActivity_btn_save);
-        clientNickName = findViewById(R.id.ClientConfigurationActivity_editText_userNickname);
-        clientNickName.addTextChangedListener(textWatcher);
+        editTextClientNickName = findViewById(R.id.ClientConfigurationActivity_editText_userNickname);
+        spinnerLoading = findViewById(R.id.ClientConfigurationActivity_spinner_loading);
+        editTextClientNickName.addTextChangedListener(textWatcher);
+        spinnerLoading.setVisibility(View.INVISIBLE);
         btnSave.setEnabled(false);
     }
-
 
     private void initializeViewModel(){
         clientConfigurationViewModel = new ViewModelProvider(this).get(ClientConfigurationViewModel.class);
