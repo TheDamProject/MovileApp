@@ -8,6 +8,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.jotamarti.golocal.Models.Client;
 import com.jotamarti.golocal.Models.Shop;
 import com.jotamarti.golocal.Models.User;
+import com.jotamarti.golocal.UseCases.Clients.ClientParser;
 import com.jotamarti.golocal.UseCases.Shops.ShopParser;
 import com.jotamarti.golocal.UseCases.Users.UserCallbacks;
 import com.jotamarti.golocal.UseCases.Users.UserRepositoryFactory;
@@ -54,16 +55,10 @@ public class UserRepository implements UserRepositoryFactory {
                 User user = null;
                 try {
                     String type = jsonObject.getString("type");
-                    String uid = jsonObject.getString("uid");
-                    String url = jsonObject.getString("avatar");
-                    if (type.equals("client")) {
-                        String nickName = jsonObject.getString("nick");
-                        user = new Client();
-                        user.setAvatar(url);
-                        user.setUserUid(uid);
-                        ((Client) user).setNickName(nickName);
-                    } else {
-                        // TODO: Si es tienda
+                    if (type.equals("CLIENT")) {
+                        user = ClientParser.parseClientFromJsonObject(jsonObject);
+                    } else { // Type equals "SHOP"
+                        user = ShopParser.parseShopFromJsonObject(jsonObject);
                     }
                     backendUser.setValue(user);
                 } catch (JSONException e) {
@@ -85,19 +80,9 @@ public class UserRepository implements UserRepositoryFactory {
         userUsecases.getShopsNearby(Double.parseDouble(lat), Double.parseDouble(lang), new UserCallbacks.onResponseCallBackGetShopsNearby() {
             @Override
             public void onResponse(JSONArray jsonArray) {
-                ArrayList<Shop> shopList = new ArrayList<>();
-                try {
-                    for (int i = 0; i < jsonArray.length(); i++) {
-                        JSONObject jsonShopObject = jsonArray.getJSONObject(i);
-                        Shop shop = ShopParser.parseShopFromJsonObject(jsonShopObject);
-                        shopList.add(shop);
-                    }
-                } catch (JSONException jsonException) {
-                    backendErrorData.setValue(BackendErrors.CLIENT_ERROR);
-                }
+                ArrayList<Shop> shopList = ShopParser.parseShopsFromJsonArray(jsonArray);
                 nearbyShops.setValue(shopList);
             }
-
             @Override
             public void onErrorResponse(BackendErrors backendError) {
                 backendErrorData.setValue(backendError);

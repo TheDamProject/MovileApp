@@ -159,6 +159,7 @@ public class ShopConfigurationActivity extends AppCompatActivity {
 
     private void observeRegisteredUserInBackend(){
         shopConfigurationViewModel.getShop().observe(this, (Shop shop) -> {
+            shopConfigurationViewModel.shop = shop;
             showMainActivity();
             shopConfigurationViewModel.getShop().removeObservers(this);
         });
@@ -174,6 +175,7 @@ public class ShopConfigurationActivity extends AppCompatActivity {
         } else {
             Intent intent = new Intent(ShopConfigurationActivity.this, MainActivity.class);
             intent.putExtra("user", shopConfigurationViewModel.shop);
+            intent.putExtra("userCoordinates", shopConfigurationViewModel.userCoordinates);
             intent.putParcelableArrayListExtra("nearbyShops", shopConfigurationViewModel.nearbyShops);
             intent.putExtra("caller", "ShopConfigurationActivity");
             startActivity(intent);
@@ -239,7 +241,7 @@ public class ShopConfigurationActivity extends AppCompatActivity {
             CropImage.ActivityResult result = CropImage.getActivityResult(data);
             if (resultCode == RESULT_OK) {
                 Uri uri = result.getUri();
-                shopConfigurationViewModel.imageBase64 = ImageUtil.UriToBase64(uri);
+                shopConfigurationViewModel.imageBase64 = ImageUtil.UriToBase64(uri, ImageUtil.IMAGE_TYPE.SHOP);
                 shopConfigurationViewModel.shop.setAvatar(shopConfigurationViewModel.imageBase64);
                 imageViewShopHeader.setImageURI(uri);
                 shopConfigurationViewModel.imageInserted = true;

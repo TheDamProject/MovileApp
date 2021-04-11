@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.jotamarti.golocal">
 
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -17,6 +18,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.GoLocal"
         android:usesCleartextTraffic="true">
+
         <activity android:name=".Activities.ShopDetailActivity" />
         <activity android:name=".Activities.ClientConfigurationActivity" />
         <activity android:name=".Activities.ShopConfigurationActivity" />

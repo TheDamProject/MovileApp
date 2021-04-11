@@ -26,11 +26,12 @@ public class PostParser {
         String message = jsonPostObject.getString("content");
         String imageUrl = jsonPostObject.getString("image");
         String postId = String.valueOf(jsonPostObject.getInt("id"));
-        //String companyUid = jsonPostObject.getString("shopUid");
+        String companyUid = jsonPostObject.getString("UIDshop");
         post.setHeader(header);
         post.setMessage(message);
         post.setImageUrl(imageUrl);
         post.setPostId(postId);
+        post.setCompanyUid(companyUid);
         return post;
     }
 }

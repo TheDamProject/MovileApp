@@ -34,24 +34,7 @@ public class ShopUsescases implements ShopApi{
         String baseUrl = String.valueOf(App.getContext().getResources().getText(R.string.api_base_url));
         String uri = baseUrl + "/api/shop/add";
 
-        JSONObject params = new JSONObject();
-        try {
-            params.put("uid", shop.getUserUid());
-            params.put("name", shop.getShopName());
-            //params.put("location_id",  null);
-            params.put("latitude", shop.getCoordinates().latitude);
-            params.put("longitude", shop.getCoordinates().longitude);
-            params.put("address", shop.getAddress());
-            //params.put("id_google", "test");
-            //params.put("shopData_id", null);
-            params.put("phone", 55555);
-            params.put("isWhatsapp", shop.isWhatsapp());
-            params.put("description", shop.getDescription());
-            params.put("category", "testing category");
-            params.put("logo", shop.getAvatar());
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        JSONObject params = ShopParser.serializeShop(shop);
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, uri, params, new Response.Listener<JSONObject>() {
             @Override

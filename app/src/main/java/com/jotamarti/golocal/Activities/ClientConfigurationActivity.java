@@ -48,7 +48,6 @@ public class ClientConfigurationActivity extends AppCompatActivity {
     private TextWatcher textWatcher;
 
 
-
     // ViewModel
     private ClientConfigurationViewModel clientConfigurationViewModel;
 
@@ -106,6 +105,7 @@ public class ClientConfigurationActivity extends AppCompatActivity {
         Intent intent = new Intent(ClientConfigurationActivity.this, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         intent.putExtra("user", client);
+        intent.putExtra("userCoordinates", clientConfigurationViewModel.userCoordinates);
         intent.putParcelableArrayListExtra("nearbyShops", clientConfigurationViewModel.nearbyShops);
         intent.putExtra("caller", "ClientConfigurationActivity");
         startActivity(intent);
@@ -173,7 +173,7 @@ public class ClientConfigurationActivity extends AppCompatActivity {
             CropImage.ActivityResult result = CropImage.getActivityResult(data);
             if (resultCode == RESULT_OK) {
                 Uri uri = result.getUri();
-                clientConfigurationViewModel.imageBase64 = ImageUtil.UriToBase64(uri);
+                clientConfigurationViewModel.imageBase64 = ImageUtil.UriToBase64(uri, ImageUtil.IMAGE_TYPE.CLIENT);
                 clientConfigurationViewModel.avatarInserted = true;
                 clientAvatar.setImageURI(result.getUri());
                 checkAllDataInserted();
@@ -230,6 +230,7 @@ public class ClientConfigurationActivity extends AppCompatActivity {
         clientConfigurationViewModel.email = AuthActivityIntent.getStringExtra("email");
         clientConfigurationViewModel.password = AuthActivityIntent.getStringExtra("password");
         clientConfigurationViewModel.nearbyShops = AuthActivityIntent.getParcelableArrayListExtra("nearbyShops");
+        clientConfigurationViewModel.userCoordinates = AuthActivityIntent.getParcelableExtra("userCoordinates");
     }
 
     private void initializeTextWatcher() {

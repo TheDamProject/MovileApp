@@ -18,7 +18,7 @@ public class Shop extends User implements Parcelable {
     private boolean isWhatsapp;
     private List<Post> shopPosts;
 
-    public Shop(String avatar, String userUid, String telNumber, String description, boolean isWhatsapp, LatLng coordinates, List<Post> shopPosts, String address){
+    public Shop(String avatar, String userUid, String telNumber, String description, boolean isWhatsapp, LatLng coordinates, List<Post> shopPosts, String address, String shopName){
         super(avatar, userUid);
         this.telNumber = telNumber;
         this.description = description;
@@ -26,6 +26,7 @@ public class Shop extends User implements Parcelable {
         this.coordinates = coordinates;
         this.shopPosts = shopPosts;
         this.address = address;
+        this.shopName = shopName;
     }
 
     public Shop(Parcel parcel){
@@ -33,6 +34,7 @@ public class Shop extends User implements Parcelable {
         this.telNumber = parcel.readString();
         this.description = parcel.readString();
         this.address = parcel.readString();
+        this.shopName = parcel.readString();
         this.isWhatsapp = parcel.readInt() == 1;
         this.coordinates = parcel.readParcelable(LatLng.class.getClassLoader());
         shopPosts = new ArrayList<>();
@@ -111,6 +113,7 @@ public class Shop extends User implements Parcelable {
         dest.writeString(this.telNumber);
         dest.writeString(this.description);
         dest.writeString(this.address);
+        dest.writeString(this.shopName);
         dest.writeInt(this.isWhatsapp ? 1 : 0);
         dest.writeParcelable(this.coordinates, flags);
         dest.writeTypedList(this.shopPosts);

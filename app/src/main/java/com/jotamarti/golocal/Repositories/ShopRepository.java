@@ -8,6 +8,7 @@ import com.jotamarti.golocal.Models.Shop;
 import com.jotamarti.golocal.Models.User;
 import com.jotamarti.golocal.UseCases.Shops.ShopApi;
 import com.jotamarti.golocal.UseCases.Shops.ShopCallbacks;
+import com.jotamarti.golocal.UseCases.Shops.ShopParser;
 import com.jotamarti.golocal.UseCases.Shops.ShopRepositoryFactory;
 import com.jotamarti.golocal.UseCases.Shops.ShopUsescases;
 import com.jotamarti.golocal.Utils.Errors.BackendErrors;
@@ -21,7 +22,7 @@ public class ShopRepository implements ShopRepositoryFactory {
 
     private ShopApi ShopUsecases;
 
-    public ShopRepository(){
+    public ShopRepository() {
         ShopUsecases = new ShopUsescases();
     }
 
@@ -35,18 +36,10 @@ public class ShopRepository implements ShopRepositoryFactory {
         ShopUsecases.registerShopInBackend(shop, new ShopCallbacks.onResponseRegisterShopInBackend() {
             @Override
             public void onResponse(JSONObject json) {
-                try {
-                    String uid = json.getString("uid");
-                    String userName = json.getString("nick");
-                    String imageUrl = json.getString("avatar");
-
-                    User user = new Client(imageUrl, uid, userName);
-                    currentShop.postValue(new Shop());
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    haveHttpNetworkError.setValue(BackendErrors.CLIENT_ERROR);
-                }
+                Shop shop = ShopParser.parseShopFromJsonObject(json);
+                currentShop.postValue(shop);
             }
+
             @Override
             public void onErrorResponse(BackendErrors httpNetworkError) {
                 haveHttpNetworkError.setValue(httpNetworkError);

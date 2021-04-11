@@ -14,6 +14,7 @@ import com.jotamarti.golocal.Models.User;
 import com.jotamarti.golocal.dummy.PostsDummy;
 import com.jotamarti.golocal.dummy.ShopsDummy;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivityViewModel extends ViewModel {
@@ -33,9 +34,8 @@ public class MainActivityViewModel extends ViewModel {
     private MutableLiveData<List<Shop>> shopsList = new MutableLiveData<>();
 
     //TODO: Poner lista de posts
-    public void setPosts() {
-        List<Post> posts = PostsDummy.getITems();
-        this.posts.setValue(posts);
+    public void setPosts(ArrayList<Post> postList) {
+        this.posts.setValue(postList);
     }
 
     public LiveData<List<Post>> getPosts() {
@@ -54,8 +54,7 @@ public class MainActivityViewModel extends ViewModel {
         return shopsList;
     }
 
-    public void setShops() {
-        List<Shop> shops = ShopsDummy.getITems();
-        shopsList.setValue(shops);
+    public void setShops(ArrayList<Shop> shopList) {
+        shopsList.setValue(shopList);
     }
 }

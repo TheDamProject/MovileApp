@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseUser;
 import com.jotamarti.golocal.Models.Shop;
 import com.jotamarti.golocal.Models.User;
@@ -27,6 +28,7 @@ public class ClientConfigurationViewModel extends ViewModel {
     public String password;
     public String nickName;
     public String imageBase64;
+    public LatLng userCoordinates;
     public ArrayList<Shop> nearbyShops;
 
     // Backend
