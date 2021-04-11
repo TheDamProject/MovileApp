@@ -44,9 +44,11 @@
     <string name="MainActivity_exitMessage">Are you sure you want to exit?</string>
     <string name="MainActivity_exitMessage_yes">Yes</string>
     <string name="title_activity_new_post">NewPostActivity</string>
-    <!--
-    This string is used for square devices and overridden by hello_world in
-    values-round/strings.xml for round devices.
-    -->
-    <string name="hello_world">Hello Square World!</string>
+    <!-- NewPostActivit -->
+    <string name="NewPostActivity_btn_changeImage">CHANGE</string>
+    <string name="NewPostActivity_textView_title">Title</string>
+    <string name="NewPostActivity_editText_title">Title</string>
+    <string name="NewPostActivity_textView_content">Content</string>
+    <string name="NewPostActivity_editText_content">Content</string>
+    <string name="NewPostActivity_btn_savePost">SAVE</string>
 </resources>

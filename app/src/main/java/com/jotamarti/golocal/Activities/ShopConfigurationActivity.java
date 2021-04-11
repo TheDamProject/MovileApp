@@ -34,7 +34,6 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseUser;
 import com.jotamarti.golocal.BuildConfig;
 import com.jotamarti.golocal.Models.Shop;
-import com.jotamarti.golocal.Models.User;
 import com.jotamarti.golocal.R;
 import com.jotamarti.golocal.Utils.CustomToast;
 import com.jotamarti.golocal.Utils.Errors.AuthErrors;
@@ -274,8 +273,8 @@ public class ShopConfigurationActivity extends AppCompatActivity {
         // Iniciamos vistas
         txtViewNumber = findViewById(R.id.textView12);
         checkBoxNoNumber = findViewById(R.id.ShopConfigurationActivity_checkbox_noNumber);
-        btnUploadImage = findViewById(R.id.ShopConfigurationActivity_btn_changeShopProfileImage);
-        imageViewShopHeader = findViewById(R.id.ShopConfigurationActivity_imageView_shopProfileImage);
+        btnUploadImage = findViewById(R.id.NewPostActivity_btn_changeShopProfileImage);
+        imageViewShopHeader = findViewById(R.id.NewPostActivity_imageView_postImage);
         btnSave = findViewById(R.id.ShopConfigurationActivity_btn_save);
         editTextPhone = findViewById(R.id.ShopConfigurationActivity_editText_phone);
         textInputShopDescription = findViewById(R.id.ShopConfigurationActivity_textField_shopDescription);

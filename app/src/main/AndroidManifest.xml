@@ -18,7 +18,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.GoLocal"
         android:usesCleartextTraffic="true">
-
+        <activity android:name=".Activities.NewPostActivity"></activity>
         <activity android:name=".Activities.ShopDetailActivity" />
         <activity android:name=".Activities.ClientConfigurationActivity" />
         <activity android:name=".Activities.ShopConfigurationActivity" />
