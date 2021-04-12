@@ -1,5 +1,6 @@
 package com.jotamarti.golocal.Fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -7,17 +8,20 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.jotamarti.golocal.Activities.NewPostActivity;
 import com.jotamarti.golocal.Models.Shop;
 import com.jotamarti.golocal.R;
 import com.jotamarti.golocal.ViewModels.MainActivityViewModel;
 import com.jotamarti.golocal.ViewModels.ShopDetailActivityViewModel;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 public class ShopProfileFragment extends Fragment {
@@ -28,6 +32,7 @@ public class ShopProfileFragment extends Fragment {
     private String TAG = "ShopProfileFragment";
 
     private Button btnEditProfile;
+    private Button btnCreatePost;
     private TextView textViewShopDescription;
     private TextView textViewShopLocation;
     private TextView textViewShopPhoneNumber;
@@ -82,6 +87,16 @@ public class ShopProfileFragment extends Fragment {
                     //startActivity(intent);
                 }
             });
+
+            btnCreatePost.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(getContext(), NewPostActivity.class);
+                    intent.putExtra("user", (Shop) mainActivityViewModel.user);
+                    intent.putParcelableArrayListExtra("shopList", (ArrayList<? extends Parcelable>) mainActivityViewModel.getShopsList().getValue());
+                    startActivity(intent);
+                }
+            });
         }
 
 
@@ -110,10 +125,12 @@ public class ShopProfileFragment extends Fragment {
         textViewShopLocation = view.findViewById(R.id.FragmentShopProfile_textView_Location);
         textViewShopPhoneNumber = view.findViewById(R.id.FragmentShopProfile_textView_PhoneNumber);
         btnEditProfile = view.findViewById(R.id.fragmentShopProfile_btn_editProfile);
+        btnCreatePost = view.findViewById(R.id.fragmentShopProfile_btn_addPost);
         if(mode.equals("visit") || mode.equals("PostDetailActivityFromMainActivity") || mode.equals("MapsFragment")){
             btnEditProfile.setVisibility(View.INVISIBLE);
         } else {
             btnEditProfile.setVisibility(View.VISIBLE);
+            btnCreatePost.setVisibility(View.VISIBLE);
         }
     }
 }

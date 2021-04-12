@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
         manageFragmentSelected();
 
         String caller = mainActivityViewModel.caller;
-        if (caller.equals("AuthActivity") || caller.equals("ClientConfigurationActivity") || caller.equals("ShopConfigurationActivity")) {
+        if (caller.equals("AuthActivity") || caller.equals("ClientConfigurationActivity") || caller.equals("ShopConfigurationActivity") ||caller.equals("NewPostActivity")) {
             setUserInViewModel();
         }
 
@@ -119,7 +119,25 @@ public class MainActivity extends AppCompatActivity {
         // We use this when we go back to this activity
         mainActivityViewModel.caller = intent.getStringExtra("caller");
         manageFragmentSelected();
+        if(mainActivityViewModel.caller.equals("NewPostActivity")){
+            updateData();
+        }
         super.onNewIntent(intent);
+    }
+
+    private void updateData() {
+        User user = mainActivityViewModel.intent.getParcelableExtra("user");
+        ArrayList<Shop> nearbyShops = mainActivityViewModel.intent.getParcelableArrayListExtra("nearbyShops");
+
+        ArrayList<Post> postList = new ArrayList<>();
+
+        for(int i = 1; i < nearbyShops.size(); i++){
+            postList.addAll(nearbyShops.get(i).getShopPosts());
+        }
+
+        mainActivityViewModel.user = user;
+        mainActivityViewModel.setPosts(postList);
+        mainActivityViewModel.setShops(nearbyShops);
     }
 
     private void setUserInViewModel() {

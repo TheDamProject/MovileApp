@@ -34,4 +34,18 @@ public class PostParser {
         post.setCompanyUid(companyUid);
         return post;
     }
+
+    public static JSONObject serializePost(Post post){
+        JSONObject params = new JSONObject();
+        try {
+            params.put("title", post.getHeader());
+            params.put("content", post.getMessage());
+            params.put("image", post.getImageUrl());
+            params.put("shopUid", post.getCompanyUid());
+            params.put("typeValue", "standar");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return params;
+    }
 }

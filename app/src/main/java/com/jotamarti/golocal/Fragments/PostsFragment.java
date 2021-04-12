@@ -79,6 +79,7 @@ public class PostsFragment extends Fragment {
                 PostsRecyclerViewAdapter adapter = new PostsRecyclerViewAdapter(postList, context, "MainActivity");
                 mainActivityViewModel.getShopsList().observe(requireActivity(), (List<Shop> shopList) -> {
                     adapter.setShopList(shopList);
+                    adapter.notifyDataSetChanged();
                     Log.d(TAG, "He puesto la lista de posts");
                 });
                 recyclerView.setAdapter(adapter);

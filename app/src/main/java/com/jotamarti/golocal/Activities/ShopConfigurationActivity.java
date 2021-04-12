@@ -51,7 +51,6 @@ public class ShopConfigurationActivity extends AppCompatActivity {
 
     private final String TAG = "ShopConfiguration";
     private final static int PERMISSIONS_REQUEST_CAMERA = 1;
-    private final static int CAMERA_REQ_CODE = 2;
 
     // Views
     private EditText editTextPhone;
