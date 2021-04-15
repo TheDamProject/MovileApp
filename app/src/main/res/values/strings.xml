@@ -31,6 +31,7 @@
     <string name="error_register_generic">Register failed.</string>
     <string name="error_login_generic">Login failed.</string>
     <string name="error_failed_get_privileges">Permission not granted.</string>
+    <string name="error_failed_create_post">Permission not granted.</string>
     <!-- API Base URL -->
     <string name="api_base_url">http://jotamarti.ddns.net:30180</string>
     <!-- Backend TAGS -->

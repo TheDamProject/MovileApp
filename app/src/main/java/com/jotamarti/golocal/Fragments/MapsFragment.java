@@ -94,13 +94,7 @@ public class MapsFragment extends Fragment {
                 @Override
                 public void onInfoWindowClick(Marker marker) {
                     //TODO: Intenta para irme al perfil de la tienda, primero tengo que sacar la tienda de la shoplist y luego pasarla
-                    Shop shop = null;
-                    for(int i = 0; i < shopList.size(); i++){
-                        if(shopList.get(i).getUserUid().equals(marker.getTag())){
-                            shop = shopList.get(i);
-                            break;
-                        }
-                    }
+                    Shop shop = Shop.getShopByUid(shopList, marker.getTag().toString());
                     Intent intent = new Intent(getContext(), ShopDetailActivity.class);
                     intent.putExtra("shop", shop);
                     intent.putExtra("caller", "MapsFragment");
@@ -154,7 +148,7 @@ public class MapsFragment extends Fragment {
             ((ImageView) view.findViewById(R.id.customInfoContent_imageView)).setImageResource(badge);
 
             String title = marker.getTitle();
-            TextView titleUi = ((TextView) view.findViewById(R.id.customInfoContent_textView_title));
+            TextView titleUi = (view.findViewById(R.id.customInfoContent_textView_title));
             if (title != null) {
                 SpannableString titleText = new SpannableString(title);
                 titleText.setSpan(new ForegroundColorSpan(Color.RED), 0, titleText.length(), 0);
@@ -164,7 +158,7 @@ public class MapsFragment extends Fragment {
             }
 
             String snippet = marker.getSnippet();
-            TextView snippetUi = ((TextView) view.findViewById(R.id.customInfoContent_textView_text));
+            TextView snippetUi = (view.findViewById(R.id.customInfoContent_textView_text));
             if (snippet != null) {
                 SpannableString snippetText = new SpannableString(snippet);
                 snippetText.setSpan(new ForegroundColorSpan(Color.BLUE), 0, snippet.length(), 0);

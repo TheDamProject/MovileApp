@@ -14,6 +14,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -23,6 +24,7 @@ import com.jotamarti.golocal.Models.Post;
 import com.jotamarti.golocal.Models.Shop;
 import com.jotamarti.golocal.R;
 import com.jotamarti.golocal.Utils.CustomToast;
+import com.jotamarti.golocal.Utils.Errors.BackendErrors;
 import com.jotamarti.golocal.Utils.ImageUtil;
 import com.jotamarti.golocal.ViewModels.NewPostActivityViewModel;
 import com.jotamarti.golocal.ViewModels.ShopConfigurationViewModel;
@@ -52,6 +54,7 @@ public class NewPostActivity extends AppCompatActivity {
         initializeViewModel();
         initializeUi();
         getDataFromMainActivity();
+        manageBackendErrors();
         newPostActivityViewModel.post = new Post();
 
         btnChangeImage.setOnClickListener(new View.OnClickListener() {
@@ -186,6 +189,21 @@ public class NewPostActivity extends AppCompatActivity {
                 CustomToast.showToast(this, "Fail to get permission", CustomToast.mode.LONGER);
             }
         }
+    }
+
+    private void manageBackendErrors() {
+        newPostActivityViewModel.getBackendError().observe(this, (BackendErrors error) -> {
+            switch (error) {
+                case REDIRECTION:
+                    CustomToast.showToast(NewPostActivity.this, getString(R.string.error_failed_create_post), CustomToast.mode.SHORTER);
+                case CLIENT_ERROR:
+                    CustomToast.showToast(NewPostActivity.this, getString(R.string.error_failed_create_post), CustomToast.mode.SHORTER);
+                case SERVER_ERROR:
+                    CustomToast.showToast(NewPostActivity.this, getString(R.string.error_failed_create_post), CustomToast.mode.SHORTER);
+                default:
+                    CustomToast.showToast(NewPostActivity.this, getString(R.string.error_failed_create_post), CustomToast.mode.SHORTER);
+            }
+        });
     }
 
     private void initializeTextWatcher() {

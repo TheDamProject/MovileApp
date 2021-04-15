@@ -23,7 +23,7 @@ public class PostUsecases implements PostApi {
     @Override
     public void createPostInBackend(Post post, PostCallbacks.onResponseCreatePostInBackend onResponseCreatePostInBackend) {
         String baseUrl = String.valueOf(App.getContext().getResources().getText(R.string.api_base_url));
-        String uri = baseUrl + "/api/shop/add";
+        String uri = baseUrl + "/api/post/add";
 
         JSONObject params = PostParser.serializePost(post);
 

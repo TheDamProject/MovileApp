@@ -128,4 +128,15 @@ public class Shop extends User implements Parcelable {
             return new Shop[size];
         }
     };
+
+    public static Shop getShopByUid(List<Shop> shops, String uid){
+        Shop shop = null;
+        for(int i = 0; i < shops.size(); i++){
+            if(shops.get(i).getUserUid().equals(uid)){
+                shop = shops.get(i);
+                break;
+            }
+        }
+        return shop;
+    }
 }
