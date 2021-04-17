@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.jotamarti.golocal.Models.Client;
 import com.jotamarti.golocal.Models.User;
 import com.jotamarti.golocal.R;
 import com.jotamarti.golocal.ViewModels.MainActivityViewModel;
@@ -21,7 +22,7 @@ import com.squareup.picasso.Picasso;
 public class ClientProfileFragment extends Fragment {
 
     private ImageView imageView;
-    private TextView txtViewEmail;
+    private TextView txtViewNick;
     private MainActivityViewModel model;
 
     private final String TAG = "MORE_FRAGMENT";
@@ -42,11 +43,12 @@ public class ClientProfileFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         imageView = view.findViewById(R.id.ClientConfigurationActivity_imageView_userAvatar);
-        txtViewEmail = view.findViewById(R.id.txtViewEmail);
+        txtViewNick = view.findViewById(R.id.txtViewNick);
         model = new ViewModelProvider(requireActivity()).get(MainActivityViewModel.class);
         model.setTitle("Client Profile");
-        User user = model.user;
-        Picasso.get().load(user.getAvatar().toString()).into(imageView);
+        Client client = (Client) model.user;
+        txtViewNick.setText(client.getNickName());
+        Picasso.get().load(client.getAvatar()).into(imageView);
 
         //TODO: Eliminar tema email
         //txtViewEmail.setText(user.getEmail());

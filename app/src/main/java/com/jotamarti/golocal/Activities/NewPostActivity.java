@@ -20,6 +20,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.jotamarti.golocal.Models.Post;
 import com.jotamarti.golocal.Models.Shop;
 import com.jotamarti.golocal.R;
@@ -42,6 +43,7 @@ public class NewPostActivity extends AppCompatActivity {
     private EditText editTextContent;
     private ImageView imageViewPostImage;
     private TextWatcher textWatcher;
+    private CircularProgressIndicator spinnerLoading;
 
     private NewPostActivityViewModel newPostActivityViewModel;
 
@@ -72,6 +74,7 @@ public class NewPostActivity extends AppCompatActivity {
         btnSavePost.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                loadingState(true);
                 newPostActivityViewModel.post.setHeader(editTextTitle.getText().toString());
                 newPostActivityViewModel.post.setMessage(editTextContent.getText().toString());
                 newPostActivityViewModel.post.setCompanyUid(newPostActivityViewModel.thisShop.getUserUid());
@@ -79,6 +82,16 @@ public class NewPostActivity extends AppCompatActivity {
                 observePostFromBackend();
             }
         });
+    }
+
+    public void loadingState(Boolean loadingState){
+        if(loadingState){
+            spinnerLoading.setVisibility(View.VISIBLE);
+            btnSavePost.setEnabled(false);
+        } else {
+            spinnerLoading.setVisibility(View.INVISIBLE);
+            btnSavePost.setEnabled(true);
+        }
     }
 
     public void observePostFromBackend(){
@@ -97,6 +110,7 @@ public class NewPostActivity extends AppCompatActivity {
             if(shop.getUserUid().equals(post.getCompanyUid())){
                 shop.getShopPosts().add(post);
                 newPostActivityViewModel.thisShop = shop;
+                break;
             }
         }
     }
@@ -122,6 +136,8 @@ public class NewPostActivity extends AppCompatActivity {
         editTextTitle = findViewById(R.id.NewPostActivity_editText_title);
         editTextContent = findViewById(R.id.NewPostActivity_editText_content);
         imageViewPostImage = findViewById(R.id.NewPostActivity_imageView_postImage);
+        spinnerLoading = findViewById(R.id.NewPostActivity_spinner_loading);
+        loadingState(false);
 
         editTextContent.addTextChangedListener(textWatcher);
         editTextTitle.addTextChangedListener(textWatcher);
@@ -204,6 +220,7 @@ public class NewPostActivity extends AppCompatActivity {
                     CustomToast.showToast(NewPostActivity.this, getString(R.string.error_failed_create_post), CustomToast.mode.SHORTER);
             }
         });
+        loadingState(false);
     }
 
     private void initializeTextWatcher() {

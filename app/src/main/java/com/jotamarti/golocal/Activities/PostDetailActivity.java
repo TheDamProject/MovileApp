@@ -34,7 +34,6 @@ public class PostDetailActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_detail);
         setTitle(R.string.PostDetailActivity_title);
@@ -51,6 +50,7 @@ public class PostDetailActivity extends AppCompatActivity {
             postDetailActivityViewModel.setPost(post);
             postDetailActivityViewModel.setShop(shop);
 
+            btnVisitShop.setVisibility(View.VISIBLE);
             btnVisitShop.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -67,11 +67,12 @@ public class PostDetailActivity extends AppCompatActivity {
             Shop shop = intent.getParcelableExtra("shop");
             postDetailActivityViewModel.setPost(post);
             postDetailActivityViewModel.setShop(shop);
-            btnVisitShop.setVisibility(View.INVISIBLE);
+        } else if(caller.equals("ShopProfile")) {
+            Post post = intent.getParcelableExtra("post");
+            postDetailActivityViewModel.setPost(post);
         } else {
             Post post = intent.getParcelableExtra("post");
             postDetailActivityViewModel.setPost(post);
-            btnVisitShop.setVisibility(View.INVISIBLE);
         }
         txtViewPostDetail.setText(postDetailActivityViewModel.getPost().getMessage());
         txtViewPostHeader.setText(postDetailActivityViewModel.getPost().getHeader());
@@ -97,6 +98,11 @@ public class PostDetailActivity extends AppCompatActivity {
             intent.putExtra("caller", "postDetailActivity");
             intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             startActivity(intent);
+        } else if(caller.equals("ShopProfile")){
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.putExtra("caller", "ShopProfile");
+            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            startActivity(intent);
         } else {
             Intent intent = new Intent(this, ShopDetailActivity.class);
             intent.putExtra("caller", "MapsFragment");
@@ -110,6 +116,7 @@ public class PostDetailActivity extends AppCompatActivity {
         txtViewPostHeader = findViewById(R.id.PostDetailsActivity_textView_postDetails);
         imageViewPostImage = findViewById(R.id.PostDetailsActivity_imageView_postImage);
         btnVisitShop = findViewById(R.id.PostDetailActivity_btn_visitShop);
+        btnVisitShop.setVisibility(View.INVISIBLE);
         postDetailActivityViewModel = new ViewModelProvider(PostDetailActivity.this).get(PostDetailActivityViewModel.class);
     }
 }

@@ -26,6 +26,8 @@ public class NewPostActivityViewModel extends ViewModel {
 
     public NewPostActivityViewModel(){
         postRepository = new PostRepository();
+        backendError = postRepository.getBackendError();
+        imageInserted = false;
     }
 
     public void createPostInBackend(){

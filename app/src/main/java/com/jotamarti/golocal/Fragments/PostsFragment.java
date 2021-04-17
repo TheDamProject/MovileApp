@@ -20,6 +20,7 @@ import com.jotamarti.golocal.R;
 import com.jotamarti.golocal.ViewModels.MainActivityViewModel;
 import com.jotamarti.golocal.ViewModels.ShopDetailActivityViewModel;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -43,10 +44,12 @@ public class PostsFragment extends Fragment {
         getBundle();
 
         List<Post> postList;
-        if (caller.equals("MapsFragment")) {
+        List<Shop> nearbyShops;
+        if (caller.equals("MapsFragment") || caller.equals("PostDetailActivityFromMainActivity")) {
             initializeShopDetailViewModel();
             shop = shopDetailActivityViewModel.shop;
             postList = shop.getShopPosts();
+            // Set the adapter
             if (view instanceof RecyclerView) {
                 Context context = view.getContext();
                 RecyclerView recyclerView = (RecyclerView) view;
@@ -55,21 +58,27 @@ public class PostsFragment extends Fragment {
                 adapter.setShop(shop);
                 recyclerView.setAdapter(adapter);
             }
-        } else if (caller.equals("PostDetailActivityFromMainActivity")) {
-            initializeShopDetailViewModel();
-            shop = shopDetailActivityViewModel.shop;
+        } else if(caller.equals("ShopProfile")) {
+            initializeMainActivityViewModel();
+            shop = (Shop) mainActivityViewModel.user;
             postList = shop.getShopPosts();
             if (view instanceof RecyclerView) {
                 Context context = view.getContext();
                 RecyclerView recyclerView = (RecyclerView) view;
                 recyclerView.setLayoutManager(new LinearLayoutManager(context));
-                PostsRecyclerViewAdapter adapter = new PostsRecyclerViewAdapter(postList, context, "PostDetailActivityFromMainActivity");
+                PostsRecyclerViewAdapter adapter = new PostsRecyclerViewAdapter(postList, context, caller);
                 adapter.setShop(shop);
+                mainActivityViewModel.getPosts().observe(requireActivity(), (List<Post> newPostList) -> {
+                    ArrayList<Post> newArrayPostList = new ArrayList<>(newPostList);
+                    adapter.setPostsList(newArrayPostList);
+                });
                 recyclerView.setAdapter(adapter);
             }
         } else {
-            mainActivityViewModel = new ViewModelProvider(requireActivity()).get(MainActivityViewModel.class);
+            // Caller equals MainActivity
+            initializeMainActivityViewModel();
             postList = mainActivityViewModel.getPosts().getValue();
+            nearbyShops = mainActivityViewModel.getShopsList().getValue();
             mainActivityViewModel.setTitle("Posts List");
             // Set the adapter
             if (view instanceof RecyclerView) {
@@ -77,10 +86,10 @@ public class PostsFragment extends Fragment {
                 RecyclerView recyclerView = (RecyclerView) view;
                 recyclerView.setLayoutManager(new LinearLayoutManager(context));
                 PostsRecyclerViewAdapter adapter = new PostsRecyclerViewAdapter(postList, context, "MainActivity");
-                mainActivityViewModel.getShopsList().observe(requireActivity(), (List<Shop> shopList) -> {
-                    adapter.setShopList(shopList);
-                    adapter.notifyDataSetChanged();
-                    Log.d(TAG, "He puesto la lista de posts");
+                adapter.setShopList(nearbyShops);
+                mainActivityViewModel.getPosts().observe(requireActivity(), (List<Post> newPostList) -> {
+                    ArrayList<Post> newArrayPostList = new ArrayList<>(newPostList);
+                    adapter.setPostsList(newArrayPostList);
                 });
                 recyclerView.setAdapter(adapter);
             }
@@ -92,7 +101,7 @@ public class PostsFragment extends Fragment {
 
     private void getBundle() {
         // El PostFragment puede venir de MainActivity o de ShopDetail
-        // Si viene de MainActivity tenemos el viewmodel para salara la informacion
+        // Si viene de MainActivity tenemos el viewmodel para sacar la informacion
         // Pero si viene de shopDetail tenemos que recuperar la información de alguna manera.
         Bundle previousBundle = this.getArguments();
         if (previousBundle != null) {
@@ -104,5 +113,9 @@ public class PostsFragment extends Fragment {
 
     private void initializeShopDetailViewModel() {
         shopDetailActivityViewModel = new ViewModelProvider(requireActivity()).get(ShopDetailActivityViewModel.class);
+    }
+
+    private void initializeMainActivityViewModel(){
+        mainActivityViewModel = new ViewModelProvider(requireActivity()).get(MainActivityViewModel.class);
     }
 }

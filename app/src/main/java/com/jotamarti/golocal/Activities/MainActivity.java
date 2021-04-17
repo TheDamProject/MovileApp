@@ -21,11 +21,10 @@ import com.jotamarti.golocal.Models.Post;
 import com.jotamarti.golocal.Models.Shop;
 import com.jotamarti.golocal.Models.User;
 import com.jotamarti.golocal.R;
+import com.jotamarti.golocal.Utils.CustomToast;
 import com.jotamarti.golocal.ViewModels.MainActivityViewModel;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -41,13 +40,18 @@ public class MainActivity extends AppCompatActivity {
 
         initializeViewModel();
         initializeActivity();
-        manageFragmentSelected();
+        //manageFragmentSelected();
 
-        String caller = mainActivityViewModel.caller;
-        if (caller.equals("AuthActivity") || caller.equals("ClientConfigurationActivity") || caller.equals("ShopConfigurationActivity") ||caller.equals("NewPostActivity")) {
-            setUserInViewModel();
-        }
+        Bundle bundle = new Bundle();
+        bundle.putString("caller", "MainActivity");
+        mainActivityViewModel.postsFragment.setArguments(bundle);
+        setCurrentFragment(mainActivityViewModel.postsFragment);
 
+        //String caller = mainActivityViewModel.caller;
+        /*if (caller.equals("AuthActivity") || caller.equals("ClientConfigurationActivity") || caller.equals("ShopConfigurationActivity") ||caller.equals("NewPostActivity")) {
+            // Probar si podemos quetar esto, aqui teniamos setDataFromIntent.
+        }*/
+        setDataFromIntent();
         manageChangeTitle();
     }
 
@@ -68,9 +72,6 @@ public class MainActivity extends AppCompatActivity {
         mainActivityViewModel.postsFragment = new PostsFragment();
         mainActivityViewModel.clientProfileFragment = new ClientProfileFragment();
         mainActivityViewModel.shopProfileFragment = new ShopProfileFragment();
-        Bundle bundle = new Bundle();
-        bundle.putString("caller", "ShopProfile");
-        mainActivityViewModel.shopProfileFragment.setArguments(bundle);
 
         // Initialize button listener
         btnNavView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -78,6 +79,9 @@ public class MainActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 int id = item.getItemId();
                 if (id == R.id.page_posts) {
+                    Bundle bundle = new Bundle();
+                    bundle.putString("caller", "MainActivity");
+                    mainActivityViewModel.postsFragment.setArguments(bundle);
                     setCurrentFragment(mainActivityViewModel.postsFragment);
                     return true;
                 } else if (id == R.id.page_maps) {
@@ -87,7 +91,10 @@ public class MainActivity extends AppCompatActivity {
                     if (mainActivityViewModel.user instanceof Client) {
                         setCurrentFragment(mainActivityViewModel.clientProfileFragment);
                     } else {
-                        //TODO : Poner el fragment de la tienda.
+                        // Le pasamos el caller por que el shopProfileFragment lo podemos abrir de distintos sitios
+                        Bundle bundle = new Bundle();
+                        bundle.putString("caller", "ShopProfile");
+                        mainActivityViewModel.shopProfileFragment.setArguments(bundle);
                         setCurrentFragment(mainActivityViewModel.shopProfileFragment);
                     }
                     return true;
@@ -98,17 +105,16 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void manageFragmentSelected() {
-        if (mainActivityViewModel.caller.equals("ShopProfileFragment")) {
-            btnNavView.setSelectedItemId(R.id.page_more);
+    /*private void manageFragmentSelected() {
+        if (mainActivityViewModel.caller.equals("ShopProfile")) {
             setCurrentFragment(mainActivityViewModel.shopProfileFragment);
-        } else if (mainActivityViewModel.caller.equals("ShopDetailsActivityFromMap")) {
+        } else if (mainActivityViewModel.caller.equals("ShopDetailActivityFromMapRoute")) {
             setCurrentFragment(mainActivityViewModel.mapsFragment);
         } else {
             setCurrentFragment(mainActivityViewModel.postsFragment);
         }
 
-    }
+    }*/
 
     private void setCurrentFragment(Fragment fragment) {
         getSupportFragmentManager().beginTransaction().replace(R.id.MainActivity_fragment_parent, fragment).commitAllowingStateLoss();
@@ -118,29 +124,18 @@ public class MainActivity extends AppCompatActivity {
     protected void onNewIntent(Intent intent) {
         // We use this when we go back to this activity
         mainActivityViewModel.caller = intent.getStringExtra("caller");
-        manageFragmentSelected();
+        //manageFragmentSelected();
         if(mainActivityViewModel.caller.equals("NewPostActivity")){
-            updateData();
+            mainActivityViewModel.intent = intent;
+            setDataFromIntent();
+        }
+        if(mainActivityViewModel.caller.equals("NewPostActivity")){
+            CustomToast.showToast(this, "Post created!", CustomToast.mode.SHORTER);
         }
         super.onNewIntent(intent);
     }
 
-    private void updateData() {
-        User user = mainActivityViewModel.intent.getParcelableExtra("user");
-        ArrayList<Shop> nearbyShops = mainActivityViewModel.intent.getParcelableArrayListExtra("nearbyShops");
-
-        ArrayList<Post> postList = new ArrayList<>();
-
-        for(int i = 1; i < nearbyShops.size(); i++){
-            postList.addAll(nearbyShops.get(i).getShopPosts());
-        }
-
-        mainActivityViewModel.user = user;
-        mainActivityViewModel.setPosts(postList);
-        mainActivityViewModel.setShops(nearbyShops);
-    }
-
-    private void setUserInViewModel() {
+    private void setDataFromIntent() {
         //TODO: Arreglar esto cuando tenga el backend
         User user = mainActivityViewModel.intent.getParcelableExtra("user");
         ArrayList<Shop> nearbyShops = mainActivityViewModel.intent.getParcelableArrayListExtra("nearbyShops");
@@ -155,7 +150,9 @@ public class MainActivity extends AppCompatActivity {
         mainActivityViewModel.setPosts(postList);
         mainActivityViewModel.setShops(nearbyShops);
 
-        mainActivityViewModel.userCoordinates = mainActivityViewModel.intent.getParcelableExtra("userCoordinates");
+        if(mainActivityViewModel.caller.equals("AuthActivity")){
+            mainActivityViewModel.userCoordinates = mainActivityViewModel.intent.getParcelableExtra("userCoordinates");
+        }
 
     }
 

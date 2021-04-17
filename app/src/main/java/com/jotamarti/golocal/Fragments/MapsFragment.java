@@ -59,12 +59,26 @@ public class MapsFragment extends Fragment {
     private List<Shop> shopList;
     List<Marker> markers;
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        model = new ViewModelProvider(requireActivity()).get(MainActivityViewModel.class);
+        model.setTitle("Explore Shops");
+
+        super.onViewCreated(view, savedInstanceState);
+
+        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+        if (mapFragment != null) {
+            mapFragment.getMapAsync(callback);
+        }
+    }
+
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
 
         @Override
         public void onMapReady(GoogleMap googleMap) {
             fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
             mMap = googleMap;
+
             mMap.setInfoWindowAdapter(new CustomInfoWindowAdapter());
             //googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
             googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(getContext(), R.raw.map_style));
@@ -79,12 +93,10 @@ public class MapsFragment extends Fragment {
                 navigateToUserLocation();
             }
 
-            CameraUpdate yourLocation = CameraUpdateFactory.newLatLngZoom(model.userCoordinates, 16);
-            mMap.animateCamera(yourLocation);
-
             mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                 @Override
                 public boolean onMarkerClick(Marker marker) {
+                    // TODO: intentar cambiar el incono
                     Log.d(TAG, "He pulsado en el marcador con el TAG: " + marker.getTag());
                     return false;
                 }
@@ -99,7 +111,6 @@ public class MapsFragment extends Fragment {
                     intent.putExtra("shop", shop);
                     intent.putExtra("caller", "MapsFragment");
                     startActivity(intent);
-                    Log.d(TAG, "He pulsado en el infoWindow de el marker con el TAG: " + marker.getTag());
                 }
             });
         }
@@ -169,27 +180,11 @@ public class MapsFragment extends Fragment {
         }
     }
 
-
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_maps, container, false);
     }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        model = new ViewModelProvider(requireActivity()).get(MainActivityViewModel.class);
-        model.setTitle("Explore Shops");
-
-        super.onViewCreated(view, savedInstanceState);
-
-        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
-        if (mapFragment != null) {
-            mapFragment.getMapAsync(callback);
-        }
-    }
-
 
     public void requestPermission() {
         requestPermissions(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, PERMISSIONS_REQUEST_ACCESS_LOCATION);
@@ -204,15 +199,11 @@ public class MapsFragment extends Fragment {
                         return;
                     }
                     mMap.setMyLocationEnabled(true);
-                    mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-                        @Override
-                        public void onMapClick(LatLng latLng) {
-                            CustomToast.showToast(requireActivity(), "Has clickado el mapa", CustomToast.mode.LONGER);
-                        }
-                    });
                     navigateToUserLocation();
                 } else {
                     CustomToast.showToast(getActivity(), "Permission not granted", CustomToast.mode.LONGER);
+                    CameraUpdate yourLocation = CameraUpdateFactory.newLatLngZoom(model.userCoordinates, 16);
+                    mMap.animateCamera(yourLocation);
                 }
             }
         }

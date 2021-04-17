@@ -28,6 +28,9 @@ public class MainActivityViewModel extends ViewModel {
     public Fragment clientProfileFragment;
     public Fragment shopProfileFragment;
 
+    private ArrayList<Shop> nearbyShops;
+    private ArrayList<Post> allShopsPostList;
+
 
     private MutableLiveData<String> title = new MutableLiveData<>();
     private MutableLiveData<List<Post>> posts = new MutableLiveData<>();
@@ -56,5 +59,26 @@ public class MainActivityViewModel extends ViewModel {
 
     public void setShops(ArrayList<Shop> shopList) {
         shopsList.setValue(shopList);
+    }
+
+    public List<Shop> getNearbyShops(){
+        return nearbyShops;
+    }
+
+    public void setNearbyShops(ArrayList<Shop> nearbyShops){
+        this.nearbyShops = nearbyShops;
+    }
+
+    public void setAllShopsPostList(ArrayList<Shop> nearbyShops) {
+        ArrayList<Post> postList = new ArrayList<>();
+
+        for(int i = 1; i < nearbyShops.size(); i++){
+            postList.addAll(nearbyShops.get(i).getShopPosts());
+        }
+        this.allShopsPostList = postList;
+    }
+
+    public ArrayList<Post> getAllShopsPostList(){
+        return this.allShopsPostList;
     }
 }

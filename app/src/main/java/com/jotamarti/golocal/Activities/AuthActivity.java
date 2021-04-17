@@ -259,7 +259,6 @@ public class AuthActivity extends AppCompatActivity {
         Intent intent = new Intent(AuthActivity.this, MainActivity.class);
         Bundle bundle = new Bundle();
         bundle.putParcelableArrayList("test", authActivityViewModel.getNearbyShopsList().getValue());
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         intent.putExtra("user", authActivityViewModel.user);
         intent.putExtra("test", bundle);
         intent.putExtra("caller", "AuthActivity");
@@ -419,7 +418,7 @@ public class AuthActivity extends AppCompatActivity {
         btnAuthActivity = findViewById(R.id.AuthActivity_btn);
         txtViewMessagePermission = findViewById(R.id.AuthActivity_txtView_askPermission);
         btnGivePermission = findViewById(R.id.AuthActivity_btn_askPermission);
-        spinnerLoading = findViewById(R.id.AuthActivity_spinner_loading);
+        spinnerLoading = findViewById(R.id.NewPostActivity_spinner_loading);
         txtViewLocationStatus = findViewById(R.id.AuthActivity_textView_locationStatus);
         txtViewGettingLocation = findViewById(R.id.AuthActivity_textView_gettingLocation);
         btnAuthActivity.setEnabled(false);

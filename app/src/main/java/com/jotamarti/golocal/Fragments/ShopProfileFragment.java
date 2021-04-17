@@ -37,6 +37,7 @@ public class ShopProfileFragment extends Fragment {
     private TextView textViewShopLocation;
     private TextView textViewShopPhoneNumber;
 
+    // Lo pongo aqui por que esta fragment puede tener diferentes viewmodels
     private Shop shop;
     private String caller;
 
@@ -54,7 +55,7 @@ public class ShopProfileFragment extends Fragment {
 
         initiaizeUi(caller, view);
 
-        if(caller.equals("MapsFragment")) {
+        if (caller.equals("MapsFragment") || caller.equals("PostDetailActivityFromMainActivity")) {
             initializeShopDetailViewModel();
             FragmentManager manager = requireActivity().getSupportFragmentManager();
             FragmentTransaction transaction = manager.beginTransaction();
@@ -64,20 +65,21 @@ public class ShopProfileFragment extends Fragment {
             transaction.addToBackStack(null);
             transaction.commit();
             shop = shopDetailActivityViewModel.shop;
-        } else if(caller.equals("PostDetailActivityFromMainActivity")){
-            initializeShopDetailViewModel();
-            FragmentManager manager = requireActivity().getSupportFragmentManager();
-            FragmentTransaction transaction = manager.beginTransaction();
-            Bundle bundle = new Bundle();
-            bundle.putString("caller", "PostDetailActivityFromMainActivity");
-            transaction.add(R.id.fragmentShopProfile_fragmentParent_shopsPosts, PostsFragment.class, bundle);
-            transaction.addToBackStack(null);
-            transaction.commit();
-            shop = shopDetailActivityViewModel.shop;
         } else {
+            // Tienda visita su perfil
             mainActivityViewModel = new ViewModelProvider(requireActivity()).get(MainActivityViewModel.class);
             mainActivityViewModel.setTitle("Shop Profile");
             shop = (Shop) mainActivityViewModel.user;
+
+
+            FragmentManager manager = requireActivity().getSupportFragmentManager();
+            FragmentTransaction transaction = manager.beginTransaction();
+            Bundle bundle = new Bundle();
+            bundle.putString("caller", caller); // El caller es ShopProfile
+            transaction.add(R.id.fragmentShopProfile_fragmentParent_shopsPosts, PostsFragment.class, bundle);
+            transaction.addToBackStack(null);
+            transaction.commit();
+
             btnEditProfile.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -99,16 +101,6 @@ public class ShopProfileFragment extends Fragment {
             });
         }
 
-
-
-        String texto = "";
-        String abecedario = "abcdefghijklmnñopqrstuvwxyz";
-        Random random = new Random();
-        for(int i = 0; i < 256; i++) {
-            int numeroRandom = random.nextInt(abecedario.length());
-            texto = texto + abecedario.charAt(numeroRandom);
-        }
-
         textViewShopDescription.setText(shop.getDescription());
         textViewShopLocation.setText(shop.getAddress());
         textViewShopPhoneNumber.setText(shop.getTelNumber());
@@ -120,13 +112,13 @@ public class ShopProfileFragment extends Fragment {
         shopDetailActivityViewModel = new ViewModelProvider(requireActivity()).get(ShopDetailActivityViewModel.class);
     }
 
-    private void initiaizeUi(String mode, View view){
+    private void initiaizeUi(String mode, View view) {
         textViewShopDescription = view.findViewById(R.id.FragmentShopProfile_textView_shopDescription);
         textViewShopLocation = view.findViewById(R.id.FragmentShopProfile_textView_Location);
         textViewShopPhoneNumber = view.findViewById(R.id.FragmentShopProfile_textView_PhoneNumber);
         btnEditProfile = view.findViewById(R.id.fragmentShopProfile_btn_editProfile);
         btnCreatePost = view.findViewById(R.id.fragmentShopProfile_btn_addPost);
-        if(mode.equals("visit") || mode.equals("PostDetailActivityFromMainActivity") || mode.equals("MapsFragment")){
+        if (mode.equals("visit") || mode.equals("PostDetailActivityFromMainActivity") || mode.equals("MapsFragment")) {
             btnEditProfile.setVisibility(View.INVISIBLE);
         } else {
             btnEditProfile.setVisibility(View.VISIBLE);

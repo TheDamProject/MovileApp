@@ -68,7 +68,7 @@ public class ShopDetailActivity extends AppCompatActivity {
         Intent intent;
         if (caller.equals("MapsFragment")) {
             intent = new Intent(this, MainActivity.class);
-            intent.putExtra("caller", "ShopDetailsActivityFromMap");
+            intent.putExtra("caller", "ShopDetailActivityFromMapRoute");
             intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         } else if(caller.equals("PostDetailActivityFromMainActivity")) { // caller equals PostDetailActivity
             intent = new Intent(this, PostDetailActivity.class);

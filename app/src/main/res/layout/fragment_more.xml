@@ -38,12 +38,12 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginTop="40dp"
-        android:text="Email:"
+        android:text="Nick:"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/background" />
 
     <TextView
-        android:id="@+id/txtViewEmail"
+        android:id="@+id/txtViewNick"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
