@@ -36,6 +36,7 @@ public class ShopProfileFragment extends Fragment {
     private TextView textViewShopDescription;
     private TextView textViewShopLocation;
     private TextView textViewShopPhoneNumber;
+    private TextView textViewShopName;
 
     // Lo pongo aqui por que esta fragment puede tener diferentes viewmodels
     private Shop shop;
@@ -104,6 +105,7 @@ public class ShopProfileFragment extends Fragment {
         textViewShopDescription.setText(shop.getDescription());
         textViewShopLocation.setText(shop.getAddress());
         textViewShopPhoneNumber.setText(shop.getTelNumber());
+        textViewShopName.setText(shop.getShopName());
 
         return view;
     }
@@ -118,6 +120,7 @@ public class ShopProfileFragment extends Fragment {
         textViewShopPhoneNumber = view.findViewById(R.id.FragmentShopProfile_textView_PhoneNumber);
         btnEditProfile = view.findViewById(R.id.fragmentShopProfile_btn_editProfile);
         btnCreatePost = view.findViewById(R.id.fragmentShopProfile_btn_addPost);
+        textViewShopName = view.findViewById(R.id.fragmentShopProfile_textView_shopNameText);
         if (mode.equals("visit") || mode.equals("PostDetailActivityFromMainActivity") || mode.equals("MapsFragment")) {
             btnEditProfile.setVisibility(View.INVISIBLE);
         } else {

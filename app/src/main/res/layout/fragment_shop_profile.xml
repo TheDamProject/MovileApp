@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_local_dark"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".Fragments.ShopProfileFragment">
 
     <ImageView
@@ -26,7 +26,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="4dp"
-        android:text="Location"
+        android:text="@string/ShopProfileFragment_textView_addressHeader"
         android:textSize="10sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/NewPostActivity_imageView_postImage" />
@@ -36,9 +36,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="2dp"
-        android:textSize="10sp"
         android:text="LocationTextView"
+        android:textSize="10sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView2" />
 
@@ -46,51 +45,50 @@
         android:id="@+id/textView8"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
         android:layout_marginTop="4dp"
-        android:text="Phone number"
+        android:layout_marginEnd="8dp"
+        android:text="@string/ShopProfileFragment_textView_phoneNumberHeader"
         android:textSize="10sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/FragmentShopProfile_textView_Location" />
+        app:layout_constraintEnd_toStartOf="@+id/fragmentShopProfile_btn_editProfile"
+        app:layout_constraintTop_toBottomOf="@+id/NewPostActivity_imageView_postImage" />
 
     <TextView
         android:id="@+id/FragmentShopProfile_textView_PhoneNumber"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="2dp"
+        android:layout_marginEnd="8dp"
         android:text="Phone number TextView"
         android:textSize="10sp"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/fragmentShopProfile_btn_editProfile"
         app:layout_constraintTop_toBottomOf="@+id/textView8" />
 
     <TextView
         android:id="@+id/textView10"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:text="Shop Description"
+        android:text="@string/ShopProfileFragment_textView_shopDescriptionHeader"
         android:textSize="10sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/FragmentShopProfile_textView_PhoneNumber" />
+        app:layout_constraintTop_toBottomOf="@+id/fragmentShopProfile_textView_shopNameText" />
 
     <TextView
         android:id="@+id/FragmentShopProfile_textView_shopDescription"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="asdasdasds"
-        android:textSize="8sp"
-        android:textAlignment="center"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
+        android:text=""
+        android:textAlignment="center"
+        android:textSize="8sp"
         app:layout_constraintTop_toBottomOf="@+id/textView10" />
 
     <Button
         android:id="@+id/fragmentShopProfile_btn_editProfile"
         android:layout_width="60dp"
         android:layout_height="40dp"
-        android:text="edit"
+        android:layout_marginEnd="16dp"
+        android:text="@string/ShopProfileFragment_btn_editShop"
         android:textSize="10sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/NewPostActivity_imageView_postImage" />
@@ -107,12 +105,33 @@
     <Button
         android:id="@+id/fragmentShopProfile_btn_addPost"
         android:layout_width="wrap_content"
-        android:visibility="invisible"
         android:layout_height="wrap_content"
-        android:text="CREATE POST"
+        android:text="@string/ShopProfileFragment_btn_createPost"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/fragmentShopProfile_textView_shopNameText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textSize="8sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/fragmentShopProfile_textView_shopNameHeader" />
+
+    <TextView
+        android:id="@+id/fragmentShopProfile_textView_shopNameHeader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="@string/ShopProfileFragment_textView_shopNameHeader"
+        android:textSize="8sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/FragmentShopProfile_textView_PhoneNumber" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

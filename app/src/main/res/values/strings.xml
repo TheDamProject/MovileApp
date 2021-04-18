@@ -17,6 +17,7 @@
     <string name="ShopConfigurationActivity_editTextLocation">Adress (With number)</string>
     <string name="ShopConfigurationActivity_textView_number">Number</string>
     <string name="ShopConfigurationActivity_check_noNumber">No number</string>
+    <string name="ShopConfigurationActivity_title">Shop Configuration</string>
     <!-- ClientConfigurationActivity Text -->
     <string name="ClientConfigurationActivity_title">Client Configuration</string>
     <string name="ClientConfigurationActivity_textView_nickName">Nickname:</string>
@@ -52,4 +53,11 @@
     <string name="NewPostActivity_textView_content">Content</string>
     <string name="NewPostActivity_editText_content">Content</string>
     <string name="NewPostActivity_btn_savePost">SAVE</string>
+    <!-- ShopProfileFragment -->
+    <string name="ShopProfileFragment_textView_addressHeader">Address</string>
+    <string name="ShopProfileFragment_textView_phoneNumberHeader">Phone number</string>
+    <string name="ShopProfileFragment_textView_shopNameHeader">Shop Name</string>
+    <string name="ShopProfileFragment_textView_shopDescriptionHeader">Shop Description</string>
+    <string name="ShopProfileFragment_btn_createPost">CREATE POST</string>
+    <string name="ShopProfileFragment_btn_editShop">EDIT</string>
 </resources>

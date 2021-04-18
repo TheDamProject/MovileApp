@@ -291,6 +291,8 @@ public class ShopConfigurationActivity extends AppCompatActivity {
         textInputShopDescription.addTextChangedListener(textWatcher);
         editTextName.addTextChangedListener(textWatcher);
         editTextPhone.addTextChangedListener(textWatcher);
+
+        setTitle(R.string.ShopConfigurationActivity_title);
     }
 
     private void manageUserInput(Boolean state){

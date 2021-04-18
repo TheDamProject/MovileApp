@@ -49,8 +49,5 @@ public class ClientProfileFragment extends Fragment {
         Client client = (Client) model.user;
         txtViewNick.setText(client.getNickName());
         Picasso.get().load(client.getAvatar()).into(imageView);
-
-        //TODO: Eliminar tema email
-        //txtViewEmail.setText(user.getEmail());
     }
 }
