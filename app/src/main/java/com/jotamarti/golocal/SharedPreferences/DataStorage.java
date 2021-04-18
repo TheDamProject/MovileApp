@@ -45,6 +45,10 @@ public class DataStorage {
         writer.apply();
     }
 
+    public void removePreferences(){
+        writer.clear().apply();
+    }
+
     public Object read(String key, int DataType) {
         Object response = new Object();
         if (DataType == INTEGER)

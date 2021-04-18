@@ -264,6 +264,7 @@ public class AuthActivity extends AppCompatActivity {
         intent.putExtra("caller", "AuthActivity");
         intent.putExtra("userCoordinates", authActivityViewModel.userCoordinates);
         intent.putParcelableArrayListExtra("nearbyShops", authActivityViewModel.getNearbyShopsList().getValue());
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
     }
 

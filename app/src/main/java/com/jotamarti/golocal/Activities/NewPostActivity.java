@@ -143,6 +143,8 @@ public class NewPostActivity extends AppCompatActivity {
         editTextTitle.addTextChangedListener(textWatcher);
 
         btnSavePost.setEnabled(false);
+
+        setTitle(R.string.NewPostActivity_title);
     }
 
     private void initializeViewModel() {

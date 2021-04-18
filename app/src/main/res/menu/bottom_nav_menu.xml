@@ -4,13 +4,13 @@
     <item
         android:id="@+id/page_posts"
         android:icon="@drawable/ic_baseline_list"
-        android:title="Posts" />
+        android:title="@string/navbar_posts" />
     <item
         android:id="@+id/page_maps"
         android:icon="@drawable/ic_baseline_map"
-        android:title="Map" />
+        android:title="@string/navbar_map" />
     <item
         android:id="@+id/page_more"
         android:icon="@drawable/ic_baseline_more_horiz"
-        android:title="More"/>
+        android:title="@string/navbar_more"/>
 </menu>

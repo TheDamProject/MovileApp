@@ -9,9 +9,11 @@ import androidx.lifecycle.ViewModelProvider;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.MenuItem;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.jotamarti.golocal.App;
 import com.jotamarti.golocal.Fragments.MapsFragment;
 import com.jotamarti.golocal.Fragments.ClientProfileFragment;
 import com.jotamarti.golocal.Fragments.PostsFragment;
@@ -21,6 +23,7 @@ import com.jotamarti.golocal.Models.Post;
 import com.jotamarti.golocal.Models.Shop;
 import com.jotamarti.golocal.Models.User;
 import com.jotamarti.golocal.R;
+import com.jotamarti.golocal.SharedPreferences.DataStorage;
 import com.jotamarti.golocal.Utils.CustomToast;
 import com.jotamarti.golocal.ViewModels.MainActivityViewModel;
 
@@ -175,5 +178,39 @@ public class MainActivity extends AppCompatActivity {
                 })
                 .setNegativeButton("No", null)
                 .show();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.logout_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+        switch (item.getItemId()) {
+            case R.id.menu_logout:
+                logout();
+                return true;
+            case R.id.menu_forget_logout:
+                removeSharedPreferences();
+                logout();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void logout(){
+        Intent intent = new Intent(this, AuthActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+
+    }
+
+    private void removeSharedPreferences(){
+        DataStorage dataStorage = new DataStorage(App.getContext());
+        dataStorage.removePreferences();
     }
 }

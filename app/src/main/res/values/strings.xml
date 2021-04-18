@@ -42,6 +42,7 @@
     <string name="ShopDetailActivity_title">Shop Detail</string>
     <!-- PostDetailActivity -->
     <string name="PostDetailActivity_title">Post Detail</string>
+    <string name="PostDetailActivity_btn_visitShop">VISIT SHOP</string>
     <!-- MainActivity -->
     <string name="MainActivity_exitMessage">Are you sure you want to exit?</string>
     <string name="MainActivity_exitMessage_yes">Yes</string>
@@ -53,6 +54,7 @@
     <string name="NewPostActivity_textView_content">Content</string>
     <string name="NewPostActivity_editText_content">Content</string>
     <string name="NewPostActivity_btn_savePost">SAVE</string>
+    <string name="NewPostActivity_title">Create Post</string>
     <!-- ShopProfileFragment -->
     <string name="ShopProfileFragment_textView_addressHeader">Address</string>
     <string name="ShopProfileFragment_textView_phoneNumberHeader">Phone number</string>
@@ -60,4 +62,17 @@
     <string name="ShopProfileFragment_textView_shopDescriptionHeader">Shop Description</string>
     <string name="ShopProfileFragment_btn_createPost">CREATE POST</string>
     <string name="ShopProfileFragment_btn_editShop">EDIT</string>
+    <!-- PostsFragment -->
+    <string name="PostsFragment_title">Posts List</string>
+    <!-- MapsFragment -->
+    <string name="MapsFragment_title">Explore Shops</string>
+    <!-- ClientProfileFragment -->
+    <string name="ClientProfileFragment_title">Client Profile</string>
+    <!-- Navbar -->
+    <string name="navbar_map">Map</string>
+    <string name="navbar_more">More</string>
+    <string name="navbar_posts">Posts</string>
+    <!-- Logout Menu -->
+    <string name="logoutMenu_logout">Log out</string>
+    <string name="logoutMenu_forget">Forget and Log out</string>
 </resources>

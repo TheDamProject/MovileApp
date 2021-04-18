@@ -62,7 +62,7 @@ public class MapsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         model = new ViewModelProvider(requireActivity()).get(MainActivityViewModel.class);
-        model.setTitle("Explore Shops");
+        model.setTitle(String.valueOf(getText(R.string.MapsFragment_title)));
 
         super.onViewCreated(view, savedInstanceState);
 

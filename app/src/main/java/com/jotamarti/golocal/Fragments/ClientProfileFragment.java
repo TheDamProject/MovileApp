@@ -45,7 +45,7 @@ public class ClientProfileFragment extends Fragment {
         imageView = view.findViewById(R.id.ClientConfigurationActivity_imageView_userAvatar);
         txtViewNick = view.findViewById(R.id.txtViewNick);
         model = new ViewModelProvider(requireActivity()).get(MainActivityViewModel.class);
-        model.setTitle("Client Profile");
+        model.setTitle(String.valueOf(getText(R.string.ClientProfileFragment_title)));
         Client client = (Client) model.user;
         txtViewNick.setText(client.getNickName());
         Picasso.get().load(client.getAvatar()).into(imageView);

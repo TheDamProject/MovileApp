@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.jotamarti.golocal.Adapters.PostsRecyclerViewAdapter;
+import com.jotamarti.golocal.App;
 import com.jotamarti.golocal.Models.Post;
 import com.jotamarti.golocal.Models.Shop;
 import com.jotamarti.golocal.R;
@@ -79,7 +80,7 @@ public class PostsFragment extends Fragment {
             initializeMainActivityViewModel();
             postList = mainActivityViewModel.getPosts().getValue();
             nearbyShops = mainActivityViewModel.getShopsList().getValue();
-            mainActivityViewModel.setTitle("Posts List");
+            mainActivityViewModel.setTitle(String.valueOf(getText(R.string.PostsFragment_title)));
             // Set the adapter
             if (view instanceof RecyclerView) {
                 Context context = view.getContext();

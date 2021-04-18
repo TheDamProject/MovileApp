@@ -122,7 +122,7 @@ public class ShopProfileFragment extends Fragment {
         btnCreatePost = view.findViewById(R.id.fragmentShopProfile_btn_addPost);
         textViewShopName = view.findViewById(R.id.fragmentShopProfile_textView_shopNameText);
         if (mode.equals("visit") || mode.equals("PostDetailActivityFromMainActivity") || mode.equals("MapsFragment")) {
-            btnEditProfile.setVisibility(View.INVISIBLE);
+            btnEditProfile.setVisibility(View.GONE);
         } else {
             btnEditProfile.setVisibility(View.VISIBLE);
             btnCreatePost.setVisibility(View.VISIBLE);
