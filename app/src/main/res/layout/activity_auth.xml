@@ -12,11 +12,11 @@
         android:layout_width="115dp"
         android:layout_height="124dp"
         android:layout_marginTop="40dp"
+        android:contentDescription="@string/authActivity_logo_description"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/go_local_house"
-        android:contentDescription="@string/authActivity_logo_description" />
+        app:srcCompat="@drawable/go_local_house" />
 
     <TextView
         android:id="@+id/textView"
@@ -59,13 +59,14 @@
     <CheckBox
         android:id="@+id/AuthActivity_checkBox_register"
         android:layout_width="wrap_content"
-        android:layout_height="20dp"
-        android:layout_marginTop="8dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="2dp"
         android:text="@string/authActivity_checkBox_register"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.267"
+        app:layout_constraintEnd_toStartOf="@+id/guideline3"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/AuthActivity_editText_password" />
+        app:layout_constraintTop_toBottomOf="@+id/AuthActivity_switch_remember" />
 
     <androidx.appcompat.widget.SwitchCompat
         android:id="@+id/AuthActivity_switch_remember"
@@ -74,7 +75,6 @@
         android:layout_marginTop="4dp"
         android:text="@string/authActivity_switch_remember"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.706"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/AuthActivity_editText_password" />
 
@@ -98,17 +98,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/AuthActivity_btn" />
-
-
-    <CheckBox
-        android:id="@+id/AuthActivity_checkBox_Shop"
-        android:layout_width="wrap_content"
-        android:layout_height="20dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginBottom="16dp"
-        android:text="@string/authActivity_checkBox_company"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/AuthActivity_btn_askPermission"
@@ -146,4 +135,37 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/AuthActivity_textView_locationStatus" />
+
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/AuthActivity_switch_register"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:layout_marginStart="2dp"
+        android:layout_marginTop="4dp"
+        android:text="@string/authActivity_switchRegister_text"
+        app:layout_constraintStart_toStartOf="@+id/guideline3"
+        app:layout_constraintTop_toBottomOf="@+id/AuthActivity_switch_remember" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:scaleX="0.5"
+        android:scaleY="0.5"
+        app:layout_constraintGuide_percent="0.5" />
+
+    <TextView
+        android:id="@+id/AuthActivity_textView_switchShop"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:layout_marginTop="4dp"
+        android:gravity="center"
+        android:text="@string/authActivity_textView_shopSwitchText"
+        android:textColor="@color/black"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/AuthActivity_switch_register"
+        app:layout_constraintTop_toBottomOf="@+id/AuthActivity_switch_remember" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

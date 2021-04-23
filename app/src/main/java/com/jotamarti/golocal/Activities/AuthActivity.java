@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatDelegate;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -62,12 +63,14 @@ public class AuthActivity extends AppCompatActivity {
     private TextView txtViewMessagePermission;
     private TextView txtViewLocationStatus;
     private TextView txtViewGettingLocation;
+    private TextView txtViewSwitchShopText;
     private SwitchCompat switchRemember;
+    private SwitchCompat switchRegister;
     private CheckBox checkBoxRegister;
-    private CheckBox checkBoxShop;
     private Button btnAuthActivity;
     private Button btnGivePermission;
     private CircularProgressIndicator spinnerLoading;
+    private ColorStateList textViewColor;
 
     private FusedLocationProviderClient fusedLocationClient;
 
@@ -86,6 +89,8 @@ public class AuthActivity extends AppCompatActivity {
         initializeViewModel();
         setCredentialsIfExists();
         handleLocationPermission();
+
+
 
         btnAuthActivity.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -238,7 +243,7 @@ public class AuthActivity extends AppCompatActivity {
             authActivityViewModel.setPreferences();
         }
         Intent intent;
-        if (checkBoxShop.isChecked()) {
+        if (switchRegister.isChecked()) {
             intent = new Intent(AuthActivity.this, ShopConfigurationActivity.class);
             intent.putExtra("cordinates", authActivityViewModel.userCoordinates);
         } else {
@@ -280,6 +285,7 @@ public class AuthActivity extends AppCompatActivity {
     private void handleLocationPermission() {
         if (!checkHaveLocationPermission()) {
             requestPermission();
+            btnAuthActivity.setEnabled(false);
         } else {
             handlePermissionGranted();
         }
@@ -293,14 +299,18 @@ public class AuthActivity extends AppCompatActivity {
         if (!isLocationEnabled()) {
             CustomToast.showToast(this, "Please, enable the location in you'r device", CustomToast.mode.LONGER);
             txtViewLocationStatus.setVisibility(View.VISIBLE);
+            btnAuthActivity.setEnabled(false);
         }
         btnGivePermission.setVisibility(View.INVISIBLE);
         getUserCoordinates();
     }
 
     private void handleLocationFinded() {
+        Log.d(TAG, "Ha saltado el handleLocationFinded");
         btnGivePermission.setEnabled(false);
         btnAuthActivity.setEnabled(true);
+        Log.d(TAG, "El boton tiene un valor de enabled: " + btnAuthActivity.isEnabled());
+        spinnerLoading.setVisibility(View.INVISIBLE);
         btnGivePermission.setVisibility(View.INVISIBLE);
         txtViewMessagePermission.setVisibility(View.INVISIBLE);
         txtViewLocationStatus.setVisibility(View.INVISIBLE);
@@ -337,8 +347,10 @@ public class AuthActivity extends AppCompatActivity {
                 if (location == null) {
                     requestNewLocationData();
                 } else {
-                    authActivityViewModel.userCoordinates = new LatLng(location.getLatitude(), location.getLongitude());
-                    handleLocationFinded();
+                    if(authActivityViewModel.userCoordinates == null){
+                        authActivityViewModel.userCoordinates = new LatLng(location.getLatitude(), location.getLongitude());
+                        handleLocationFinded();
+                    }
                 }
             }
         });
@@ -375,6 +387,7 @@ public class AuthActivity extends AppCompatActivity {
             authActivityViewModel.userCoordinates = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
             spinnerLoading.setVisibility(View.INVISIBLE);
             txtViewGettingLocation.setVisibility(View.INVISIBLE);
+            fusedLocationClient.removeLocationUpdates(mLocationCallback);
             handleLocationFinded();
         }
     };
@@ -415,14 +428,15 @@ public class AuthActivity extends AppCompatActivity {
         editTxtPassword = findViewById(R.id.AuthActivity_editText_password);
         switchRemember = findViewById(R.id.AuthActivity_switch_remember);
         checkBoxRegister = findViewById(R.id.AuthActivity_checkBox_register);
-        checkBoxShop = findViewById(R.id.AuthActivity_checkBox_Shop);
         btnAuthActivity = findViewById(R.id.AuthActivity_btn);
         txtViewMessagePermission = findViewById(R.id.AuthActivity_txtView_askPermission);
         btnGivePermission = findViewById(R.id.AuthActivity_btn_askPermission);
         spinnerLoading = findViewById(R.id.NewPostActivity_spinner_loading);
         txtViewLocationStatus = findViewById(R.id.AuthActivity_textView_locationStatus);
         txtViewGettingLocation = findViewById(R.id.AuthActivity_textView_gettingLocation);
-        btnAuthActivity.setEnabled(false);
+        switchRegister = findViewById(R.id.AuthActivity_switch_register);
+        txtViewSwitchShopText = findViewById(R.id.AuthActivity_textView_switchShop);
+        textViewColor = txtViewSwitchShopText.getTextColors();
         spinnerLoading.setVisibility(View.INVISIBLE);
         txtViewLocationStatus.setVisibility(View.INVISIBLE);
         txtViewGettingLocation.setVisibility(View.INVISIBLE);
@@ -432,14 +446,16 @@ public class AuthActivity extends AppCompatActivity {
         btnAuthActivity.setEnabled(state);
         btnGivePermission.setEnabled(state);
         switchRemember.setEnabled(state);
+        switchRegister.setEnabled(state);
         editTxtPassword.setEnabled(state);
         editTxtEmail.setEnabled(state);
         checkBoxRegister.setEnabled(state);
-        checkBoxShop.setEnabled(state);
         if (state) {
             spinnerLoading.setVisibility(View.INVISIBLE);
+            txtViewSwitchShopText.setTextColor(textViewColor.withAlpha(255));
         } else {
             spinnerLoading.setVisibility(View.VISIBLE);
+            txtViewSwitchShopText.setTextColor(textViewColor.withAlpha(55));
         }
     }
 
