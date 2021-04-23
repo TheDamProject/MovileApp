@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.jotamarti.golocal.Activities.NewPostActivity;
 import com.jotamarti.golocal.Models.Shop;
 import com.jotamarti.golocal.R;
@@ -32,7 +33,7 @@ public class ShopProfileFragment extends Fragment {
     private String TAG = "ShopProfileFragment";
 
     private Button btnEditProfile;
-    private Button btnCreatePost;
+    private FloatingActionButton btnCreatePost;
     private TextView textViewShopDescription;
     private TextView textViewShopLocation;
     private TextView textViewShopPhoneNumber;
@@ -125,7 +126,7 @@ public class ShopProfileFragment extends Fragment {
             btnEditProfile.setVisibility(View.GONE);
         } else {
             btnEditProfile.setVisibility(View.VISIBLE);
-            btnCreatePost.setVisibility(View.VISIBLE);
+            btnCreatePost.show();
         }
     }
 }

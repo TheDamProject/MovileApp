@@ -183,7 +183,7 @@ public class NewPostActivity extends AppCompatActivity {
             CropImage.ActivityResult result = CropImage.getActivityResult(data);
             if (resultCode == RESULT_OK) {
                 Uri uri = result.getUri();
-                newPostActivityViewModel.imageBase64 = ImageUtil.UriToBase64(uri, ImageUtil.IMAGE_TYPE.SHOP);
+                newPostActivityViewModel.imageBase64 = ImageUtil.UriToBase64(uri, ImageUtil.IMAGE_TYPE.POST);
                 newPostActivityViewModel.post.setImageUrl(newPostActivityViewModel.imageBase64);
                 imageViewPostImage.setImageURI(uri);
                 newPostActivityViewModel.imageInserted = true;
@@ -195,7 +195,7 @@ public class NewPostActivity extends AppCompatActivity {
 
 
     private void startCrop(Uri imageUri) {
-        CropImage.activity(imageUri).setGuidelines(CropImageView.Guidelines.ON).setMultiTouchEnabled(true).setAspectRatio(2, 1).start(this);
+        CropImage.activity(imageUri).setGuidelines(CropImageView.Guidelines.ON).setMultiTouchEnabled(true).setAspectRatio(4, 1).start(this);
     }
 
     @Override

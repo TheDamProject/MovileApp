@@ -102,15 +102,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/FragmentShopProfile_textView_shopDescription" />
 
-    <Button
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fragmentShopProfile_btn_addPost"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/ShopProfileFragment_btn_createPost"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="@color/indian_red_700"
+        app:fabSize="mini"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:srcCompat="@drawable/ic_add_foreground"
+        app:tint="@color/white" />
 
     <TextView
         android:id="@+id/fragmentShopProfile_textView_shopNameText"
