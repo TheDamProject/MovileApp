@@ -302,6 +302,7 @@ public class AuthActivity extends AppCompatActivity {
             btnAuthActivity.setEnabled(false);
         }
         btnGivePermission.setVisibility(View.INVISIBLE);
+        txtViewMessagePermission.setVisibility(View.INVISIBLE);
         getUserCoordinates();
     }
 
@@ -387,6 +388,7 @@ public class AuthActivity extends AppCompatActivity {
             authActivityViewModel.userCoordinates = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
             spinnerLoading.setVisibility(View.INVISIBLE);
             txtViewGettingLocation.setVisibility(View.INVISIBLE);
+            txtViewMessagePermission.setVisibility(View.INVISIBLE);
             fusedLocationClient.removeLocationUpdates(mLocationCallback);
             handleLocationFinded();
         }
