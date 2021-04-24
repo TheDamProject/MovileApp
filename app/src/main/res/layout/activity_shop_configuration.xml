@@ -40,7 +40,7 @@
         android:layout_marginTop="16dp"
         android:text="@string/ShopConfigurationActivity_editTextLocation"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/NewPostActivity_imageView_postImage" />
+        app:layout_constraintTop_toBottomOf="@+id/FragmentShopProfile_imageView_shopImage" />
 
 
 
@@ -65,7 +65,7 @@
         app:layout_constraintTop_toBottomOf="@+id/textView12" />
 
     <ImageView
-        android:id="@+id/NewPostActivity_imageView_postImage"
+        android:id="@+id/FragmentShopProfile_imageView_shopImage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:adjustViewBounds="true"
@@ -83,8 +83,8 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="6dp"
         android:text="CHANGE"
-        app:layout_constraintBottom_toBottomOf="@+id/NewPostActivity_imageView_postImage"
-        app:layout_constraintEnd_toEndOf="@+id/NewPostActivity_imageView_postImage" />
+        app:layout_constraintBottom_toBottomOf="@+id/FragmentShopProfile_imageView_shopImage"
+        app:layout_constraintEnd_toEndOf="@+id/FragmentShopProfile_imageView_shopImage" />
 
     <TextView
         android:id="@+id/textView3"

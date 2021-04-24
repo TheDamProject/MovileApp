@@ -14,7 +14,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -28,7 +27,6 @@ import com.jotamarti.golocal.Utils.CustomToast;
 import com.jotamarti.golocal.Utils.Errors.BackendErrors;
 import com.jotamarti.golocal.Utils.ImageUtil;
 import com.jotamarti.golocal.ViewModels.NewPostActivityViewModel;
-import com.jotamarti.golocal.ViewModels.ShopConfigurationViewModel;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
@@ -135,7 +133,7 @@ public class NewPostActivity extends AppCompatActivity {
         btnSavePost = findViewById(R.id.NewPostActivity_btn_save);
         editTextTitle = findViewById(R.id.NewPostActivity_editText_title);
         editTextContent = findViewById(R.id.NewPostActivity_editText_content);
-        imageViewPostImage = findViewById(R.id.NewPostActivity_imageView_postImage);
+        imageViewPostImage = findViewById(R.id.FragmentShopProfile_imageView_shopImage);
         spinnerLoading = findViewById(R.id.NewPostActivity_spinner_loading);
         loadingState(false);
 

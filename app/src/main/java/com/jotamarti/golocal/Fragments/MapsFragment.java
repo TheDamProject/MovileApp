@@ -14,6 +14,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.text.SpannableString;
@@ -26,6 +27,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
@@ -45,6 +50,8 @@ import com.jotamarti.golocal.Models.Shop;
 import com.jotamarti.golocal.R;
 import com.jotamarti.golocal.Utils.CustomToast;
 import com.jotamarti.golocal.ViewModels.MainActivityViewModel;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -106,7 +113,8 @@ public class MapsFragment extends Fragment {
                 @Override
                 public void onInfoWindowClick(Marker marker) {
                     //TODO: Intenta para irme al perfil de la tienda, primero tengo que sacar la tienda de la shoplist y luego pasarla
-                    Shop shop = Shop.getShopByUid(shopList, marker.getTag().toString());
+
+                    Shop shop = (Shop) marker.getTag();
                     Intent intent = new Intent(getContext(), ShopDetailActivity.class);
                     intent.putExtra("shop", shop);
                     intent.putExtra("caller", "MapsFragment");
@@ -125,10 +133,10 @@ public class MapsFragment extends Fragment {
 
         markers = new ArrayList<>();
 
-        for(int i = 0; i < shopList.size(); i++){
+        for (int i = 0; i < shopList.size(); i++) {
             Shop currentShop = shopList.get(i);
             Marker marker = mMap.addMarker(new MarkerOptions().position(shopList.get(i).getCoordinates()).title(currentShop.getShopName()).snippet(currentShop.getAddress()).icon(BitmapDescriptorFactory.fromBitmap(smallMarker)));
-            marker.setTag(currentShop.getUserUid());
+            marker.setTag(currentShop);
             markers.add(marker);
         }
     }
@@ -155,8 +163,13 @@ public class MapsFragment extends Fragment {
         private void render(Marker marker, View view) {
             int badge;
 
+            Shop shop = (Shop) marker.getTag();
+
             badge = R.drawable.shop_header_mock;
-            ((ImageView) view.findViewById(R.id.customInfoContent_imageView)).setImageResource(badge);
+            ImageView imageView = ((ImageView) view.findViewById(R.id.customInfoContent_imageView));
+
+            Picasso.get().load(shop.getAvatar()).placeholder(badge).into(imageView, new MarkerCallback(marker));
+
 
             String title = marker.getTitle();
             TextView titleUi = (view.findViewById(R.id.customInfoContent_textView_title));
@@ -176,6 +189,41 @@ public class MapsFragment extends Fragment {
                 snippetUi.setText(snippetText);
             } else {
                 snippetUi.setText("");
+            }
+        }
+
+        // Callback is an interface from Picasso:
+        class MarkerCallback implements Callback
+        {
+            Marker marker = null;
+
+            MarkerCallback(Marker marker)
+            {
+                this.marker = marker;
+            }
+
+            @Override
+            public void onSuccess()
+            {
+                if (marker == null)
+                {
+                    return;
+                }
+
+                if (!marker.isInfoWindowShown())
+                {
+                    return;
+                }
+
+                // If Info Window is showing, then refresh it's contents:
+
+                marker.hideInfoWindow(); // Calling only showInfoWindow() throws an error
+                marker.showInfoWindow();
+            }
+
+            @Override
+            public void onError(Exception e) {
+
             }
         }
     }
@@ -217,7 +265,7 @@ public class MapsFragment extends Fragment {
         fusedLocationClient.getLastLocation().addOnSuccessListener(requireActivity(), new OnSuccessListener<Location>() {
             @Override
             public void onSuccess(Location location) {
-                if (location != null){
+                if (location != null) {
                     LatLng cordsUser = new LatLng(location.getLatitude(), location.getLongitude());
                     CameraUpdate yourLocation = CameraUpdateFactory.newLatLngZoom(cordsUser, 16);
                     mMap.animateCamera(yourLocation);
@@ -226,7 +274,7 @@ public class MapsFragment extends Fragment {
         });
     }
 
-    private Boolean checkHaveLocationPermission(){
+    private Boolean checkHaveLocationPermission() {
         if (ActivityCompat.checkSelfPermission(requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(requireActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return false;
         } else {

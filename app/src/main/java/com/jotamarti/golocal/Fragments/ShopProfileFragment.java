@@ -13,14 +13,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.jotamarti.golocal.Activities.NewPostActivity;
+import com.jotamarti.golocal.Activities.ShopConfigurationActivity;
 import com.jotamarti.golocal.Models.Shop;
 import com.jotamarti.golocal.R;
 import com.jotamarti.golocal.ViewModels.MainActivityViewModel;
 import com.jotamarti.golocal.ViewModels.ShopDetailActivityViewModel;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -38,6 +41,7 @@ public class ShopProfileFragment extends Fragment {
     private TextView textViewShopLocation;
     private TextView textViewShopPhoneNumber;
     private TextView textViewShopName;
+    private ImageView imageViewShopImage;
 
     // Lo pongo aqui por que esta fragment puede tener diferentes viewmodels
     private Shop shop;
@@ -85,10 +89,10 @@ public class ShopProfileFragment extends Fragment {
             btnEditProfile.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    //Intent intent = new Intent(getContext(), ShopConfigurationActivity.class);
-                    //intent.putExtra("user", model.getUser());
-                    //intent.putExtra("caller", "ShopProfileFragment");
-                    //startActivity(intent);
+                    Intent intent = new Intent(getContext(), ShopConfigurationActivity.class);
+                    intent.putExtra("user", mainActivityViewModel.user);
+                    intent.putExtra("caller", "ShopProfileFragment");
+                    startActivity(intent);
                 }
             });
 
@@ -107,6 +111,7 @@ public class ShopProfileFragment extends Fragment {
         textViewShopLocation.setText(shop.getAddress());
         textViewShopPhoneNumber.setText(shop.getTelNumber());
         textViewShopName.setText(shop.getShopName());
+        Picasso.get().load(shop.getAvatar()).into(imageViewShopImage);
 
         return view;
     }
@@ -122,6 +127,7 @@ public class ShopProfileFragment extends Fragment {
         btnEditProfile = view.findViewById(R.id.fragmentShopProfile_btn_editProfile);
         btnCreatePost = view.findViewById(R.id.fragmentShopProfile_btn_addPost);
         textViewShopName = view.findViewById(R.id.fragmentShopProfile_textView_shopNameText);
+        imageViewShopImage = view.findViewById(R.id.FragmentShopProfile_imageView_shopImage);
         if (mode.equals("visit") || mode.equals("PostDetailActivityFromMainActivity") || mode.equals("MapsFragment")) {
             btnEditProfile.setVisibility(View.GONE);
         } else {

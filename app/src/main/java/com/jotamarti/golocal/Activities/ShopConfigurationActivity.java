@@ -40,6 +40,7 @@ import com.jotamarti.golocal.Utils.Errors.AuthErrors;
 import com.jotamarti.golocal.Utils.Errors.BackendErrors;
 import com.jotamarti.golocal.Utils.ImageUtil;
 import com.jotamarti.golocal.ViewModels.ShopConfigurationViewModel;
+import com.squareup.picasso.Picasso;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
@@ -80,7 +81,7 @@ public class ShopConfigurationActivity extends AppCompatActivity {
         setContentView(R.layout.activity_shop_configuration);
 
         initializeViewModel();
-        getDataFromAuthActivity();
+        getDataFromPreviousActivity();
         initializeTextWatcher();
         initializeUi();
         initializeAutoCompleteFragment();
@@ -273,7 +274,7 @@ public class ShopConfigurationActivity extends AppCompatActivity {
         txtViewNumber = findViewById(R.id.textView12);
         checkBoxNoNumber = findViewById(R.id.ShopConfigurationActivity_checkbox_noNumber);
         btnUploadImage = findViewById(R.id.NewPostActivity_btn_changeShopProfileImage);
-        imageViewShopHeader = findViewById(R.id.NewPostActivity_imageView_postImage);
+        imageViewShopHeader = findViewById(R.id.FragmentShopProfile_imageView_shopImage);
         btnSave = findViewById(R.id.ShopConfigurationActivity_btn_save);
         editTextPhone = findViewById(R.id.ShopConfigurationActivity_editText_phone);
         textInputShopDescription = findViewById(R.id.ShopConfigurationActivity_textField_shopDescription);
@@ -367,7 +368,7 @@ public class ShopConfigurationActivity extends AppCompatActivity {
         manageAuthServiceErrors();
     }
 
-    private void getDataFromAuthActivity() {
+    private void getDataFromPreviousActivity() {
         Intent AuthActivityIntent = getIntent();
         shopConfigurationViewModel.caller = AuthActivityIntent.getStringExtra("caller");
         if(shopConfigurationViewModel.caller.equals("AuthActivity")){
@@ -377,9 +378,14 @@ public class ShopConfigurationActivity extends AppCompatActivity {
             shopConfigurationViewModel.userCoordinates = AuthActivityIntent.getParcelableExtra("userCoordinates");
             shopConfigurationViewModel.shop = new Shop();
             shopConfigurationViewModel.shop.setAddress("");
-        } else {
+        }
+        if(shopConfigurationViewModel.caller.equals("ShopProfileFragment")){
             shopConfigurationViewModel.shop = AuthActivityIntent.getParcelableExtra("user");
         }
 
+    }
+
+    private void fillAllShopData(){
+        Picasso.get().load(shopConfigurationViewModel.shop.getAvatar()).into(imageViewShopHeader);
     }
 }
