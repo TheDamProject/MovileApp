@@ -37,6 +37,7 @@ public class UserRepository implements UserRepositoryFactory {
 
     // Backend
     private MutableLiveData<User> backendUser = new MutableLiveData<>();
+    private MutableLiveData<String> deletedUserResponse = new MutableLiveData<>();
     private MutableLiveData<BackendErrors> backendErrorData = new MutableLiveData<>();
     private MutableLiveData<ArrayList<Shop>> nearbyShops = new MutableLiveData<>();
 
@@ -72,6 +73,23 @@ public class UserRepository implements UserRepositoryFactory {
             }
         });
         return backendUser;
+    }
+
+    @Override
+    public LiveData<String> deleteUserFromBackend(String uid) {
+        deletedUserResponse = new MutableLiveData<>();
+        userUsecases.deleteUserFromBackend(uid, new UserCallbacks.onResponseCallDeleteUserFromBackend() {
+            @Override
+            public void onResponse(JSONObject jsonObject) {
+                deletedUserResponse.postValue("ok");
+            }
+
+            @Override
+            public void onErrorResponse(BackendErrors backendError) {
+                backendErrorData.setValue(backendError);
+            }
+        });
+        return deletedUserResponse;
     }
 
     @Override

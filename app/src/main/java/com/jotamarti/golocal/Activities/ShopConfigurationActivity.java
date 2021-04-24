@@ -87,6 +87,10 @@ public class ShopConfigurationActivity extends AppCompatActivity {
         initializeAutoCompleteFragment();
         manageUserInput(true);
 
+        if(shopConfigurationViewModel.caller.equals("ShopProfileFragment")){
+            fillAllShopData();
+        }
+
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(@NotNull Place place) {
@@ -133,14 +137,19 @@ public class ShopConfigurationActivity extends AppCompatActivity {
             public void onClick(View v) {
                 manageUserInput(false);
                 btnSave.setEnabled(false);
-                shopConfigurationViewModel.shop.setDescription(textInputShopDescription.getText().toString());
                 shopConfigurationViewModel.shop.setTelNumber(editTextPhone.getText().toString());
                 shopConfigurationViewModel.shop.setWhatsapp(isWhatsapp.isChecked());
                 shopConfigurationViewModel.shop.setShopName(editTextName.getText().toString());
+                shopConfigurationViewModel.shop.setDescription(textInputShopDescription.getText().toString());
 
-                //TODO: Llamar al backend y actualizar la tienda
-                shopConfigurationViewModel.registerShopInAuthService(shopConfigurationViewModel.email, shopConfigurationViewModel.password);
-                observeRegisteredUserInAuthService();
+                if(!shopConfigurationViewModel.caller.equals("ShopProfileFragment")) {
+                    shopConfigurationViewModel.registerShopInAuthService(shopConfigurationViewModel.email, shopConfigurationViewModel.password);
+                    observeRegisteredUserInAuthService();
+                }
+                if(shopConfigurationViewModel.caller.equals("ShopProfileFragment")){
+                    shopConfigurationViewModel.modifyShopInBackend();
+                    observeModifiedShopInBackend();
+                }
             }
         });
     }
@@ -164,12 +173,25 @@ public class ShopConfigurationActivity extends AppCompatActivity {
         });
     }
 
+    private void observeModifiedShopInBackend(){
+        shopConfigurationViewModel.getModifyShopResponse().observe(this, (String response) -> {
+            if(response.length() == 0){
+                //TODO: No se ha actualizado la foto, en teoria esto lo quitaremos
+            }
+            if(response.length() > 0){
+                shopConfigurationViewModel.shop.setAvatar(response);
+            }
+            showMainActivity();
+            shopConfigurationViewModel.getModifyShopResponse().removeObservers(this);
+        });
+    }
+
     private void showMainActivity(){
         if (shopConfigurationViewModel.caller.equals("ShopProfileFragment")) {
-            // TODO: Cuando le de a guardar desde ShopProfileFragment tendre que actualizar en el bancked, despues actualizar el objeto y volver al perfil
             Intent intent = new Intent(ShopConfigurationActivity.this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             intent.putExtra("user", shopConfigurationViewModel.shop);
-            intent.putExtra("caller", "ShopProfileFragment");
+            intent.putExtra("caller", "ShopModified");
             startActivity(intent);
         } else {
             Intent intent = new Intent(ShopConfigurationActivity.this, MainActivity.class);
@@ -381,11 +403,19 @@ public class ShopConfigurationActivity extends AppCompatActivity {
         }
         if(shopConfigurationViewModel.caller.equals("ShopProfileFragment")){
             shopConfigurationViewModel.shop = AuthActivityIntent.getParcelableExtra("user");
+            shopConfigurationViewModel.imageInserted = true;
         }
 
     }
 
     private void fillAllShopData(){
-        Picasso.get().load(shopConfigurationViewModel.shop.getAvatar()).into(imageViewShopHeader);
+        Shop shop = shopConfigurationViewModel.shop;
+        Picasso.get().load(shop.getAvatar()).into(imageViewShopHeader);
+        editTextPhone.setText(shop.getTelNumber());
+        checkBoxNoNumber.setChecked(shop.isWhatsapp());
+        editTextName.setText(shop.getShopName());
+        textInputShopDescription.setText(shop.getDescription());
+        autocompleteFragment.setText(shop.getAddress());
+        btnSave.setEnabled(true);
     }
 }

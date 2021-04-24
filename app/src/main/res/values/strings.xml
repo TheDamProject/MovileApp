@@ -70,6 +70,7 @@
     <string name="MapsFragment_title">Explore Shops</string>
     <!-- ClientProfileFragment -->
     <string name="ClientProfileFragment_title">Client Profile</string>
+    <string name="ClientProfileFragment_btn_unsubscribe">UNSUBSCRIBE</string>
     <!-- Navbar -->
     <string name="navbar_map">Map</string>
     <string name="navbar_more">More</string>

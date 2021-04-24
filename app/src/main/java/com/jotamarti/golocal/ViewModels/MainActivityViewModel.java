@@ -11,6 +11,9 @@ import com.google.android.gms.maps.model.LatLng;
 import com.jotamarti.golocal.Models.Post;
 import com.jotamarti.golocal.Models.Shop;
 import com.jotamarti.golocal.Models.User;
+import com.jotamarti.golocal.Repositories.UserRepository;
+import com.jotamarti.golocal.UseCases.Users.UserRepositoryFactory;
+import com.jotamarti.golocal.Utils.Errors.BackendErrors;
 import com.jotamarti.golocal.dummy.PostsDummy;
 import com.jotamarti.golocal.dummy.ShopsDummy;
 
@@ -31,10 +34,19 @@ public class MainActivityViewModel extends ViewModel {
     private ArrayList<Shop> nearbyShops;
     private ArrayList<Post> allShopsPostList;
 
+    private UserRepositoryFactory userRepository;
 
     private MutableLiveData<String> title = new MutableLiveData<>();
     private MutableLiveData<List<Post>> posts = new MutableLiveData<>();
     private MutableLiveData<List<Shop>> shopsList = new MutableLiveData<>();
+
+    private LiveData<String> deleteUserInBackendResponse;
+    private LiveData<BackendErrors> deleteUserInBackendError;
+
+    public MainActivityViewModel(){
+        userRepository = new UserRepository();
+        deleteUserInBackendError = userRepository.getBackendError();
+    }
 
     //TODO: Poner lista de posts
     public void setPosts(ArrayList<Post> postList) {
@@ -67,6 +79,18 @@ public class MainActivityViewModel extends ViewModel {
 
     public void setNearbyShops(ArrayList<Shop> nearbyShops){
         this.nearbyShops = nearbyShops;
+    }
+
+    public void deleteUserInBackend(String uid) {
+        deleteUserInBackendResponse = userRepository.deleteUserFromBackend(uid);
+    }
+
+    public LiveData<BackendErrors> getDeleteUserBackendError(){
+        return deleteUserInBackendError;
+    }
+
+    public LiveData<String> getDeleteUserInBackendResponse(){
+        return deleteUserInBackendResponse;
     }
 
     public void setAllShopsPostList(ArrayList<Shop> nearbyShops) {

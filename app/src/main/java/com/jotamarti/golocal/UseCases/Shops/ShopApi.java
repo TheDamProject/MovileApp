@@ -8,6 +8,6 @@ public interface ShopApi {
 
     void getShop(String uid);
     void registerShopInBackend(Shop shop, ShopCallbacks.onResponseRegisterShopInBackend onResponseRegisterShopInBackend);
-    void modifyShop(String uid, JsonObject newValues);
+    void modifyShopInBackend(Shop shop, ShopCallbacks.onResponseModifyShopInBackend onResponseModifyShopInBackend);
 
 }

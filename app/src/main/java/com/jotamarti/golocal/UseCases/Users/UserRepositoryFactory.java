@@ -16,6 +16,7 @@ public interface UserRepositoryFactory {
 
     // Backend
     LiveData<User> getUserFromBackend(String uid);
+    LiveData<String> deleteUserFromBackend(String uid);
     LiveData<ArrayList<Shop>> getShopsNearby(String lat, String lang);
     MutableLiveData<BackendErrors> getBackendError();
 

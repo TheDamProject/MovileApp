@@ -136,6 +136,48 @@ public class UserUseCases implements UserApi {
     }
 
     @Override
+    public void deleteUserFromBackend(String uid, UserCallbacks.onResponseCallDeleteUserFromBackend onResponseCallDeleteUserFromBackend) {
+        String baseUrl = String.valueOf(App.getContext().getResources().getText(R.string.api_base_url));
+        String uri = baseUrl + "/api/user/delete";
+
+        Map<String, String> mParams = new HashMap<String, String>();
+        mParams.put("uid", uid);
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, uri, new JSONObject(mParams), new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                onResponseCallDeleteUserFromBackend.onResponse(response);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                if(error == null || error.networkResponse == null) {
+                    onResponseCallDeleteUserFromBackend.onErrorResponse(BackendErrors.SERVER_ERROR);
+                }
+                Log.d(TAG, error.toString());
+                BackendErrors httpNetworkError = BackendErrors.getBackendError(error.networkResponse.statusCode);
+                onResponseCallDeleteUserFromBackend.onErrorResponse(httpNetworkError);
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Content-Type", "application/json; charset=UTF-8");
+                params.put("X-AUTH-TOKEN", BuildConfig.BACKEND_API_KEY);
+                return params;
+            }
+
+            @Override
+            public Priority getPriority() {
+                return Priority.HIGH;
+            }
+
+        };
+        jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(0, 0, 5f));
+        RequestQueueSingleton.getInstance().addToRequestQueue(jsonObjectRequest);
+    }
+
+    @Override
     public void loginUserInAuthService(String email, String password, UserCallbacks.onResponseCallBackLoginUserInAuthService onResponseCallBackLoginUserInAuthService) {
         firebaseAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(TaskExecutors.MAIN_THREAD, new OnCompleteListener<AuthResult>() {

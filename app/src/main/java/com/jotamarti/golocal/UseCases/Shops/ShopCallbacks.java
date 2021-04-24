@@ -10,4 +10,9 @@ public class ShopCallbacks {
         void onResponse(JSONObject json);
         void onErrorResponse(BackendErrors httpNetworkError);
     }
+
+    public interface onResponseModifyShopInBackend {
+        void onResponse(JSONObject json);
+        void onErrorResponse(BackendErrors httpNetworkError);
+    }
 }

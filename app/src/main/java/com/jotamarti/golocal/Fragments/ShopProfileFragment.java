@@ -9,6 +9,7 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.os.Parcelable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -134,5 +135,17 @@ public class ShopProfileFragment extends Fragment {
             btnEditProfile.setVisibility(View.VISIBLE);
             btnCreatePost.show();
         }
+    }
+
+    @Override
+    public void onResume() {
+        shop = (Shop) mainActivityViewModel.user;
+        textViewShopDescription.setText(shop.getDescription());
+        textViewShopLocation.setText(shop.getAddress());
+        textViewShopPhoneNumber.setText(shop.getTelNumber());
+        textViewShopName.setText(shop.getShopName());
+        Picasso.get().load(shop.getAvatar()).into(imageViewShopImage);
+        Log.d(TAG, "onResume del ShopProfileFragment");
+        super.onResume();
     }
 }

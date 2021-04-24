@@ -37,6 +37,7 @@ public class ShopConfigurationViewModel extends ViewModel {
     // Auth
     private final UserRepositoryFactory userRepository;
     private LiveData<FirebaseUser> authUserRegistered;
+    private LiveData<String> modifyShopResponse;
     private LiveData<AuthErrors> authError;
 
     public ShopConfigurationViewModel(){
@@ -51,8 +52,16 @@ public class ShopConfigurationViewModel extends ViewModel {
         backendShop = shopRepository.registerShopInBackend(shop);
     }
 
+    public void modifyShopInBackend(){
+        modifyShopResponse = shopRepository.modifyShopInBackend(shop);
+    }
+
     public LiveData<Shop> getShop() {
         return backendShop;
+    }
+
+    public LiveData<String> getModifyShopResponse() {
+        return modifyShopResponse;
     }
 
     public LiveData<BackendErrors> getBackendError() {

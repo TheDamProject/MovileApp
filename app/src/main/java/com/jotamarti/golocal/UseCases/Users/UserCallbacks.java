@@ -22,6 +22,11 @@ public class UserCallbacks {
         void onErrorResponse(BackendErrors backendError);
     };
 
+    public interface onResponseCallDeleteUserFromBackend {
+        void onResponse(JSONObject jsonObject);
+        void onErrorResponse(BackendErrors backendError);
+    };
+
     // Auth service
     public interface onResponseCallBackLoginUserInAuthService {
         void onResponse(String uid);

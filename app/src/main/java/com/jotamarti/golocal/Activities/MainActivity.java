@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModelProvider;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -132,16 +133,49 @@ public class MainActivity extends AppCompatActivity {
         if(mainActivityViewModel.caller.equals("NewPostActivity")){
             mainActivityViewModel.intent = intent;
             setDataFromIntent();
-        }
-        if(mainActivityViewModel.caller.equals("NewPostActivity")){
             CustomToast.showToast(this, "Post created!", CustomToast.mode.SHORTER);
         }
+        if(mainActivityViewModel.caller.equals("ShopModified")){
+            Shop shop = intent.getParcelableExtra("user");
+            updateShop(shop);
+        }
         super.onNewIntent(intent);
+    }
+
+    private void updateShop(Shop shop){
+        //TODO: Arreglar esto cuando tenga el backend
+
+        ArrayList<Shop> nearbyShops = (ArrayList<Shop>) mainActivityViewModel.getShopsList().getValue();
+
+        for(int i = 1; i < nearbyShops.size(); i++){
+            if(nearbyShops.get(i).getUserUid().equals(shop.getUserUid())){
+                Log.d(TAG, "TESt");
+                nearbyShops.remove(i);
+                nearbyShops.add(shop);
+                break;
+            }
+        }
+
+        ArrayList<Post> postList = new ArrayList<>();
+
+        for(int i = 1; i < nearbyShops.size(); i++){
+            postList.addAll(nearbyShops.get(i).getShopPosts());
+        }
+
+        mainActivityViewModel.user = shop;
+        mainActivityViewModel.setPosts(postList);
+        mainActivityViewModel.setShops(nearbyShops);
+
+        if(mainActivityViewModel.caller.equals("AuthActivity")){
+            mainActivityViewModel.userCoordinates = mainActivityViewModel.intent.getParcelableExtra("userCoordinates");
+        }
+
     }
 
     private void setDataFromIntent() {
         //TODO: Arreglar esto cuando tenga el backend
         User user = mainActivityViewModel.intent.getParcelableExtra("user");
+
         ArrayList<Shop> nearbyShops = mainActivityViewModel.intent.getParcelableArrayListExtra("nearbyShops");
 
         ArrayList<Post> postList = new ArrayList<>();

@@ -28,6 +28,7 @@ public class ShopRepository implements ShopRepositoryFactory {
 
     // Backend
     private MutableLiveData<Shop> currentShop = new MutableLiveData<>();
+    private MutableLiveData<String> modifyShopResponse = new MutableLiveData<>();
     private MutableLiveData<BackendErrors> haveHttpNetworkError = new MutableLiveData<>();
 
     @Override
@@ -46,6 +47,29 @@ public class ShopRepository implements ShopRepositoryFactory {
             }
         });
         return currentShop;
+    }
+
+    @Override
+    public LiveData<String> modifyShopInBackend(Shop shop) {
+        modifyShopResponse = new MutableLiveData<>();
+        ShopUsecases.modifyShopInBackend(shop, new ShopCallbacks.onResponseModifyShopInBackend() {
+            @Override
+            public void onResponse(JSONObject json) {
+                String logo = "";
+                try {
+                    logo = json.getString("logo");
+                } catch (JSONException jsonException) {
+                    jsonException.printStackTrace();
+                }
+                modifyShopResponse.postValue(logo);
+            }
+
+            @Override
+            public void onErrorResponse(BackendErrors httpNetworkError) {
+                haveHttpNetworkError.setValue(httpNetworkError);
+            }
+        });
+        return modifyShopResponse;
     }
 
     @Override

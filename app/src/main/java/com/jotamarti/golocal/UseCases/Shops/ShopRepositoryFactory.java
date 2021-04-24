@@ -9,5 +9,6 @@ import com.jotamarti.golocal.Utils.Errors.BackendErrors;
 public interface ShopRepositoryFactory {
 
     LiveData<Shop> registerShopInBackend(Shop shop);
+    LiveData<String> modifyShopInBackend(Shop shop);
     MutableLiveData<BackendErrors> getBackendError();
 }
