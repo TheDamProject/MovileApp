@@ -1,13 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
     <item
-        android:id="@+id/menu_logout"
-        android:title="@string/logoutMenu_logout"
-        app:showAsAction="never"/>
-    <item
-        android:id="@+id/menu_forget_logout"
-        android:title="@string/logoutMenu_forget"
-        app:showAsAction="never"/>
+        android:id="@+id/action_more"
+        android:icon="@drawable/ic_baseline_more_vert_24"
+        android:title=""
+        app:showAsAction="always">
+        <menu>
+            <item
+                android:id="@+id/menu_logout"
+                android:icon="@drawable/ic_baseline_exit_to_app_24"
+                android:title="@string/logoutMenu_logout"
+                app:showAsAction="ifRoom" />
+            <item
+                android:id="@+id/menu_forget_logout"
+                android:icon="@drawable/ic_baseline_logout_24"
+                android:title="@string/logoutMenu_forget"
+                app:showAsAction="ifRoom" />
+        </menu>
+    </item>
 
 </menu>
