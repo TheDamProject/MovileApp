@@ -85,10 +85,10 @@
 
     <Button
         android:id="@+id/fragmentShopProfile_btn_editProfile"
-        android:layout_width="wrap_content"
+        android:layout_width="30dp"
         android:layout_height="40dp"
         android:layout_marginEnd="16dp"
-        android:text="@string/ShopProfileFragment_btn_editShop"
+        android:drawableBottom="@drawable/ic_baseline_edit_24"
         android:textSize="10sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/NewPostActivity_imageView_postImage" />
