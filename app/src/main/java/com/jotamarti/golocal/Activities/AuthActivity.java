@@ -297,7 +297,7 @@ public class AuthActivity extends AppCompatActivity {
 
     private void handlePermissionGranted() {
         if (!isLocationEnabled()) {
-            CustomToast.showToast(this, "Please, enable the location in you'r device", CustomToast.mode.LONGER);
+            CustomToast.showToast(this, getText(R.string.authActivity_textView_enableLocation).toString(), CustomToast.mode.LONGER);
             txtViewLocationStatus.setVisibility(View.VISIBLE);
             btnAuthActivity.setEnabled(false);
         }

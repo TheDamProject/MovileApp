@@ -15,6 +15,9 @@
     <string name="authActivity_logo_description">Go Local logo</string>
     <string name="authActivity_btn_login">LOGIN</string>
     <string name="authActivity_btn_register">REGISTER</string>
+    <string name="authActivity_textView_enableLocation">Please, enable the location in you\'r device</string>
+    <string name="authActivity_textView_gettingLocation">Getting you\'r location, please wait</string>
+    <string name="authActivity_textView_knowLocation">We need to know you\'r location to use the app</string>
     <!-- ShopConfigurationActivity Text -->
     <string name="ShopConfigurationActivity_editTextLocation">Adress (With number)</string>
     <string name="ShopConfigurationActivity_textView_number">Number</string>
