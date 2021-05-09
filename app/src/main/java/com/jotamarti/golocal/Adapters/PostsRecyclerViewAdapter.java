@@ -37,7 +37,7 @@ public class PostsRecyclerViewAdapter extends RecyclerView.Adapter<PostsRecycler
         this.caller = caller;
     }
 
-    public void setPostsList(List<Post> postsListTest){
+    public void setPostsList(List<Post> postsListTest) {
         this.postsList.clear();
         this.postsList.addAll(postsListTest);
         this.notifyDataSetChanged();
@@ -61,30 +61,30 @@ public class PostsRecyclerViewAdapter extends RecyclerView.Adapter<PostsRecycler
             public void onClick(View v) {
                 Intent intent = new Intent(context, PostDetailActivity.class);
                 intent.putExtra("post", postsList.get(position));
-                if (caller.equals("MainActivity")){
-                    String shopId = postsList.get(position).getCompanyUid();
-                    Shop theShop = Shop.getShopByUid(shopList, shopId);
-
-                    intent.putExtra("caller", "MainActivity");
-                    intent.putExtra("shop", theShop);
-                    context.startActivity(intent);
-                } else if(caller.equals("PostDetailActivityFromMainActivity")){
-                    // Le paso esto para que cuando entremos al post desde esta ruta si le damos atrás vuelva a la mainActivity
-                    intent.putExtra("caller", "MainActivity");
-                    intent.putExtra("shop", shop);
-                    context.startActivity(intent);
-                } else if (caller.equals("MapsFragment")) {
-                    intent.putExtra("caller", caller);
-                    intent.putExtra("shop", shop);
-                    context.startActivity(intent);
-                } else if (caller.equals("ShopProfile")) {
-                    intent.putExtra("caller", caller);
-                    context.startActivity(intent);
-                } else {
-                    intent.putExtra("caller", "visit");
-                    context.startActivity(intent);
+                if (!postsList.get(0).getHeader().equals("Esta tienda no tiene ofertas")) {
+                    if (caller.equals("MainActivity")) {
+                        String shopId = postsList.get(position).getCompanyUid();
+                        Shop theShop = Shop.getShopByUid(shopList, shopId);
+                        intent.putExtra("caller", "MainActivity");
+                        intent.putExtra("shop", theShop);
+                        context.startActivity(intent);
+                    } else if (caller.equals("PostDetailActivityFromMainActivity")) {
+                        // Le paso esto para que cuando entremos al post desde esta ruta si le damos atrás vuelva a la mainActivity
+                        intent.putExtra("caller", "MainActivity");
+                        intent.putExtra("shop", shop);
+                        context.startActivity(intent);
+                    } else if (caller.equals("MapsFragment")) {
+                        intent.putExtra("caller", caller);
+                        intent.putExtra("shop", shop);
+                        context.startActivity(intent);
+                    } else if (caller.equals("ShopProfile")) {
+                        intent.putExtra("caller", caller);
+                        context.startActivity(intent);
+                    } else {
+                        intent.putExtra("caller", "visit");
+                        context.startActivity(intent);
+                    }
                 }
-
             }
         });
     }
@@ -94,11 +94,11 @@ public class PostsRecyclerViewAdapter extends RecyclerView.Adapter<PostsRecycler
         return postsList.size();
     }
 
-    public void setShopList(List<Shop> shopList){
+    public void setShopList(List<Shop> shopList) {
         this.shopList = shopList;
     }
 
-    public void setShop(Shop shop){
+    public void setShop(Shop shop) {
         this.shop = shop;
     }
 

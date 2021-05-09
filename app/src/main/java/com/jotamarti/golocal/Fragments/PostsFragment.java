@@ -81,8 +81,8 @@ public class PostsFragment extends Fragment {
                         Post post = new Post();
                         post.setImageUrl("http://jotamarti.ddns.net:30180/storage/default/postImage/postImage_6071cc761426d3.77334310.png");
                         post.setCompanyUid(shop.getUserUid());
-                        post.setMessage("Default");
-                        post.setHeader("This store has no posts");
+                        post.setMessage("");
+                        post.setHeader("Esta tienda no tiene ofertas");
                         post.setPostId("999999999");
                         newArrayPostList.add(post);
                     }
