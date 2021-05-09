@@ -147,7 +147,7 @@ public class MainActivity extends AppCompatActivity {
 
         ArrayList<Shop> nearbyShops = (ArrayList<Shop>) mainActivityViewModel.getShopsList().getValue();
 
-        for(int i = 1; i < nearbyShops.size(); i++){
+        for(int i = 0; i < nearbyShops.size(); i++){
             if(nearbyShops.get(i).getUserUid().equals(shop.getUserUid())){
                 Log.d(TAG, "TESt");
                 nearbyShops.remove(i);
@@ -158,7 +158,7 @@ public class MainActivity extends AppCompatActivity {
 
         ArrayList<Post> postList = new ArrayList<>();
 
-        for(int i = 1; i < nearbyShops.size(); i++){
+        for(int i = 0; i < nearbyShops.size(); i++){
             postList.addAll(nearbyShops.get(i).getShopPosts());
         }
 
@@ -180,7 +180,7 @@ public class MainActivity extends AppCompatActivity {
 
         ArrayList<Post> postList = new ArrayList<>();
 
-        for(int i = 1; i < nearbyShops.size(); i++){
+        for(int i = 0; i < nearbyShops.size(); i++){
             postList.addAll(nearbyShops.get(i).getShopPosts());
         }
 

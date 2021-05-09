@@ -96,7 +96,7 @@ public class MainActivityViewModel extends ViewModel {
     public void setAllShopsPostList(ArrayList<Shop> nearbyShops) {
         ArrayList<Post> postList = new ArrayList<>();
 
-        for(int i = 1; i < nearbyShops.size(); i++){
+        for(int i = 0; i < nearbyShops.size(); i++){
             postList.addAll(nearbyShops.get(i).getShopPosts());
         }
         this.allShopsPostList = postList;
