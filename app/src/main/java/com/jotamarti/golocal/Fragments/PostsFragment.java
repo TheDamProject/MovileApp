@@ -59,10 +59,11 @@ public class PostsFragment extends Fragment {
                 adapter.setShop(shop);
                 recyclerView.setAdapter(adapter);
             }
-        } else if(caller.equals("ShopProfile")) {
+        } else if (caller.equals("ShopProfile")) {
             initializeMainActivityViewModel();
             shop = (Shop) mainActivityViewModel.user;
             postList = shop.getShopPosts();
+
             if (view instanceof RecyclerView) {
                 Context context = view.getContext();
                 RecyclerView recyclerView = (RecyclerView) view;
@@ -71,10 +72,19 @@ public class PostsFragment extends Fragment {
                 adapter.setShop(shop);
                 mainActivityViewModel.getPosts().observe(requireActivity(), (List<Post> newPostList) -> {
                     ArrayList<Post> newArrayPostList = new ArrayList<>();
-                    for(int i = 0; i< newPostList.size(); i++){
-                        if(newPostList.get(i).getCompanyUid().equals(shop.getUserUid())){
+                    for (int i = 0; i < newPostList.size(); i++) {
+                        if (newPostList.get(i).getCompanyUid().equals(shop.getUserUid())) {
                             newArrayPostList.add(newPostList.get(i));
                         }
+                    }
+                    if (newArrayPostList.size() == 0) {
+                        Post post = new Post();
+                        post.setImageUrl("http://jotamarti.ddns.net:30180/storage/default/postImage/postImage_6071cc761426d3.77334310.png");
+                        post.setCompanyUid(shop.getUserUid());
+                        post.setMessage("Default");
+                        post.setHeader("This store has no posts");
+                        post.setPostId("999999999");
+                        newArrayPostList.add(post);
                     }
                     adapter.setPostsList(newArrayPostList);
                 });
@@ -121,7 +131,7 @@ public class PostsFragment extends Fragment {
         shopDetailActivityViewModel = new ViewModelProvider(requireActivity()).get(ShopDetailActivityViewModel.class);
     }
 
-    private void initializeMainActivityViewModel(){
+    private void initializeMainActivityViewModel() {
         mainActivityViewModel = new ViewModelProvider(requireActivity()).get(MainActivityViewModel.class);
     }
 }
