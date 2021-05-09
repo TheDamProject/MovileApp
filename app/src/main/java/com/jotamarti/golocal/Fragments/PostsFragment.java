@@ -70,7 +70,12 @@ public class PostsFragment extends Fragment {
                 PostsRecyclerViewAdapter adapter = new PostsRecyclerViewAdapter(postList, context, caller);
                 adapter.setShop(shop);
                 mainActivityViewModel.getPosts().observe(requireActivity(), (List<Post> newPostList) -> {
-                    ArrayList<Post> newArrayPostList = new ArrayList<>(newPostList);
+                    ArrayList<Post> newArrayPostList = new ArrayList<>();
+                    for(int i = 0; i< newPostList.size(); i++){
+                        if(newPostList.get(i).getCompanyUid().equals(shop.getUserUid())){
+                            newArrayPostList.add(newPostList.get(i));
+                        }
+                    }
                     adapter.setPostsList(newArrayPostList);
                 });
                 recyclerView.setAdapter(adapter);

@@ -13,7 +13,7 @@ public class PostParser {
 
     public static List<Post> parsePostsFromJsonArray(JSONArray jsonPostsListObject) throws JSONException {
         List<Post> postList = new ArrayList<>();
-        for (int i = 1; i < jsonPostsListObject.length(); i++) {
+        for (int i = 0; i < jsonPostsListObject.length(); i++) {
             Post post = parsePostFromJsonObject(jsonPostsListObject.getJSONObject(i));
             postList.add(post);
         }
