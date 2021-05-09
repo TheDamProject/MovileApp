@@ -139,13 +139,20 @@ public class ShopProfileFragment extends Fragment {
 
     @Override
     public void onResume() {
-        shop = (Shop) mainActivityViewModel.user;
-        textViewShopDescription.setText(shop.getDescription());
-        textViewShopLocation.setText(shop.getAddress());
-        textViewShopPhoneNumber.setText(shop.getTelNumber());
-        textViewShopName.setText(shop.getShopName());
-        Picasso.get().load(shop.getAvatar()).into(imageViewShopImage);
-        Log.d(TAG, "onResume del ShopProfileFragment");
+        if (mainActivityViewModel != null) {
+            if (mainActivityViewModel.intent != null) {
+                String caller = mainActivityViewModel.intent.getStringExtra("caller");
+                if (caller.equals("NewPostActivity")) {
+                    shop = (Shop) mainActivityViewModel.user;
+                    textViewShopDescription.setText(shop.getDescription());
+                    textViewShopLocation.setText(shop.getAddress());
+                    textViewShopPhoneNumber.setText(shop.getTelNumber());
+                    textViewShopName.setText(shop.getShopName());
+                    Picasso.get().load(shop.getAvatar()).into(imageViewShopImage);
+                    Log.d(TAG, "onResume del ShopProfileFragment");
+                }
+            }
+        }
         super.onResume();
     }
 }

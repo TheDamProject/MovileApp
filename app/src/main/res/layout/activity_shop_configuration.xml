@@ -82,7 +82,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="6dp"
-        android:text="CHANGE"
+        android:text="@string/ShopConfigurationActivity_button_changeImage"
         app:layout_constraintBottom_toBottomOf="@+id/FragmentShopProfile_imageView_shopImage"
         app:layout_constraintEnd_toEndOf="@+id/FragmentShopProfile_imageView_shopImage" />
 
@@ -102,7 +102,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="10dp"
-        android:text="Phone Number"
+        android:text="@string/ShopConfigurationActivity_textView_phoneNumber"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView3" />
 
@@ -123,13 +123,15 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="6dp"
         android:layout_marginTop="10dp"
-        android:text="Have Whatsapp"
+        android:text="@string/ShopConfigurationActivity_checkBox_haveWhatsapp"
         app:layout_constraintStart_toEndOf="@+id/ShopConfigurationActivity_editText_phone"
         app:layout_constraintTop_toBottomOf="@+id/textView5" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginStart="14dp"
+        android:layout_marginEnd="14dp"
         app:layout_constraintBottom_toTopOf="@+id/ShopConfigurationActivity_btn_save"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/ShopConfigurationActivity_editText_shopName"
@@ -139,7 +141,7 @@
             android:id="@+id/ShopConfigurationActivity_textField_shopDescription"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Shop Description"
+            android:hint="@string/ShopConfigurationActivity_textAreaHint_shopDescription"
             android:maxLength="255"
             android:maxLines="3" />
     </com.google.android.material.textfield.TextInputLayout>
@@ -150,7 +152,7 @@
         android:id="@+id/ShopConfigurationActivity_btn_save"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="SAVE"
+        android:text="@string/ShopConfigurationActivity_button_save"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -170,7 +172,9 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:inputType="textPersonName"
-        android:hint="Shop name"
+        android:hint="@string/ShopConfigurationActivity_editTextHint_shopName"
+        android:layout_marginStart="14dp"
+        android:layout_marginEnd="14dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/ShopConfigurationActivity_editText_phone" />

@@ -17,7 +17,7 @@
     <string name="authActivity_btn_register">REGISTRAR</string>
     <string name="authActivity_btn_login">ACCEDER</string>
     <string name="authActivity_editText_passwordHint">Contraseña</string>
-    <string name="authActivity_switch_remember">Recurdame</string>
+    <string name="authActivity_switch_remember">Recuerdame</string>
     <string name="authActivity_checkBox_register">Registrar como:</string>
     <string name="PostDetailActivity_title">Detalles del Post</string>
     <string name="ShopDetailActivity_title">Detalles de la tienda</string>
@@ -49,4 +49,10 @@
     <string name="logoutMenu_forget">Desconectar y olvidar</string>
     <string name="authActivity_switchRegister_text">Cliente</string>
     <string name="authActivity_textView_shopSwitchText">Comercio</string>
+    <string name="ShopConfigurationActivity_button_changeImage">Cambiar</string>
+    <string name="ShopConfigurationActivity_textView_phoneNumber">Numero de télefono</string>
+    <string name="ShopConfigurationActivity_checkBox_haveWhatsapp">Tengo Whatsapp</string>
+    <string name="ShopConfigurationActivity_editTextHint_shopName">Nombre del comercio</string>
+    <string name="ShopConfigurationActivity_textAreaHint_shopDescription">Descripción del comercio</string>
+    <string name="ShopConfigurationActivity_button_save">GUARDAR</string>
 </resources>

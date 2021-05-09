@@ -18,6 +18,12 @@
     <!-- ShopConfigurationActivity Text -->
     <string name="ShopConfigurationActivity_editTextLocation">Adress (With number)</string>
     <string name="ShopConfigurationActivity_textView_number">Number</string>
+    <string name="ShopConfigurationActivity_button_changeImage">CHANGE</string>
+    <string name="ShopConfigurationActivity_textView_phoneNumber">Phone number</string>
+    <string name="ShopConfigurationActivity_checkBox_haveWhatsapp">Have Whatsapp</string>
+    <string name="ShopConfigurationActivity_editTextHint_shopName">Shop name</string>
+    <string name="ShopConfigurationActivity_textAreaHint_shopDescription">Shop Description</string>
+    <string name="ShopConfigurationActivity_button_save">SAVE</string>
     <string name="ShopConfigurationActivity_check_noNumber">No number</string>
     <string name="ShopConfigurationActivity_title">Shop Configuration</string>
     <!-- ClientConfigurationActivity Text -->
