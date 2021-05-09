@@ -59,7 +59,7 @@ public class ShopConfigurationActivity extends AppCompatActivity {
     private TextInputEditText textInputShopDescription;
     private TextView txtViewNumber;
     private CheckBox checkBoxNoNumber;
-    private CheckBox isWhatsapp;
+    private CheckBox checkBoxIsWhatsapp;
     private Button btnUploadImage;
     private Button btnSave;
     private ImageView imageViewShopHeader;
@@ -138,7 +138,7 @@ public class ShopConfigurationActivity extends AppCompatActivity {
                 manageUserInput(false);
                 btnSave.setEnabled(false);
                 shopConfigurationViewModel.shop.setTelNumber(editTextPhone.getText().toString());
-                shopConfigurationViewModel.shop.setWhatsapp(isWhatsapp.isChecked());
+                shopConfigurationViewModel.shop.setWhatsapp(checkBoxIsWhatsapp.isChecked());
                 shopConfigurationViewModel.shop.setShopName(editTextName.getText().toString());
                 shopConfigurationViewModel.shop.setDescription(textInputShopDescription.getText().toString());
 
@@ -300,7 +300,7 @@ public class ShopConfigurationActivity extends AppCompatActivity {
         btnSave = findViewById(R.id.ShopConfigurationActivity_btn_save);
         editTextPhone = findViewById(R.id.ShopConfigurationActivity_editText_phone);
         textInputShopDescription = findViewById(R.id.ShopConfigurationActivity_textField_shopDescription);
-        isWhatsapp = findViewById(R.id.ShopConfigurationActivity_checkBox_isWhatsapp);
+        checkBoxIsWhatsapp = findViewById(R.id.ShopConfigurationActivity_checkBox_isWhatsapp);
         editTextName = findViewById(R.id.ShopConfigurationActivity_editText_shopName);
         spinnerLoading = findViewById(R.id.ShopConfigurationActivity_spinner_loading);
 
@@ -324,6 +324,7 @@ public class ShopConfigurationActivity extends AppCompatActivity {
         textInputShopDescription.setEnabled(state);
         btnUploadImage.setEnabled(state);
         autoCompleteFragmentEditText.setEnabled(state);
+        checkBoxIsWhatsapp.setEnabled(state);
         if (state) {
             spinnerLoading.setVisibility(View.INVISIBLE);
         } else {
