@@ -59,9 +59,9 @@ public class PostsRecyclerViewAdapter extends RecyclerView.Adapter<PostsRecycler
         holder.parent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(context, PostDetailActivity.class);
-                intent.putExtra("post", postsList.get(position));
-                if (!postsList.get(0).getHeader().equals("Esta tienda no tiene ofertas")) {
+                if (!postsList.get(0).getHeader().equals("Esta tienda no tiene anuncios") && !postsList.get(0).getHeader().equals("Ninguna oferta disponible")) {
+                    Intent intent = new Intent(context, PostDetailActivity.class);
+                    intent.putExtra("post", postsList.get(position));
                     if (caller.equals("MainActivity")) {
                         String shopId = postsList.get(position).getCompanyUid();
                         Shop theShop = Shop.getShopByUid(shopList, shopId);

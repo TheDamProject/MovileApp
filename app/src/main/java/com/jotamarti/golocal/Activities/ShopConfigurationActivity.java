@@ -195,6 +195,7 @@ public class ShopConfigurationActivity extends AppCompatActivity {
             startActivity(intent);
         } else {
             Intent intent = new Intent(ShopConfigurationActivity.this, MainActivity.class);
+            shopConfigurationViewModel.nearbyShops.add(shopConfigurationViewModel.shop);
             intent.putExtra("user", shopConfigurationViewModel.shop);
             intent.putExtra("userCoordinates", shopConfigurationViewModel.userCoordinates);
             intent.putParcelableArrayListExtra("nearbyShops", shopConfigurationViewModel.nearbyShops);

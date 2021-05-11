@@ -55,6 +55,15 @@ public class PostsFragment extends Fragment {
                 Context context = view.getContext();
                 RecyclerView recyclerView = (RecyclerView) view;
                 recyclerView.setLayoutManager(new LinearLayoutManager(context));
+                if (postList.size() == 0) {
+                    Post post = new Post();
+                    post.setImageUrl("http://jotamarti.ddns.net:30180/storage/default/postImage/postImage_6071cc761426d3.77334310.png");
+                    post.setCompanyUid(shop.getUserUid());
+                    post.setMessage("");
+                    post.setHeader("Esta tienda no tiene anuncios");
+                    post.setPostId("999999999");
+                    postList.add(post);
+                }
                 PostsRecyclerViewAdapter adapter = new PostsRecyclerViewAdapter(postList, context, caller);
                 adapter.setShop(shop);
                 recyclerView.setAdapter(adapter);
@@ -105,6 +114,15 @@ public class PostsFragment extends Fragment {
                 adapter.setShopList(nearbyShops);
                 mainActivityViewModel.getPosts().observe(requireActivity(), (List<Post> newPostList) -> {
                     ArrayList<Post> newArrayPostList = new ArrayList<>(newPostList);
+                    if (newArrayPostList.size() == 0) {
+                        Post post = new Post();
+                        post.setImageUrl("http://jotamarti.ddns.net:30180/storage/default/postImage/postImage_6071cc761426d3.77334310.png");
+                        post.setCompanyUid("1234");
+                        post.setMessage("");
+                        post.setHeader("Ninguna oferta disponible");
+                        post.setPostId("999999999");
+                        newArrayPostList.add(post);
+                    }
                     adapter.setPostsList(newArrayPostList);
                 });
                 recyclerView.setAdapter(adapter);
