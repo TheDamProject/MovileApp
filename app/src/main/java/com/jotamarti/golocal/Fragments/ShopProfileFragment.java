@@ -20,6 +20,7 @@ import android.widget.TextView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.jotamarti.golocal.Activities.NewPostActivity;
 import com.jotamarti.golocal.Activities.ShopConfigurationActivity;
+import com.jotamarti.golocal.App;
 import com.jotamarti.golocal.Models.Shop;
 import com.jotamarti.golocal.R;
 import com.jotamarti.golocal.ViewModels.MainActivityViewModel;
@@ -75,7 +76,7 @@ public class ShopProfileFragment extends Fragment {
         } else {
             // Tienda visita su perfil
             mainActivityViewModel = new ViewModelProvider(requireActivity()).get(MainActivityViewModel.class);
-            mainActivityViewModel.setTitle("Shop Profile");
+            mainActivityViewModel.setTitle(App.getContext().getString(R.string.ShopProfileFragment_title));
             shop = (Shop) mainActivityViewModel.user;
 
 

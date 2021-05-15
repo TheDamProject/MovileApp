@@ -11,7 +11,7 @@ import java.util.List;
 public class App extends Application {
 
     private static Context mContext;
-    private static final Boolean appInDevelopment = true;
+    private static final Boolean appInDevelopment = false;
 
     @Override
     public void onCreate() {

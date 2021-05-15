@@ -58,4 +58,9 @@
     <string name="authActivity_textView_enableLocation">Por favor, activa la localización en tu dispositivo</string>
     <string name="authActivity_textView_gettingLocation">Obteniendo tu localización, por favor espere...</string>
     <string name="authActivity_textView_knowLocation">Necesitamos saber tu localización para poder usar la app</string>
+    <string name="NewPostActivity_textView_title">Titulo</string>
+    <string name="NewPostActivity_editText_title">Titulo</string>
+    <string name="NewPostActivity_textView_content">Contenido</string>
+    <string name="NewPostActivity_editText_content">Contenido</string>
+    <string name="ShopProfileFragment_title">Perfil del Comercio</string>
 </resources>

@@ -79,9 +79,6 @@ public class AuthActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_auth);
 
-        // Disable night mode
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-
         // Object to get location data
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 

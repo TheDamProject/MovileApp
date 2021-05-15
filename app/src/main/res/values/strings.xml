@@ -68,6 +68,7 @@
     <string name="NewPostActivity_title">Create Post</string>
     <!-- ShopProfileFragment -->
     <string name="ShopProfileFragment_textView_addressHeader">Address</string>
+    <string name="ShopProfileFragment_title">Shop Profile</string>
     <string name="ShopProfileFragment_textView_phoneNumberHeader">Phone number</string>
     <string name="ShopProfileFragment_textView_shopNameHeader">Shop Name</string>
     <string name="ShopProfileFragment_textView_shopDescriptionHeader">Shop Description</string>

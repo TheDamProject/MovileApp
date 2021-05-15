@@ -1,6 +1,7 @@
 package com.jotamarti.golocal.Splash;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -18,6 +19,9 @@ public class SplashActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // Disable night mode
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+
         // SharedPreferences
         dataStorage = new DataStorage(App.getContext());
         String userEmail = (String) dataStorage.read("email", DataStorage.STRING);
@@ -26,9 +30,6 @@ public class SplashActivity extends AppCompatActivity {
         Intent intentLogin = new Intent(this, AuthActivity.class);
         Intent intentMain = new Intent(this, MainActivity.class);
 
-
-
-        //SystemClock.sleep(1000);
         if (!userEmail.isEmpty() && !userPassword.isEmpty()) {
             // TODO: Cambiar a main activity en produccion.
             startActivity(intentLogin);
