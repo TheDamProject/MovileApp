@@ -183,7 +183,8 @@ public class ClientConfigurationActivity extends AppCompatActivity {
     }
 
     private void startCrop(Uri imageUri) {
-        CropImage.activity(imageUri).setGuidelines(CropImageView.Guidelines.ON).setMultiTouchEnabled(true).setAspectRatio(4, 4).setCropShape(CropImageView.CropShape.OVAL).start(this);
+        CropImage.activity(imageUri).setGuidelines(CropImageView.Guidelines.ON)
+                .setMultiTouchEnabled(true).setAspectRatio(4, 4).setCropShape(CropImageView.CropShape.OVAL).start(this);
     }
 
     private void checkAllDataInserted() {

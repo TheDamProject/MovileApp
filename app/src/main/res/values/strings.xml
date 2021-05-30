@@ -88,4 +88,5 @@
     <!-- Logout Menu -->
     <string name="logoutMenu_logout">Log out</string>
     <string name="logoutMenu_forget">Forget and Log out</string>
+    <string name="google_maps_key">AIzaSyDQgLwvtTMV9qlTWU3ET9t-q7eC9J_tNZQ</string>
 </resources>
