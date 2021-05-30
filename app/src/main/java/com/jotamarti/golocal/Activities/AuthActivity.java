@@ -304,10 +304,8 @@ public class AuthActivity extends AppCompatActivity {
     }
 
     private void handleLocationFinded() {
-        Log.d(TAG, "Ha saltado el handleLocationFinded");
         btnGivePermission.setEnabled(false);
         btnAuthActivity.setEnabled(true);
-        Log.d(TAG, "El boton tiene un valor de enabled: " + btnAuthActivity.isEnabled());
         spinnerLoading.setVisibility(View.INVISIBLE);
         btnGivePermission.setVisibility(View.INVISIBLE);
         txtViewMessagePermission.setVisibility(View.INVISIBLE);
